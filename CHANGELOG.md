@@ -4,6 +4,12 @@
 
 - Private client request attachments with validation, upload retry and authenticated admin downloads.
 - Supabase Storage policies, attachment manifests and live upload/privacy tests.
+- Bilingual, indexable URLs: every public route now has its own Arabic document (unprefixed, unchanged) and English document at the matching `/en/` path, with reciprocal `hreflang` tags (`x-default` pointing at Arabic) and both listed in the sitemap. Route titles/descriptions moved to a single shared `src/config/routes.ts`.
+- Language now lives in the URL, not in memory: the toggle navigates to the matching Arabic/English URL instead of flipping hidden state, and the router keeps the same page mounted across the switch so in-progress form input survives it.
+- Self-hosted the site's two font families (Arabic + Latin + Latin Extended subsets) instead of loading them from Google Fonts, removing a render-blocking third-party dependency.
+- Fixed a page-load focus bug that put the skip link and header navigation behind the user's starting tab position, and a related bug where switching language moved focus off the toggle button.
+- Fixed WCAG AA contrast failures on the 404/empty-state numeral, the mobile footer tag, the small brand tagline and section eyebrow labels; fixed four heading-order skips (h1 → h3) on the services, how-it-works, success and 404 views; gave the fixed mobile contact bar its own landmark.
+- Widened the accessibility test from 4 routes to every route in both languages, and the axe rule set to include WCAG 2.2 AA and best-practice checks.
 
 ## 1.1.0 — 2026-09-11
 

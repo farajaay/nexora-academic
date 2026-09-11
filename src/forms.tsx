@@ -5,12 +5,7 @@ import {
   type Attachment,
 } from "./lib/attachments";
 import { useRef, useState, type FormEvent, type ReactNode } from "react";
-import {
-  Link,
-  useNavigate,
-  useSearchParams,
-  useLocation,
-} from "react-router-dom";
+import { useSearchParams, useLocation } from "react-router-dom";
 import {
   ArrowLeft,
   Calculator as CalcIcon,
@@ -29,7 +24,12 @@ import {
   type Choices,
 } from "./lib/pricing";
 import { orderMessage, validateOrder, type OrderInput } from "./lib/orders";
-import { PageIntro, useLanguage } from "./ui";
+import {
+  LocalizedLink,
+  PageIntro,
+  useLanguage,
+  useLocalizedNavigate,
+} from "./ui";
 const backendReady = Boolean(
   import.meta.env.VITE_SUPABASE_URL &&
   import.meta.env.VITE_SUPABASE_PUBLISHABLE_KEY,
@@ -239,7 +239,7 @@ export function PriceSummary({ value }: { value: Choices }) {
 export function Calculator() {
   const { t } = useLanguage();
   const [value, setValue] = useState(defaults);
-  const navigate = useNavigate();
+  const navigate = useLocalizedNavigate();
   return (
     <>
       <PageIntro
@@ -316,7 +316,7 @@ export function Contact() {
   const [errors, setErrors] = useState<Record<string, string>>({});
   const [busy, setBusy] = useState(false);
   const [message, setMessage] = useState("");
-  const navigate = useNavigate();
+  const navigate = useLocalizedNavigate();
   const patch = (p: Partial<OrderInput>) => setValue((v) => ({ ...v, ...p }));
   function valid() {
     const next = validateOrder(value, lang);
@@ -691,17 +691,17 @@ export function Contact() {
               />
               <span>
                 {t("أوافق على", "I accept the")}{" "}
-                <Link to="/terms" target="_blank">
+                <LocalizedLink to="/terms" target="_blank">
                   {t("شروط الاستخدام", "terms")}
-                </Link>{" "}
+                </LocalizedLink>{" "}
                 {t("و", "and")}{" "}
-                <Link to="/privacy" target="_blank">
+                <LocalizedLink to="/privacy" target="_blank">
                   {t("الخصوصية", "privacy")}
-                </Link>{" "}
+                </LocalizedLink>{" "}
                 {t("و", "and")}{" "}
-                <Link to="/integrity" target="_blank">
+                <LocalizedLink to="/integrity" target="_blank">
                   {t("سياسة النزاهة الأكاديمية", "academic integrity policy")}
-                </Link>
+                </LocalizedLink>
                 .
               </span>
             </label>
@@ -827,11 +827,11 @@ export function Success() {
           {state.id}
         </code>
       )}
-      <Link className="button" to={state ? "/" : "/contact"}>
+      <LocalizedLink className="button" to={state ? "/" : "/contact"}>
         {state
           ? t("العودة للرئيسية", "Back to home")
           : t("اطلب الخدمة", "Request a service")}
-      </Link>
+      </LocalizedLink>
     </div>
   );
 }

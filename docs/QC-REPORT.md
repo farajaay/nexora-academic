@@ -186,6 +186,29 @@ Temporary QC scripts were removed after the run; no test or source file was modi
 
 ---
 
+## 8. Follow-up — fixes applied (same day)
+
+Two rounds of fixes landed after this report, both fully verified (lint, typecheck, unit, SEO, and the full e2e suite — desktop + mobile — all passing; see 8.2 for the widened coverage's own numbers).
+
+### 8.1 Round 1 — P1-1 through P1-4, and the contained P2 items
+
+Fixed as specified in sections 3–4: the load-time focus hijack and the language-toggle focus loss (P1-2/P1-3, one change in `src/App.tsx`'s effects), both colour-contrast failures (P1-1), fonts self-hosted removing the third-party render-blocking dependency (P2-2), the axe route/tag coverage widened from 4 routes to every route (P2-3), all four h1→h3 heading skips (P2-4), the mobile contact bar given a landmark (P2-5), and `test:seo` wired to build first (P2-6). P1-4 (the RTL first-paint flash) was patched with an inline pre-paint script reading the same `localStorage` key the app used — a contained fix, since the full URL-based solution was P2-1's scope. This round is commit `7b1193f`.
+
+### 8.2 Round 2 — P2-1, the bilingual URL and hreflang architecture
+
+Implemented as planned: Arabic keeps every existing URL unprefixed; English is the same path under `/en/`, generated as its own static document with reciprocal `hreflang` tags (`x-default` → Arabic) and listed in the sitemap. Admin and success also get a document per language for toggle/direct-link consistency, but stay `noindex` and out of the sitemap/hreflang. Route titles and descriptions moved out of two hand-duplicated dictionaries (App.tsx's `meta`, seo.mjs's Arabic-only `pages` — confirmed to have drifted on 7 of 11 routes) into one shared `src/config/routes.ts`. P1-4's inline pre-paint script was removed entirely and superseded: every static document now bakes its own correct `lang`/`dir` in, so the flash is eliminated at the source rather than patched after paint.
+
+Two things were discovered only once the router carried real dual-language routes, both fixed in the same round:
+
+- **Language switching remounted the page, losing in-progress form input.** The first routing design mirrored the route tree once for Arabic and once under `/en`; navigating between the two matched two different `<Route>` elements, so React unmounted and remounted the page component — an e2e test written for this round (checking that a partially filled contact form survives a language switch) caught it immediately. Fixed by matching both languages with a single route per page (`:lang?/segment`, guarded against any value but `"en"`), which React Router treats as the same route across the navigation and keeps mounted.
+- **Two more real WCAG AA contrast failures**, invisible until English content was actually run through axe for the first time: the small brand tagline (`.brand small`, 4.36:1) and the section eyebrow label on tinted backgrounds (`.eyebrow`, 4.3:1), both just under the 4.5:1 normal-text minimum. Neither route in the original 4-route axe test (home/calculator/contact/admin, section 4's own P2-3 finding) rendered enough English text in the right spots to surface them; the widened `en/` coverage this round added did. Fixed the same way as 3's contrast pair: darker colours from the existing palette (`var(--muted)`, and a darker teal in the same family as the original).
+
+**Verification for this round:** the accessibility test now covers 15 routes × 2 viewports (12 Arabic/neutral + `en/`, `en/services/`, `en/contact/`) with the WCAG 2.2 AA + best-practice tag set from round 1 — zero violations. Two new e2e tests were added: a direct `/en/` load asserting no flash, and a language-toggle test asserting the URL itself changes (`/services/` → `/en/services/` → back) and that internal navigation while browsing English stays under `/en/`. `tests/seo.test.mjs` was rewritten to assert, for all 9 public routes: both documents exist, correct `lang`/`dir`, correct self-canonical, and all three reciprocal hreflang tags; plus that admin/success get both documents but no hreflang, 404 stays single and unprefixed, the sitemap lists exactly 18 URLs, and robots.txt blocks both languages of the private routes.
+
+Not done, deliberately out of scope for this change: actually submitting the new sitemap in Google Search Console (tracked in `docs/LAUNCH-CHECKLIST.md`) and a follow-up crawl check once the site is live with the new URLs.
+
+---
+
 ## بالعربية — ملخص
 
 نجحت جميع الفحوص الثابتة: التدقيق اللغوي للشيفرة والأنواع والبناء و6 اختبارات وحدة واختبار SEO، و12 اختبار متصفح على سطح المكتب والهاتف بعد معالجة مشكلة بيئية في المشغّل. اختبارات قاعدة البيانات تخطّت التنفيذ لعدم توفر بيانات الاعتماد، لذا لم تُتحقق في هذا التقرير.
@@ -193,3 +216,7 @@ Temporary QC scripts were removed after the run; no test or source file was modi
 البنية سليمة: معالم صفحة متسقة، عنوان رئيسي واحد لكل صفحة، لا تجاوز أفقي، ولا معرّفات مكررة، وجميع الحقول موسومة.
 
 أهم الملاحظات: نقص تباين الألوان في صفحتي الحالة و404 وفي تذييل الهاتف، ونقل التركيز إلى المحتوى عند أول تحميل مما يُعطّل رابط التخطي ويمنع الوصول إلى التنقل بلوحة المفاتيح، وفقدان التركيز عند تبديل اللغة، وظهور المحتوى العربي للحظة لمستخدمي الإنجليزية، وغياب روابط ومسارات مستقلة للغة الإنجليزية مما يحجبها عن محركات البحث، واعتماد تحميل الصفحة على خطوط خارجية دون بديل محلي.
+
+### تحديث لاحق
+
+عولجت جميع الملاحظات في جولتين. الأولى (القسمان 3 و4): إصلاح التركيز عند التحميل وعند تبديل اللغة، تباين الألوان، استضافة الخطوط محليًا، ترتيب العناوين، معلم الفوتر الهاتفي، وربط اختبار SEO بالبناء. الثانية: بناء مسارات ثنائية اللغة فعلية — العربية على رابطها الأصلي، والإنجليزية على `/en/` بنفس المسار، مع وسوم hreflang متبادلة وx-default للعربية، ومصدر واحد لعناوين المسارات في `src/config/routes.ts`. اكتُشف أثناء التنفيذ عيبان حقيقيان جديدان وأُصلحا فورًا: تبديل اللغة كان يُفرغ حقول نموذج التواصل الجاري تعبئته (أُصلح بجعل مسار العربية والإنجليزية لنفس الصفحة مسارًا واحدًا في الموجّه)، وعيبا تباين إضافيان في الشعار الفرعي والعناوين الفرعية لم يظهرا إلا بعد فحص المحتوى الإنجليزي فعليًا بأداة axe لأول مرة.

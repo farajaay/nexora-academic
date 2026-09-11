@@ -1,4 +1,3 @@
-import { Link } from "react-router-dom";
 import {
   ArrowLeft,
   ArrowRight,
@@ -14,7 +13,13 @@ import {
 } from "lucide-react";
 import { useState } from "react";
 import { integrity, services, site } from "./config/site";
-import { PageIntro, SectionHeading, ServiceCard, useLanguage } from "./ui";
+import {
+  LocalizedLink,
+  PageIntro,
+  SectionHeading,
+  ServiceCard,
+  useLanguage,
+} from "./ui";
 export function Steps() {
   const { t } = useLanguage();
   return (
@@ -72,10 +77,10 @@ export function CTA() {
           )}
         </p>
       </div>
-      <Link className="button white" to="/contact">
+      <LocalizedLink className="button white" to="/contact">
         {t("أرسل طلبك الآن", "Send your request")}
         <ArrowLeft size={18} />
-      </Link>
+      </LocalizedLink>
     </section>
   );
 }
@@ -101,13 +106,13 @@ export function Home() {
             )}
           </p>
           <div className="hero-actions">
-            <Link className="button" to="/contact">
+            <LocalizedLink className="button" to="/contact">
               {t("اطلب الخدمة", "Request a service")}
               <ArrowLeft size={18} />
-            </Link>
-            <Link className="button secondary" to="/services">
+            </LocalizedLink>
+            <LocalizedLink className="button secondary" to="/services">
               {t("استعرض الأسعار", "Explore pricing")}
-            </Link>
+            </LocalizedLink>
           </div>
           <div className="hero-notes">
             <span>
@@ -220,10 +225,10 @@ export function Home() {
               "From your first question to your final review, build understanding and better work.",
             )}
           />
-          <Link className="text-link" to="/services">
+          <LocalizedLink className="text-link" to="/services">
             {t("جميع الخدمات والأسعار", "All services & pricing")}
             <ArrowLeft size={17} />
-          </Link>
+          </LocalizedLink>
         </div>
         <div className="services-grid">
           {[
@@ -264,10 +269,10 @@ export function Home() {
               "Support that puts your learning first and gives your work the attention it deserves.",
             )}
           </p>
-          <Link className="text-link" to="/integrity">
+          <LocalizedLink className="text-link" to="/integrity">
             {t("تعرّف على التزامنا الأكاديمي", "Our academic commitment")}
             <ArrowLeft size={17} />
-          </Link>
+          </LocalizedLink>
         </div>
         <div className="benefits">
           {[
@@ -424,9 +429,9 @@ export function Services() {
             )}
           </li>
         </ul>
-        <Link to="/calculator" className="button">
+        <LocalizedLink to="/calculator" className="button">
           {t("احسب السعر التقديري", "Estimate your price")}
-        </Link>
+        </LocalizedLink>
       </section>
     </>
   );
@@ -688,10 +693,10 @@ export function NotFound() {
           "The link may have changed. Let’s go back to the start.",
         )}
       </p>
-      <Link className="button" to="/">
+      <LocalizedLink className="button" to="/">
         {t("الصفحة الرئيسية", "Back to home")}
         <ArrowRight size={18} />
-      </Link>
+      </LocalizedLink>
     </div>
   );
 }

@@ -33,3 +33,21 @@ Performance advisor reported two informational unused indexes on the new databas
 - File picker validation/removal and responsive screenshots verified.
 - Supabase bucket is private with 10 MiB limit; wrong-order paths and malformed manifests rejected. No new security advisor findings.
 - Synthetic request attachments are removed through the Storage API after tests.
+
+## UX/structure fixes and bilingual URLs
+
+An independent QC pass (`docs/QC-REPORT.md`) found and this fixed: a load-time focus bug hijacking the skip link and header navigation, a language-toggle focus-loss bug, two WCAG AA contrast failures (404 numeral, mobile footer tag), a third-party render-blocking font dependency, four heading-order skips, a mobile contact bar outside any landmark, and an accessibility test that only covered 4 of 13 routes.
+
+The same effort then implemented bilingual, indexable URLs: every public route now has an Arabic document at its existing unprefixed URL and an English document at the matching `/en/` URL, with reciprocal `hreflang` tags on each (`x-default` pointing at Arabic) and both listed in the sitemap. Admin and success also get a document per language for toggle and direct-link consistency, but stay `noindex` and out of the sitemap/hreflang. Route titles and descriptions moved from two hand-maintained, already-drifted dictionaries into one shared `src/config/routes.ts`. Two real defects were only found once English content actually got dual URLs: a router design that remounted the page (and lost in-progress form input) when the language toggle navigated between the Arabic and English URL of the same page, and two more WCAG AA contrast failures in small English-only text that the original 4-route axe test never rendered. Both were fixed in the same change.
+
+- `npm run lint`, `npm run typecheck`, `npm run test:unit` (6 tests): passed.
+- `npm run test:seo` (rewritten): 5 tests passed — every public route has both documents with correct `lang`/`dir`, self-canonical and all three reciprocal hreflang tags; admin/success have both documents but no hreflang; 404 stays single, unprefixed and hreflang-free; the sitemap lists exactly 18 URLs (9 routes × 2 languages) and nothing private; robots.txt blocks both languages of the private routes.
+- `npm run build`: passed, generating 22 route documents plus 404, sitemap and robots.txt.
+- `npm run test:e2e`: 16 tests passed on desktop and mobile (2 backend tests correctly skipped without live credentials), including two new tests (a direct `/en/` load with no flash, and a language-toggle test asserting the URL itself changes and internal navigation while browsing English stays under `/en/`) and the widened accessibility test — now 15 routes × 2 viewports including three `/en/` routes, WCAG 2.2 AA plus best-practice — with zero violations.
+- Self-hosted fonts verified to produce zero external requests on any route in this environment's sandboxed network.
+
+## تحديثات الواجهة والبنية والمسارات ثنائية اللغة
+
+عولجت نتائج مراجعة جودة مستقلة (`docs/QC-REPORT.md`): خلل في نقل التركيز عند التحميل يعطّل رابط التخطي والتنقل، وفقدان التركيز عند تبديل اللغة، وعيبا تباين ألوان، واعتماد الخطوط على مصدر خارجي، وأربعة تجاوزات في ترتيب العناوين، وشريط تواصل هاتفي خارج أي معلم، واختبار إتاحة كان يغطي 4 من 13 مسارًا فقط.
+
+أُضيفت بعدها مسارات ثنائية اللغة فعلية وقابلة للفهرسة: مستند عربي على الرابط الأصلي بلا بادئة، ومستند إنجليزي مطابق تحت `/en/`، مع وسوم hreflang متبادلة وx-default للعربية، وكلاهما في sitemap. صفحتا الإدارة وحالة الطلب لهما مستند بكل لغة أيضًا لكنهما تبقيان noindex. اكتُشف عيبان حقيقيان أثناء التنفيذ وأُصلحا: تبديل اللغة كان يُفرغ نموذج التواصل الجاري تعبئته، وعيبا تباين إضافيان في نص إنجليزي صغير لم يكشفهما اختبار الإتاحة السابق. جميع الفحوص نجحت بعد الإصلاح.

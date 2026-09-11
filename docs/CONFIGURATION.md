@@ -8,9 +8,17 @@
 - `email`: استبدل `REPLACE_WITH_BUSINESS_EMAIL` ببريد العمل الرسمي. يتفعّل mailto بعد التعديل.
 - `services`: الأسعار والتسميات والوحدات. البطاقات والحاسبة تقرآن القائمة نفسها.
 - `urgency`, `difficulty`, `specializedEnglish`, `extras`, `minimum`: معاملات السعر. تعديل أسعار الصعوبة والإضافات يستلزم تحديث التسميات التوضيحية بجوارها.
-- `url`: رابط الإنتاج مع `/` في النهاية. يولد منه canonical وsitemap وSchema عند البناء.
+- `url`: رابط الإنتاج مع `/` في النهاية. يولد منه canonical وsitemap وSchema عند البناء، للعربية وللإنجليزية تحت `en/` من نفس الرابط.
 - `social`: الروابط الفارغة لا تظهر.
 - `turnaround`: المدة العادية المعروضة.
+
+## المسارات ثنائية اللغة
+
+كل مسار عام معرّف مرة واحدة في `src/config/routes.ts` (عنوان ووصف بالعربية والإنجليزية)، ويقرأه كل من الموجّه (`src/App.tsx`) ومولّد الصفحات الساكنة (`scripts/seo.mjs`) — لا يوجد مصدر ثانٍ ليختلف عنه. إضافة صفحة عامة جديدة تكون بإضافتها إلى `publicRoutes` هناك فقط، ثم ربط عنصرها في خريطة `elementByPath` بملف `src/App.tsx`.
+
+العربية على المسار الأصلي بلا بادئة (`/services/` مثلًا) كما كانت دائمًا، والإنجليزية على المسار نفسه تحت `/en/` (`/en/services/`)، مع وسوم `hreflang` متبادلة على كل مستند تجاه الآخر ووسم `x-default` يشير دائمًا للعربية. صفحتا الإدارة وحالة الطلب (`admin`, `success`) لهما مستند بكل لغة أيضًا لثبات السلوك عند التبديل والروابط المباشرة، لكنهما `noindex` دائمًا ولا تدخلان sitemap أو hreflang لأنهما ليستا محتوى يُكتشف بالبحث. صفحة 404 وحيدة بلا بادئة، تمامًا كما قبل.
+
+اللغة تُشتق من المسار نفسه وليست محفوظة في ذاكرة المتصفح؛ زر التبديل ينتقل إلى المسار المطابق للصفحة الحالية بلغته الأخرى، والموجّه يُبقي نفس مكوّن الصفحة مثبّتًا أثناء التبديل حتى لا يفقد المستخدم ما كتبه في نموذج جارٍ تعبئته.
 
 ## الهوية
 
@@ -38,6 +46,8 @@
 ## English
 
 Edit `src/config/site.ts` for the business WhatsApp number, business email, canonical URL, prices, multipliers and social links. Replace `public/brand-mark.svg` for the logo/favicon and edit `src/index.css` for the visual identity. Prices use one source of truth.
+
+Every public route is defined once in `src/config/routes.ts` (Arabic and English title/description), read by both the router (`src/App.tsx`) and the static generator (`scripts/seo.mjs`) — add a page there and nothing else needs to know about it twice. Arabic stays on its original unprefixed URL; English is the same path under `/en/`, with reciprocal `hreflang` tags on each document and `x-default` always pointing at Arabic. Admin and success also get a document per language (so the toggle and direct links behave the same everywhere) but stay `noindex` and out of the sitemap/hreflang — they are not content meant to be found through search. There is still a single, unprefixed 404. Language is derived from the URL, not remembered client-side; the toggle navigates to the matching URL in the other language, and the router keeps the same page component mounted across that switch so in-progress form input isn't lost.
 
 Apply the SQL migration to a dedicated Supabase project, configure the two public Vite environment variables, create an Auth user in the Supabase dashboard, and add that user's UUID to `public.admins` through the SQL editor. Never expose service-role credentials. Anonymous visitors may insert requests but cannot read them. Only provisioned admins can read orders, update their status/quote and append confirmed payments. Payment references are unique. No real funds are collected by the site.
 

@@ -13,5 +13,7 @@
 - [x] تشغيل lint وtypecheck وtest:unit وbuild وtest:e2e / Run all quality checks.
 - [x] فحص الهاتف وRTL وEN والروابط المباشرة / Verify mobile, RTL, EN and deep links.
 - [x] التأكد من اكتمال GitHub Actions وعمل رابط الإنتاج / Verify successful deployment and live URL.
+- [x] التحقق من مستندات `/en/` وhreflang المتبادل في كل مسار عام وsitemap / Verify `/en/` documents and reciprocal hreflang on every public route, and the sitemap.
+- [ ] تسجيل رابط sitemap.xml الجديد في Google Search Console / Submit the updated sitemap.xml in Google Search Console.
 
 إطلاق الواجهة وحده لا يعني جاهزية التشغيل التجاري. لا تفعل استقبال البيانات قبل تحديد المشغل وقنوات التواصل والاحتفاظ، ولا تعتبر رسالة واتساب مرسلة لمجرد فتح التطبيق.
