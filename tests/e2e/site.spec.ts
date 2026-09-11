@@ -222,3 +222,16 @@ test("toggling language rewrites the current URL, and internal links stay locali
   await expect(page).toHaveURL(/\/calculator\/?$/);
   await expect(page).not.toHaveURL(/\/en\//);
 });
+test("site theme defaults to Emerald Scholar without a database", async ({
+  page,
+}) => {
+  // The admin picker itself (rendering all 3 options, disabling them and
+  // explaining why, saving, and persisting across reload) requires a real
+  // admin session and is covered by tests/e2e/backend.spec.ts, which skips
+  // without live credentials -- there is no way to reach the authorized
+  // admin view here.
+  for (const route of ["", "en/", "contact/", "admin/"]) {
+    await page.goto(`./${route}`, { waitUntil: "commit" });
+    await expect(page.locator("html")).toHaveAttribute("data-theme", "emerald");
+  }
+});

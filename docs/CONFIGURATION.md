@@ -24,12 +24,20 @@
 
 الشعار الهندسي المؤقت في `public/brand-mark.svg` يستخدم كذلك favicon. تركيب الاسم في `src/ui.tsx`، والألوان والخطوط والتصميم في `src/index.css`. الصور المرفقة كانت مرجعًا بصريًا وليست صور واجهة منشورة. لا توجد صور stock أو إحصاءات عملاء مختلقة.
 
+## مظهر الموقع
+
+ثلاثة مظاهر جاهزة قابلة للتبديل من لوحة الإدارة (تحت "مظهر الموقع"): **زمردي أكاديمي/Emerald Scholar** (افتراضي)، **بنفسجي ملكي/Royal Violet**، و**ليموني منتصف الليل/Midnight Lime**. كل مظهر يغيّر الألوان والخطوط والأيقونات للموقع بالكامل فور الحفظ، لكل الزوار، لأن الاختيار مخزّن في جدول `public.site_settings` (صف واحد، قراءة عامة، تعديل للمدراء فقط عبر RLS) لا في متصفح المدير وحده.
+
+المصدر الموحد لتعريف المظاهر `src/config/theme.ts` (الاسم والوصف بكل لغة، ونقاط الألوان المصغّرة للوحة الإدارة)، بينما التطبيق الفعلي لكل مظهر — الألوان والخطوط الكاملة — في `src/index.css` ضمن `:root` (الافتراضي) وكتل `[data-theme="violet"]`/`[data-theme="lime"]`. إضافة مظهر رابع تعني: إضافة قيمه إلى `theme.ts` والكتلة المقابلة في `index.css`، وتحديث قيد `check` الخاص بعمود `theme` في migration جديدة (تعديل جدول موجود، لا تكرار migration site_settings).
+
+الخطوط الثلاثة للمظاهر (Tajawal، Plus Jakarta Sans، Sora) مستضافة محليًا بنفس أسلوب خطي الموقع الأصليين — لا اعتماد على مصدر خارجي عند التحميل. بلا اتصال بقاعدة البيانات، يظهر الموقع دائمًا بالمظهر الافتراضي ولوحة الإدارة تعرض تعطيل التبديل صراحة، بنفس نهج "حالة عدم توفر واضحة" المتبع في بقية الموقع.
+
 ## قاعدة البيانات والإدارة
 
 مشروع الإنتاج المستقل: [nexora-academic](https://supabase.com/dashboard/project/swgosjtqchcjuvxggxkv)، بمنطقة `eu-central-1`. طُبّقت الجداول والسياسات وأُنشئ حساب الإدارة. الخطوات التالية لإعادة الإعداد أو إنشاء بيئة جديدة؛ لا تعِد تشغيل migration على الجداول الموجودة.
 
 1. أنشئ مشروع Supabase مستقلًا.
-2. طبّق `supabase/migrations/20260911133120_orders_admin_payments.sql` في SQL Editor أو CLI.
+2. طبّق كل ملفات `supabase/migrations/` بترتيب أسمائها (الطابع الزمني) في SQL Editor أو CLI.
 3. ضع رابط المشروع والمفتاح **publishable** في `.env.local` لتجربتك المحلية.
 4. أضف `VITE_SUPABASE_URL` و`VITE_SUPABASE_PUBLISHABLE_KEY` إلى GitHub → Settings → Secrets and variables → Actions → Variables.
 5. أنشئ مستخدم الإدارة من Supabase → Authentication → Users. استخدم بريدك الإداري الحقيقي وكلمة مرور قوية؛ لا تضف كلمة المرور إلى المستودع.
@@ -49,7 +57,9 @@ Edit `src/config/site.ts` for the business WhatsApp number, business email, cano
 
 Every public route is defined once in `src/config/routes.ts` (Arabic and English title/description), read by both the router (`src/App.tsx`) and the static generator (`scripts/seo.mjs`) — add a page there and nothing else needs to know about it twice. Arabic stays on its original unprefixed URL; English is the same path under `/en/`, with reciprocal `hreflang` tags on each document and `x-default` always pointing at Arabic. Admin and success also get a document per language (so the toggle and direct links behave the same everywhere) but stay `noindex` and out of the sitemap/hreflang — they are not content meant to be found through search. There is still a single, unprefixed 404. Language is derived from the URL, not remembered client-side; the toggle navigates to the matching URL in the other language, and the router keeps the same page component mounted across that switch so in-progress form input isn't lost.
 
-Apply the SQL migration to a dedicated Supabase project, configure the two public Vite environment variables, create an Auth user in the Supabase dashboard, and add that user's UUID to `public.admins` through the SQL editor. Never expose service-role credentials. Anonymous visitors may insert requests but cannot read them. Only provisioned admins can read orders, update their status/quote and append confirmed payments. Payment references are unique. No real funds are collected by the site.
+Three ready-made themes are switchable from the admin panel ("Site theme"): **Emerald Scholar** (default), **Royal Violet** and **Midnight Lime**. Each changes color, typography and icon style for the whole site the moment it's saved, for every visitor, because the choice lives in `public.site_settings` (a single row, publicly readable, admin-only writable through RLS) rather than in the admin's own browser. `src/config/theme.ts` is the shared source of the three themes' names/descriptions and small preview swatches; the actual color/typography tokens for each live in `src/index.css` under `:root` (default) and `[data-theme="violet"]`/`[data-theme="lime"]`. Adding a fourth theme means adding it in both places plus the `theme` column's `check` constraint in a new migration (an alteration, not a repeat of the `site_settings` migration). The three themes' fonts (Tajawal, Plus Jakarta Sans, Sora) are self-hosted the same way the site's original two are. Without a database connection the site always renders the default theme and the admin panel explicitly disables switching, matching the "explicit unavailability" pattern used elsewhere.
+
+Apply the SQL migrations (in `supabase/migrations/`, in filename order) to a dedicated Supabase project, configure the two public Vite environment variables, create an Auth user in the Supabase dashboard, and add that user's UUID to `public.admins` through the SQL editor. Never expose service-role credentials. Anonymous visitors may insert requests but cannot read them. Only provisioned admins can read orders, update their status/quote and append confirmed payments. Payment references are unique. No real funds are collected by the site.
 
 Run the GitHub Pages workflow after editing configuration. Public environment variables are intentionally browser-visible and rely on RLS, not secrecy. Every `VITE_` variable is public; never place secrets in them.
 

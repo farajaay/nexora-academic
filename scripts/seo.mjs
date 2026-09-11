@@ -1,6 +1,7 @@
 import { readFileSync, writeFileSync, mkdirSync } from "node:fs";
 import { site } from "../src/config/site.ts";
 import { privateRoutes, publicRoutes, urlFor } from "../src/config/routes.ts";
+import { DEFAULT_THEME } from "../src/config/theme.ts";
 
 const template = readFileSync("dist/index.html", "utf8");
 const escape = (s) =>
@@ -23,7 +24,7 @@ function render(route, lang, { indexable }) {
   let html = template
     .replace(
       /<html[^>]*>/,
-      `<html lang="${lang}" dir="${lang === "ar" ? "rtl" : "ltr"}">`,
+      `<html lang="${lang}" dir="${lang === "ar" ? "rtl" : "ltr"}" data-theme="${DEFAULT_THEME}">`,
     )
     .replace(
       /<title>.*?<\/title>/s,

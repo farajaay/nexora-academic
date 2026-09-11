@@ -18,6 +18,7 @@ import { ArrowUp, Globe2, Menu, MessageCircle, X } from "lucide-react";
 import { contactReady, site, type Lang } from "./config/site";
 import { allRoutes, publicRoutes, urlFor } from "./config/routes";
 import { isEnglishPath, localize } from "./lib/i18n";
+import { applyTheme, loadStoredTheme } from "./lib/theme";
 import { LanguageContext, LocalizedLink, LocalizedNavLink, Logo } from "./ui";
 import { FAQ, Home, How, Legal, NotFound, Services } from "./pages";
 import { Calculator, Contact, Success } from "./forms";
@@ -86,6 +87,12 @@ function Shell() {
       /* Remembering the last language is a nicety, not a requirement. */
     }
   }, [lang]);
+  // The static document already carries the default theme (no flash for the
+  // common case); this only ever changes anything when an admin picked a
+  // different one, in which case it upgrades once, here, on mount.
+  useEffect(() => {
+    void loadStoredTheme().then(applyTheme);
+  }, []);
   function toggle() {
     const target: Lang = lang === "ar" ? "en" : "ar";
     navigate(localize(pathname, target) + window.location.search);

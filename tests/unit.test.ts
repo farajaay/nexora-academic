@@ -12,6 +12,12 @@ import {
   type OrderInput,
 } from "../src/lib/orders.ts";
 import { services } from "../src/config/site.ts";
+import {
+  DEFAULT_THEME,
+  isThemeId,
+  themes,
+  type ThemeId,
+} from "../src/config/theme.ts";
 test("pricing: minimum, urgency, translation blocks and custom scope", () => {
   assert.deepEqual(estimate(defaults), { low: 40, high: 46 });
   assert.equal(
@@ -116,4 +122,22 @@ test("attachment limits reject oversized, empty, unsupported and excess files", 
     assert.ok(attachmentError(files, "en"));
     assert.ok(attachmentError(files, "ar"));
   }
+});
+test("themes: default is valid, every theme has bilingual text and a real swatch", () => {
+  const ids: ThemeId[] = ["emerald", "violet", "lime"];
+  assert.equal(themes.length, ids.length);
+  assert.ok(isThemeId(DEFAULT_THEME));
+  assert.ok(ids.includes(DEFAULT_THEME));
+  for (const id of ids) {
+    const theme = themes.find((t) => t.id === id);
+    assert.ok(theme, `missing theme entry for ${id}`);
+    for (const lang of ["ar", "en"] as const) {
+      assert.ok(theme!.name[lang].trim().length > 0);
+      assert.ok(theme!.blurb[lang].trim().length > 0);
+    }
+    assert.equal(theme!.swatch.length, 3);
+    for (const color of theme!.swatch) assert.match(color, /^#[0-9a-f]{6}$/);
+  }
+  assert.ok(!isThemeId("sunrise"));
+  assert.ok(!isThemeId(""));
 });

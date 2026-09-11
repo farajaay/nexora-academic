@@ -2,6 +2,7 @@ import { test } from "node:test";
 import assert from "node:assert/strict";
 import { readFileSync, existsSync } from "node:fs";
 import { publicRoutes, privateRoutes, urlFor } from "../src/config/routes.ts";
+import { DEFAULT_THEME } from "../src/config/theme.ts";
 
 function docPath(path, lang) {
   const slug = path ? `${path}/` : "";
@@ -17,7 +18,7 @@ test("public routes get a bilingual pair of documents with reciprocal hreflang",
       const html = readFileSync(file, "utf8");
       assert.ok(
         html.includes(
-          `<html lang="${lang}" dir="${lang === "ar" ? "rtl" : "ltr"}">`,
+          `<html lang="${lang}" dir="${lang === "ar" ? "rtl" : "ltr"}" data-theme="${DEFAULT_THEME}">`,
         ),
         `${file} should declare lang/dir for ${lang}`,
       );
@@ -73,7 +74,7 @@ test("private routes exist in both languages but stay noindex with no hreflang",
       );
       assert.ok(
         html.includes(
-          `<html lang="${lang}" dir="${lang === "ar" ? "rtl" : "ltr"}">`,
+          `<html lang="${lang}" dir="${lang === "ar" ? "rtl" : "ltr"}" data-theme="${DEFAULT_THEME}">`,
         ),
       );
     }

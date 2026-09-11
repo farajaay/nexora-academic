@@ -13,6 +13,7 @@
 - أسعار من مصدر واحد، حساب الاستعجال واللغة والصعوبة والإضافات، ونقل الاختيارات للنموذج.
 - تحقق واضح من الجوال السعودي وروابط الملفات والموافقة؛ واتساب وmailto ونسخ التفاصيل.
 - إدارة محمية عبر Supabase Auth وRLS، حالات الطلبات والأسعار وسجل دفعات يدوي بمرجع فريد.
+- ثلاثة مظاهر بصرية جاهزة (زمردي أكاديمي، بنفسجي ملكي، ليموني منتصف الليل) قابلة للتبديل من لوحة الإدارة لكل زوار الموقع فورًا.
 - تصميم متجاوب، لوحة مفاتيح، حركات مخفضة، بيانات SEO وhreflang لكل مسار بلغتيه وروابط مباشرة متوافقة مع GitHub Pages.
 - لا توجد مفاتيح سرية أو أرقام تواصل شخصية أو حسابات إدارة افتراضية.
 
@@ -75,7 +76,7 @@ Use Node.js 24. Run `npm ci`, copy `.env.example` to `.env.local`, and run `npm 
 
 Select GitHub Actions in repository Pages settings. Every push to main runs checks and deploys `dist`. Set the public Supabase URL/key as Actions variables. Apply the included SQL migration, create an Auth user and provision its UUID in the admins table. Never expose service-role or secret keys. Browser requests are protected by column grants and RLS.
 
-The shared configuration at `src/config/site.ts` controls names, contact placeholders, pricing, currency, timing and links. Replace only with real business details. Change `public/brand-mark.svg` and `src/index.css` for branding. Update the Vite base and site URL if renaming the repository. Route titles and descriptions live in `src/config/routes.ts`, the single source both the router and the static generator read — add a page there once, not in two places. Each public route gets its own Arabic document at its existing unprefixed URL and an English document at the matching `/en/` URL, with reciprocal `hreflang` tags (`x-default` pointing at Arabic) and both listed in the sitemap; the build also creates a single unprefixed 404 page and robots file.
+The shared configuration at `src/config/site.ts` controls names, contact placeholders, pricing, currency, timing and links. Replace only with real business details. Change `public/brand-mark.svg` and `src/index.css` for branding. Update the Vite base and site URL if renaming the repository. Route titles and descriptions live in `src/config/routes.ts`, the single source both the router and the static generator read — add a page there once, not in two places. Each public route gets its own Arabic document at its existing unprefixed URL and an English document at the matching `/en/` URL, with reciprocal `hreflang` tags (`x-default` pointing at Arabic) and both listed in the sitemap; the build also creates a single unprefixed 404 page and robots file. Three ready-made visual themes (Emerald Scholar, Royal Violet, Midnight Lime) are switchable from the admin panel and apply to every visitor immediately, since the choice is stored in the database, not the admin's own browser.
 
 Academic integrity is central. Testimonials are explicitly illustrative. WhatsApp/email links prepare a message; the user must complete sending in the external app. The success screen does not confuse message preparation with database submission. Payments are recorded manually after receipt, not processed by the site.
 

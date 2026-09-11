@@ -227,3 +227,127 @@ test(
     }
   },
 );
+test(
+  "Live Supabase: site theme is publicly readable and admin-only writable",
+  { skip: !url || !key || !secret || !path },
+  async (t) => {
+    const options = {
+      auth: { persistSession: false, autoRefreshToken: false },
+    };
+    const owner = createClient(url, secret, options);
+    const anon = createClient(url, key, options);
+    const admin = createClient(url, key, options);
+    const other = createClient(url, key, options);
+    const creds = JSON.parse(readFileSync(path, "utf8"));
+    let otherId;
+    const before = await owner
+      .from("site_settings")
+      .select("theme")
+      .eq("id", 1)
+      .single();
+    assert.equal(before.error, null);
+    const original = before.data.theme;
+    try {
+      await t.test("anonymous can read the current theme", async () => {
+        const r = await anon
+          .from("site_settings")
+          .select("theme")
+          .eq("id", 1)
+          .single();
+        assert.equal(r.error, null);
+        assert.ok(["emerald", "violet", "lime"].includes(r.data.theme));
+      });
+      await t.test(
+        "anonymous cannot change, insert or delete the theme",
+        async () => {
+          assert.ok(
+            (
+              await anon
+                .from("site_settings")
+                .update({ theme: "violet" })
+                .eq("id", 1)
+            ).error,
+          );
+          assert.ok((await anon.from("site_settings").insert({ id: 2 })).error);
+          assert.ok(
+            (await anon.from("site_settings").delete().eq("id", 1)).error,
+          );
+        },
+      );
+      await t.test(
+        "authenticated non-admin cannot change the theme even with forged user metadata",
+        async () => {
+          const email = `nexora-theme-test-${randomUUID()}@example.com`;
+          const password = randomBytes(24).toString("hex");
+          const created = await owner.auth.admin.createUser({
+            email,
+            password,
+            email_confirm: true,
+            user_metadata: { role: "admin", is_admin: true },
+          });
+          assert.equal(created.error, null);
+          otherId = created.data.user.id;
+          assert.equal(
+            (await other.auth.signInWithPassword({ email, password })).error,
+            null,
+          );
+          const changed = await other
+            .from("site_settings")
+            .update({ theme: "lime" })
+            .eq("id", 1)
+            .select();
+          assert.equal(changed.data?.length, 0);
+        },
+      );
+      await t.test(
+        "provisioned admin can change the theme and it is immediately visible anonymously",
+        async () => {
+          assert.equal(
+            (
+              await admin.auth.signInWithPassword({
+                email: creds.email,
+                password: creds.password,
+              })
+            ).error,
+            null,
+          );
+          const next = original === "violet" ? "lime" : "violet";
+          const r = await admin
+            .from("site_settings")
+            .update({ theme: next })
+            .eq("id", 1)
+            .select("theme")
+            .single();
+          assert.equal(r.error, null);
+          assert.equal(r.data.theme, next);
+          const seen = await anon
+            .from("site_settings")
+            .select("theme")
+            .eq("id", 1)
+            .single();
+          assert.equal(seen.data.theme, next);
+        },
+      );
+      await t.test("admin cannot set an invalid theme value", async () => {
+        assert.ok(
+          (
+            await admin
+              .from("site_settings")
+              .update({ theme: "sunrise" })
+              .eq("id", 1)
+          ).error,
+        );
+      });
+    } finally {
+      const restore = await owner
+        .from("site_settings")
+        .update({ theme: original })
+        .eq("id", 1);
+      assert.equal(restore.error, null);
+      await admin.auth.signOut();
+      await other.auth.signOut();
+      if (otherId)
+        assert.equal((await owner.auth.admin.deleteUser(otherId)).error, null);
+    }
+  },
+);
