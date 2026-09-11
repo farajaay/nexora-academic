@@ -29,3 +29,9 @@
 - Supabase integration, restricted admin access, order status and quote management, immutable payment ledger.
 - Per-route metadata, canonical URLs, sitemap, robots, GitHub Pages deep links and 404.
 - GitHub Actions deployment, automated checks and bilingual operator documentation.
+
+## 2026-09-12 — Complete visitor and admin themes
+
+- Preserve Claude Code's six themes and bilingual routes; add visitor selection and browser persistence with a site-default option.
+- Activate the pending Supabase theme migrations; verify actual admin authorization, saved defaults and personal overrides.
+- Fix silent zero-row theme save success and self-hosted font build warnings; verify desktop/mobile theme menus and existing request flows.

@@ -47,6 +47,60 @@ export async function saveTheme(id: ThemeId): Promise<boolean> {
   const { error } = await db
     .from("site_settings")
     .update({ theme: id })
-    .eq("id", 1);
+    .eq("id", 1)
+    .select("theme")
+    .single();
   return !error;
+}
+
+export const THEME_PREFERENCE_KEY = "nexora-theme-preference";
+let siteTheme: ThemeId = DEFAULT_THEME;
+let preference: ThemeId | null = null;
+export function getThemePreference() {
+  return preference;
+}
+export function updateSiteTheme(id: ThemeId) {
+  siteTheme = id;
+  applyTheme(preference ?? siteTheme);
+  window.dispatchEvent(new Event("nexora-theme-change"));
+}
+export function setThemePreference(id: ThemeId | null) {
+  preference = id;
+  try {
+    if (id) localStorage.setItem(THEME_PREFERENCE_KEY, id);
+    else localStorage.removeItem(THEME_PREFERENCE_KEY);
+  } catch {
+    /* The choice still works for this page when storage is unavailable. */
+  }
+  updateSiteTheme(siteTheme);
+}
+export function initializeThemes() {
+  let active = true;
+  const readPreference = () => {
+    try {
+      const stored = localStorage.getItem(THEME_PREFERENCE_KEY);
+      preference = stored && isThemeId(stored) ? stored : null;
+    } catch {
+      /* Retain this page's in-memory choice. */
+    }
+    updateSiteTheme(siteTheme);
+  };
+  const refresh = () => {
+    void loadStoredTheme().then((id) => {
+      if (active) updateSiteTheme(id);
+    });
+  };
+  const storage = (event: StorageEvent) => {
+    if (event.key === THEME_PREFERENCE_KEY || event.key === null)
+      readPreference();
+  };
+  readPreference();
+  refresh();
+  window.addEventListener("focus", refresh);
+  window.addEventListener("storage", storage);
+  return () => {
+    active = false;
+    window.removeEventListener("focus", refresh);
+    window.removeEventListener("storage", storage);
+  };
 }

@@ -225,6 +225,7 @@ test("toggling language rewrites the current URL, and internal links stay locali
 test("site theme defaults to Golden Sandstone without a database", async ({
   page,
 }) => {
+  await page.route("**/rest/v1/site_settings*", (route) => route.abort());
   // The admin picker itself (rendering all 6 options, disabling them and
   // explaining why, saving, and persisting across reload) requires a real
   // admin session and is covered by tests/e2e/backend.spec.ts, which skips
@@ -236,5 +237,69 @@ test("site theme defaults to Golden Sandstone without a database", async ({
       "data-theme",
       "sandstone",
     );
+  }
+});
+
+test("visitor themes persist across routes, languages and reloads; reset follows default", async ({
+  page,
+}, info) => {
+  await page.route("**/rest/v1/site_settings*", (route) =>
+    route.fulfill({ json: { theme: "sandstone" } }),
+  );
+  await page.goto("./en/contact/");
+  await page.locator("#name").fill("Theme preservation");
+  await page.getByLabel("Choose theme", { exact: true }).click();
+  for (const [id, name] of [
+    ["emerald", "Emerald Scholar"],
+    ["violet", "Royal Violet"],
+    ["lime", "Midnight Lime"],
+    ["sandstone", "Golden Sandstone"],
+    ["nebula", "Nebula Indigo"],
+    ["clay", "Canyon Clay"],
+  ]) {
+    await page.getByRole("button", { name, exact: true }).click();
+    await expect(page.locator("html")).toHaveAttribute("data-theme", id);
+    await expect(page.locator("#name")).toHaveValue("Theme preservation");
+  }
+  await page.keyboard.press("Escape");
+  await page.reload();
+  await expect(page.locator("html")).toHaveAttribute("data-theme", "clay");
+  await page.getByRole("button", { name: "التبديل إلى العربية" }).click();
+  await expect(page.locator("html")).toHaveAttribute("data-theme", "clay");
+  await page.getByLabel("اختيار المظهر", { exact: true }).click();
+  await page.screenshot({ path: `artifacts/${info.project.name}-themes.png` });
+  expect(
+    await page.evaluate(
+      () => document.documentElement.scrollWidth <= innerWidth,
+    ),
+  ).toBeTruthy();
+  await page
+    .getByRole("button", { name: "استخدام مظهر الموقع الافتراضي" })
+    .click();
+  await expect(page.locator("html")).toHaveAttribute("data-theme", "sandstone");
+});
+
+test("all six theme menus meet contrast requirements", async ({ page }) => {
+  await page.goto("./en/");
+  await page.getByLabel("Choose theme", { exact: true }).click();
+  for (const name of [
+    "Emerald Scholar",
+    "Royal Violet",
+    "Midnight Lime",
+    "Golden Sandstone",
+    "Nebula Indigo",
+    "Canyon Clay",
+  ]) {
+    await page.getByRole("button", { name, exact: true }).click();
+    const result = await new AxeBuilder({ page })
+      .withTags(["wcag2a", "wcag2aa", "wcag21aa"])
+      .analyze();
+    expect(
+      result.violations.map((v) => ({
+        id: v.id,
+        nodes: v.nodes.map((n) => n.target),
+      })),
+      name,
+    ).toEqual([]);
   }
 });

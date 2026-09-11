@@ -157,47 +157,6 @@ test("live flow: student request → admin quote/status → confirmed payment", 
       .eq("order_id", id);
     expect(ledger.data).toEqual([{ amount: 100 }]);
 
-    // Site theme: admin-only, site-wide, visible immediately and after reload.
-    const themeName: Record<string, string> = {
-      emerald: "Emerald Scholar",
-      violet: "Royal Violet",
-      lime: "Midnight Lime",
-    };
-    const before = await operator
-      .from("site_settings")
-      .select("theme")
-      .eq("id", 1)
-      .single();
-    const originalTheme = before.data!.theme as string;
-    const nextTheme = originalTheme === "violet" ? "lime" : "violet";
-    const themePanel = page.locator(".account-settings").first();
-    await themePanel.getByText("مظهر الموقع").click();
-    await themePanel
-      .locator(".theme-option")
-      .filter({ hasText: themeName[nextTheme] })
-      .click();
-    await expect(themePanel.getByRole("status")).toContainText(
-      "تم تحديث مظهر الموقع",
-    );
-    await expect(page.locator("html")).toHaveAttribute("data-theme", nextTheme);
-    await page.reload();
-    await expect(page.locator("html")).toHaveAttribute("data-theme", nextTheme);
-    const storedTheme = await operator
-      .from("site_settings")
-      .select("theme")
-      .eq("id", 1)
-      .single();
-    expect(storedTheme.data!.theme).toBe(nextTheme);
-    await themePanel.getByText("مظهر الموقع").click();
-    await themePanel
-      .locator(".theme-option")
-      .filter({ hasText: themeName[originalTheme] })
-      .click();
-    await expect(page.locator("html")).toHaveAttribute(
-      "data-theme",
-      originalTheme,
-    );
-
     await page.getByRole("button", { name: "خروج", exact: true }).click();
     await expect(page.locator("#admin-password")).toBeVisible();
     await expect(page.locator(".order-list")).toHaveCount(0);
@@ -223,5 +182,81 @@ test("live flow: student request → admin quote/status → confirmed payment", 
         (await operator.from("orders").delete().eq("id", record.id)).error,
       ).toBeNull();
     }
+  }
+});
+
+test("admin publishes site default while visitors keep personal choices", async ({
+  page,
+  context,
+}, info) => {
+  test.skip(
+    info.project.name !== "desktop",
+    "Shared global setting tested once to prevent parallel writes.",
+  );
+  const url = process.env.NEXORA_SUPABASE_URL,
+    secret = process.env.NEXORA_SERVICE_ROLE_KEY,
+    path = process.env.NEXORA_CREDENTIALS_PATH;
+  test.skip(!url || !secret || !path, "Needs operator credentials");
+  const creds = JSON.parse(readFileSync(path!, "utf8"));
+  const operator = createClient(url!, secret!, {
+    auth: { persistSession: false },
+  });
+  const before = await operator
+    .from("site_settings")
+    .select("theme")
+    .eq("id", 1)
+    .single();
+  expect(before.error).toBeNull();
+  const original = before.data!.theme;
+  const next = original === "violet" ? "emerald" : "violet";
+  try {
+    await page.goto("./en/admin/");
+    await page.locator("#admin-email").fill(creds.email);
+    await page.locator("#admin-password").fill(creds.password);
+    await page.getByRole("button", { name: "Sign in", exact: true }).click();
+    const panel = page
+      .locator(".account-settings")
+      .filter({ has: page.locator(".theme-grid") });
+    await panel.locator("summary").click();
+    await expect(panel.locator(".theme-option")).toHaveCount(6);
+    await panel
+      .getByRole("button", {
+        name: next === "violet" ? /Royal Violet/ : /Emerald Scholar/,
+      })
+      .click();
+    await expect(panel.getByRole("status")).toContainText(
+      "Site default updated",
+    );
+    const visitor = await context.newPage();
+    await visitor.goto("./en/");
+    await expect(visitor.locator("html")).toHaveAttribute("data-theme", next);
+    await visitor.getByLabel("Choose theme", { exact: true }).click();
+    await visitor
+      .getByRole("button", { name: "Canyon Clay", exact: true })
+      .click();
+    await visitor.reload();
+    await expect(visitor.locator("html")).toHaveAttribute("data-theme", "clay");
+    await page.reload(); // auth intentionally expires on reload
+    await expect(page.locator("#admin-password")).toBeVisible();
+    await expect(page.locator("html")).toHaveAttribute("data-theme", "clay");
+    expect(
+      (
+        await operator
+          .from("site_settings")
+          .select("theme")
+          .eq("id", 1)
+          .single()
+      ).data!.theme,
+    ).toBe(next);
+    await visitor.close();
+  } finally {
+    expect(
+      (
+        await operator
+          .from("site_settings")
+          .update({ theme: original })
+          .eq("id", 1)
+      ).error,
+    ).toBeNull();
   }
 });

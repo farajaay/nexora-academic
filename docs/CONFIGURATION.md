@@ -68,3 +68,9 @@ Run the GitHub Pages workflow after editing configuration. Public environment va
 Production now uses the dedicated `nexora-academic` project (`swgosjtqchcjuvxggxkv`, Frankfurt). The schema and initial admin have been provisioned. Public sign-up is disabled. Admins can change their password in the dashboard's account security section (12-character minimum). The operator-only provisioning script accepts credentials through environment variables and writes a random initial password to a private local file outside Git; it does not send email. Never run the migration again on existing production tables.
 
 For live verification, `npm run test:backend` and `tests/e2e/backend.spec.ts` require explicit operator environment variables. They use synthetic orders and a temporary unprivileged account and remove their test records afterward. The browser test disables traces to avoid capturing login credentials. Keep the credential file and test artifacts out of Git.
+
+## Visitor and admin theme selection
+
+Visitors use the palette button in the header to choose any of the six themes. Their preference is stored as `nexora-theme-preference` in this browser; “Use site default” removes the override. The admin Site theme panel sets the shared default in Supabase. It is read on page load and window focus. An explicit visitor preference wins, including in the administrator's own browser. Theme changes do not reset request inputs or language.
+
+يمكن للزائر اختيار المظهر من رمز لوحة الألوان في الشريط العلوي. يحفظ الاختيار في المتصفح فقط. يحدد المدير المظهر الافتراضي من لوحة الإدارة؛ لا يلغي ذلك اختيار الزائر الشخصي. خيار «استخدام مظهر الموقع الافتراضي» يعيد اتباع اختيار المدير.

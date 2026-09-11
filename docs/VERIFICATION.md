@@ -75,3 +75,9 @@ The same effort then implemented bilingual, indexable URLs: every public route n
 - فحص axe عبر المظاهر الستة و6 مسارات رئيسية: صفر مخالفات من أول تشغيل — لم تتكرر مشكلة التباين السابقة لأن كل قيمة لونية جديدة تحققت حسابيًا (≥4.5:1 للنص، ≥3:1 للأيقونات) قبل استخدامها.
 - `npm run test:e2e`: 18 اختبارًا نجحت على سطح المكتب والهاتف دون تعديل، إضافة إلى تحديث اختبار سلامة بيانات المظاهر واختبار RLS في `tests/backend.test.mjs` ليشملا الستة (كلاهما يتخطى التنفيذ بلا بيانات اعتماد حقيقية).
 - تحقق يدوي بلقطات شاشة للمظاهر الثلاثة الجديدة بالعربية والإنجليزية، ولوحة الإدارة بالستة مظاهر معًا (عبر التجاوز المؤقت نفسه، أُزيل قبل الالتزام).
+
+## Completion of theme selection (2026-09-12)
+
+Continued from Claude Code's merged six-theme implementation at `2550a9c`, retaining its designs, bilingual URLs and quality fixes. Applied the three pending site_settings migrations to the dedicated production Supabase project. Added browser-local visitor selection with a site-default reset, storage synchronization and refresh of the admin default on window focus. Admin saving verifies an updated row instead of treating a zero-row RLS response as success.
+
+Verified: lint, typecheck, production build (font URL warnings resolved), 7 unit tests, 5 SEO checks, 14 real database checks, 22 public browser tests across desktop/mobile, and 3 credentialed browser flows including admin default persistence and personal overrides. The redundant mobile global-setting mutation is deliberately skipped to prevent concurrent changes. Test orders, uploads and payments are cleaned up; global theme restored to its original value. Six-theme expanded-picker contrast checks report zero WCAG A/AA violations. No new Supabase security warnings.

@@ -2,7 +2,7 @@ import type { Attachment } from "./lib/attachments";
 import { useEffect, useState, type FormEvent } from "react";
 import { Check, LockKeyhole, LogOut, RefreshCw } from "lucide-react";
 import { db, type Order, type Payment } from "./lib/backend";
-import { applyTheme, loadStoredTheme, saveTheme } from "./lib/theme";
+import { updateSiteTheme, loadStoredTheme, saveTheme } from "./lib/theme";
 import { themes, type ThemeId } from "./config/theme";
 import { options, services, site } from "./config/site";
 import { Field } from "./forms";
@@ -30,11 +30,11 @@ function ThemeSettings() {
     const ok = await saveTheme(id);
     if (ok) {
       setCurrent(id);
-      applyTheme(id);
+      updateSiteTheme(id);
       setMessage(
         t(
-          "تم تحديث مظهر الموقع لجميع الزوار.",
-          "Site theme updated for every visitor.",
+          "تم تحديث مظهر الموقع الافتراضي. تبقى اختيارات الزوار الشخصية محفوظة.",
+          "Site default updated. Visitors keep their personal theme choices.",
         ),
       );
     } else {
@@ -52,8 +52,8 @@ function ThemeSettings() {
       <summary>{t("مظهر الموقع", "Site theme")}</summary>
       <p className="field-hint">
         {t(
-          "يغيّر المظهر المختار تصميم الموقع بالكامل لجميع الزوار فورًا.",
-          "The chosen theme changes the whole site's design for every visitor immediately.",
+          "يحدد المظهر الافتراضي للزوار الذين لم يختاروا مظهرًا شخصيًا. يظهر عند فتح الموقع أو العودة إلى نافذته.",
+          "Sets the default for visitors without a personal preference. It is applied when they open the site or return to its window.",
         )}
       </p>
       <div className="theme-grid">
