@@ -1,4 +1,10 @@
-import { useState, type FormEvent, type ReactNode } from "react";
+import {
+  attachmentError,
+  attachmentManifest,
+  fileAccept,
+  type Attachment,
+} from "./lib/attachments";
+import { useRef, useState, type FormEvent, type ReactNode } from "react";
 import {
   Link,
   useNavigate,
@@ -297,6 +303,16 @@ export function Contact() {
     preferred_contact: "whatsapp",
     consent: false,
   }));
+  const [files, setFiles] = useState<File[]>([]);
+  const [fileError, setFileError] = useState("");
+  const [receipt, setReceipt] = useState("");
+  const pending = useRef<{
+    id: string;
+    attachments: Attachment[];
+    uploaded: Set<string>;
+    saved: boolean;
+  } | null>(null);
+  const sending = useRef(false);
   const [errors, setErrors] = useState<Record<string, string>>({});
   const [busy, setBusy] = useState(false);
   const [message, setMessage] = useState("");
@@ -323,7 +339,20 @@ export function Contact() {
     e?: FormEvent,
   ) {
     e?.preventDefault();
+    if (sending.current) return;
     if (!valid()) return;
+    const uploadError = attachmentError(files, lang);
+    setFileError(uploadError);
+    if (uploadError) return;
+    if (channel !== "save" && files.length) {
+      setMessage(
+        t(
+          "المرفقات تُرفع بزر إرسال وحفظ الطلب فقط. أرسل الملفات يدويًا عند استخدام واتساب أو البريد.",
+          "Attachments upload only through Submit & save request. Attach files manually when using WhatsApp or email.",
+        ),
+      );
+      return;
+    }
     const text = orderMessage(value, lang);
     if (channel === "copy") {
       try {
@@ -369,30 +398,82 @@ export function Contact() {
       );
       return;
     }
+    sending.current = true;
     setBusy(true);
     try {
       const { db } = await import("./lib/backend");
       if (!db) throw new Error("Database is not configured");
       const { consent, ...payload } = value;
-      const id = crypto.randomUUID();
-      const { error } = await db.from("orders").insert({
-        ...payload,
-        id,
-        consent,
-        phone: value.phone.replace(/[\s-]/g, ""),
-        name: value.name.trim(),
-        description: value.description.trim(),
-      });
-      if (error) throw error;
+      const attempt = pending.current ?? {
+        id: crypto.randomUUID(),
+        attachments: [] as Attachment[],
+        uploaded: new Set<string>(),
+        saved: false,
+      };
+      if (!pending.current)
+        attempt.attachments = attachmentManifest(files, attempt.id);
+      pending.current = attempt;
+      const id = attempt.id;
+      if (!attempt.saved) {
+        const { error } = await db.from("orders").insert({
+          ...payload,
+          id,
+          consent,
+          attachments: attempt.attachments,
+          phone: value.phone.replace(/[\s-]/g, ""),
+          name: value.name.trim(),
+          description: value.description.trim(),
+        });
+        // Retrying an uncertain response reuses the same immutable request ID.
+        if (error && error.code !== "23505") throw error;
+        attempt.saved = true;
+        setReceipt(id);
+      }
+      for (let i = 0; i < attempt.attachments.length; i++) {
+        const attachment = attempt.attachments[i];
+        if (attempt.uploaded.has(attachment.path)) continue;
+        setMessage(
+          t(
+            `جارٍ رفع الملف ${i + 1} من ${files.length}…`,
+            `Uploading file ${i + 1} of ${files.length}…`,
+          ),
+        );
+        const result = await db.storage
+          .from("request-files")
+          .upload(attachment.path, files[i], {
+            contentType: attachment.type,
+            upsert: false,
+          });
+        if (
+          result.error &&
+          !(
+            "statusCode" in result.error &&
+            String(result.error.statusCode) === "409"
+          )
+        )
+          throw result.error;
+        attempt.uploaded.add(attachment.path);
+      }
       navigate("/success", { state: { channel: "save", id } });
     } catch {
-      setMessage(
-        t(
-          "تعذر حفظ الطلب. لم نؤكد الاستلام. تحقق من الاتصال وحاول مجددًا أو انسخ التفاصيل.",
-          "Your request could not be saved. Receipt is not confirmed. Check your connection and retry or copy the details.",
-        ),
-      );
+      if (pending.current?.saved)
+        setMessage(
+          t(
+            "تم حفظ الطلب، لكن رفع بعض المرفقات لم يكتمل. أبقِ الصفحة مفتوحة واضغط إعادة محاولة رفع الملفات. رقم طلبك: " +
+              pending.current.id,
+            "Request saved, but some attachments did not finish uploading. Keep this page open and retry uploads. Your reference: " +
+              pending.current.id,
+          ),
+        );
+      else
+        setMessage(
+          t(
+            "تعذر حفظ الطلب. لم نؤكد الاستلام. تحقق من الاتصال وحاول مجددًا أو انسخ التفاصيل.",
+            "Your request could not be saved. Receipt is not confirmed. Check your connection and retry or copy the details.",
+          ),
+        );
     } finally {
+      sending.current = false;
       setBusy(false);
     }
   }
@@ -418,139 +499,220 @@ export function Contact() {
               "All fields are required unless marked optional.",
             )}
           </p>
-          <div className="form-grid">
-            {(
-              [
-                ["name", t("الاسم", "Name"), "text", "name"],
-                ["phone", t("رقم الجوال", "Mobile number"), "tel", "tel"],
+          <fieldset
+            className="request-fields"
+            disabled={busy || Boolean(pending.current)}
+          >
+            <div className="form-grid">
+              {(
                 [
-                  "email",
-                  t("البريد الإلكتروني (اختياري)", "Email (optional)"),
-                  "email",
-                  "email",
-                ],
-                [
-                  "major",
-                  t("التخصص / المسار", "Major / study track"),
-                  "text",
-                  "off",
-                ],
-              ] as const
-            ).map(([key, label, type, auto]) => (
-              <Field key={key} name={key} label={label} error={errors[key]}>
-                <input
-                  id={key}
-                  type={type}
-                  autoComplete={auto}
-                  maxLength={key === "email" ? 254 : 100}
-                  value={value[key]}
-                  aria-invalid={Boolean(errors[key])}
-                  aria-describedby={errors[key] ? `${key}-error` : undefined}
-                  onChange={(e) => patch({ [key]: e.target.value })}
-                />
-              </Field>
-            ))}
-            <ChoiceFields value={value} change={patch} errors={errors} />
-            <div className="full">
+                  ["name", t("الاسم", "Name"), "text", "name"],
+                  ["phone", t("رقم الجوال", "Mobile number"), "tel", "tel"],
+                  [
+                    "email",
+                    t("البريد الإلكتروني (اختياري)", "Email (optional)"),
+                    "email",
+                    "email",
+                  ],
+                  [
+                    "major",
+                    t("التخصص / المسار", "Major / study track"),
+                    "text",
+                    "off",
+                  ],
+                ] as const
+              ).map(([key, label, type, auto]) => (
+                <Field key={key} name={key} label={label} error={errors[key]}>
+                  <input
+                    id={key}
+                    type={type}
+                    autoComplete={auto}
+                    maxLength={key === "email" ? 254 : 100}
+                    value={value[key]}
+                    aria-invalid={Boolean(errors[key])}
+                    aria-describedby={errors[key] ? `${key}-error` : undefined}
+                    onChange={(e) => patch({ [key]: e.target.value })}
+                  />
+                </Field>
+              ))}
+              <ChoiceFields value={value} change={patch} errors={errors} />
+              <div className="full">
+                <Field
+                  name="description"
+                  label={t(
+                    "وصف الطلب وما تحتاج فهمه أو تحسينه",
+                    "Request description and what you want to understand or improve",
+                  )}
+                  error={errors.description}
+                >
+                  <textarea
+                    id="description"
+                    rows={5}
+                    maxLength={4000}
+                    value={value.description}
+                    aria-invalid={Boolean(errors.description)}
+                    aria-describedby={
+                      errors.description ? "description-error" : undefined
+                    }
+                    onChange={(e) => patch({ description: e.target.value })}
+                  />
+                </Field>
+              </div>
               <Field
-                name="description"
-                label={t(
-                  "وصف الطلب وما تحتاج فهمه أو تحسينه",
-                  "Request description and what you want to understand or improve",
-                )}
-                error={errors.description}
+                name="pages"
+                label={t("عدد الصفحات أو الأسئلة", "Pages or questions")}
+                error={errors.pages}
               >
-                <textarea
-                  id="description"
-                  rows={5}
-                  maxLength={4000}
-                  value={value.description}
-                  aria-invalid={Boolean(errors.description)}
-                  aria-describedby={
-                    errors.description ? "description-error" : undefined
-                  }
-                  onChange={(e) => patch({ description: e.target.value })}
+                <input
+                  id="pages"
+                  type="number"
+                  min="1"
+                  max="10000"
+                  value={value.pages}
+                  onChange={(e) => patch({ pages: Number(e.target.value) })}
                 />
               </Field>
+              <Field
+                name="preferred_contact"
+                error={errors.preferred_contact}
+                label={t("طريقة التواصل المفضلة", "Preferred contact")}
+              >
+                <select
+                  id="preferred_contact"
+                  value={value.preferred_contact}
+                  onChange={(e) => patch({ preferred_contact: e.target.value })}
+                >
+                  <option value="whatsapp">{t("واتساب", "WhatsApp")}</option>
+                  <option value="phone">
+                    {t("اتصال هاتفي", "Phone call")}
+                  </option>
+                  <option value="email" disabled={!value.email}>
+                    {t("البريد الإلكتروني", "Email")}
+                  </option>
+                </select>
+              </Field>
+              <div className="full attachment-picker">
+                <Field
+                  name="attachments"
+                  label={t("إرفاق ملفات (اختياري)", "Attach files (optional)")}
+                  error={fileError}
+                >
+                  <div className="file-control">
+                    <span aria-hidden="true">
+                      {t("اختيار ملفات", "Choose files")} ·{" "}
+                      {files.length
+                        ? t(
+                            `${files.length} ملفات محددة`,
+                            `${files.length} files selected`,
+                          )
+                        : t("لم تحدد ملفات بعد", "No files selected yet")}
+                    </span>
+                    <input
+                      id="attachments"
+                      type="file"
+                      multiple
+                      accept={fileAccept}
+                      aria-describedby={
+                        fileError
+                          ? "attachment-help attachments-error"
+                          : "attachment-help"
+                      }
+                      aria-invalid={Boolean(fileError)}
+                      onChange={(e) => {
+                        const next = [
+                          ...files,
+                          ...Array.from(e.target.files || []),
+                        ];
+                        const error = attachmentError(next, lang);
+                        setFileError(error);
+                        if (!error) setFiles(next);
+                        e.target.value = "";
+                      }}
+                    />
+                  </div>
+                </Field>
+                <p id="attachment-help" className="field-hint">
+                  {t(
+                    "حتى 5 ملفات، 10 ميجابايت لكل ملف. PDF، Word، PowerPoint، Excel، TXT، CSV، PNG، JPG، ZIP، DWG، DXF. ترفع عند حفظ الطلب، وتتاح للإدارة فقط.",
+                    "Up to 5 files, 10 MB each. PDF, Word, PowerPoint, Excel, TXT, CSV, PNG, JPG, ZIP, DWG, DXF. Uploaded when saving your request; accessible only to administrators.",
+                  )}
+                </p>
+                <ul className="attachment-list">
+                  {files.map((file, i) => (
+                    <li key={i}>
+                      <span>
+                        <bdi>{file.name}</bdi> ·{" "}
+                        {(file.size / 1024 / 1024).toFixed(2)} MB
+                      </span>
+                      <button
+                        type="button"
+                        className="text-link"
+                        aria-label={t("إزالة ", "Remove ") + file.name}
+                        onClick={() => {
+                          setFiles(files.filter((_, index) => index !== i));
+                          setFileError("");
+                        }}
+                      >
+                        {t("إزالة", "Remove")}
+                      </button>
+                    </li>
+                  ))}
+                </ul>
+              </div>
+              <div className="full">
+                <Field
+                  name="files_url"
+                  label={t("رابط الملفات (اختياري)", "File link (optional)")}
+                  error={errors.files_url}
+                >
+                  <input
+                    id="files_url"
+                    type="url"
+                    dir="ltr"
+                    placeholder="https://"
+                    value={value.files_url}
+                    onChange={(e) => patch({ files_url: e.target.value })}
+                  />
+                </Field>
+                <p className="field-hint">
+                  {t(
+                    "شارك فقط الملفات اللازمة، وتأكد من صلاحية الوصول للرابط.",
+                    "Share only necessary files and check the link’s access permissions.",
+                  )}
+                </p>
+              </div>
             </div>
-            <Field
-              name="pages"
-              label={t("عدد الصفحات أو الأسئلة", "Pages or questions")}
-              error={errors.pages}
-            >
+            <label className="check-row consent">
               <input
-                id="pages"
-                type="number"
-                min="1"
-                max="10000"
-                value={value.pages}
-                onChange={(e) => patch({ pages: Number(e.target.value) })}
+                id="consent"
+                type="checkbox"
+                checked={value.consent}
+                onChange={(e) => patch({ consent: e.target.checked })}
               />
-            </Field>
-            <Field
-              name="preferred_contact"
-              error={errors.preferred_contact}
-              label={t("طريقة التواصل المفضلة", "Preferred contact")}
-            >
-              <select
-                id="preferred_contact"
-                value={value.preferred_contact}
-                onChange={(e) => patch({ preferred_contact: e.target.value })}
-              >
-                <option value="whatsapp">{t("واتساب", "WhatsApp")}</option>
-                <option value="phone">{t("اتصال هاتفي", "Phone call")}</option>
-                <option value="email" disabled={!value.email}>
-                  {t("البريد الإلكتروني", "Email")}
-                </option>
-              </select>
-            </Field>
-            <div className="full">
-              <Field
-                name="files_url"
-                label={t("رابط الملفات (اختياري)", "File link (optional)")}
-                error={errors.files_url}
-              >
-                <input
-                  id="files_url"
-                  type="url"
-                  dir="ltr"
-                  placeholder="https://"
-                  value={value.files_url}
-                  onChange={(e) => patch({ files_url: e.target.value })}
-                />
-              </Field>
-              <p className="field-hint">
-                {t(
-                  "شارك فقط الملفات اللازمة، وتأكد من صلاحية الوصول للرابط.",
-                  "Share only necessary files and check the link’s access permissions.",
-                )}
-              </p>
-            </div>
-          </div>
-          <label className="check-row consent">
-            <input
-              id="consent"
-              type="checkbox"
-              checked={value.consent}
-              onChange={(e) => patch({ consent: e.target.checked })}
-            />
-            <span>
-              {t("أوافق على", "I accept the")}{" "}
-              <Link to="/terms" target="_blank">
-                {t("شروط الاستخدام", "terms")}
-              </Link>{" "}
-              {t("و", "and")}{" "}
-              <Link to="/privacy" target="_blank">
-                {t("الخصوصية", "privacy")}
-              </Link>{" "}
-              {t("و", "and")}{" "}
-              <Link to="/integrity" target="_blank">
-                {t("سياسة النزاهة الأكاديمية", "academic integrity policy")}
-              </Link>
-              .
-            </span>
-          </label>
-          {errors.consent && <p className="field-error">{errors.consent}</p>}
+              <span>
+                {t("أوافق على", "I accept the")}{" "}
+                <Link to="/terms" target="_blank">
+                  {t("شروط الاستخدام", "terms")}
+                </Link>{" "}
+                {t("و", "and")}{" "}
+                <Link to="/privacy" target="_blank">
+                  {t("الخصوصية", "privacy")}
+                </Link>{" "}
+                {t("و", "and")}{" "}
+                <Link to="/integrity" target="_blank">
+                  {t("سياسة النزاهة الأكاديمية", "academic integrity policy")}
+                </Link>
+                .
+              </span>
+            </label>
+            {errors.consent && <p className="field-error">{errors.consent}</p>}
+          </fieldset>
+          {receipt && (
+            <p className="field-hint">
+              {t("رقم الطلب المحفوظ: ", "Saved request reference: ")}
+              <bdi>{receipt}</bdi>
+            </p>
+          )}
           {message && (
             <p className="notice" role="status">
               {message}
@@ -559,7 +721,9 @@ export function Contact() {
           <button className="button wide" disabled={busy || !backendReady}>
             {busy
               ? t("جارٍ حفظ الطلب…", "Saving request…")
-              : t("إرسال وحفظ الطلب", "Submit & save request")}
+              : receipt
+                ? t("إعادة محاولة رفع الملفات", "Retry file uploads")
+                : t("إرسال وحفظ الطلب", "Submit & save request")}
             <ArrowLeft size={18} />
           </button>
           {!backendReady && (

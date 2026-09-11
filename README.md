@@ -86,3 +86,7 @@ MIT license applies to the source code. Review the launch checklist before opera
 Production uses a dedicated Supabase project named nexora-academic (Frankfurt), with private admin accounts and public sign-up disabled. The public frontend and database settings are deployed separately. To change your initial password, use the account security section in the admin dashboard. Credentials are provided privately outside Git.
 
 تم ربط مشروع Supabase مستقل باسم nexora-academic في فرانكفورت. التسجيل العام للحسابات معطل. حساب الإدارة وبيانات دخوله خارج المستودع، ويمكن تغيير كلمة المرور من قسم أمان الحساب داخل اللوحة.
+
+### مرفقات الطلب / File uploads
+
+Clients can upload 5 files (10 MB each) directly with their request. Admins can download private attachments from order details. See [file upload operations](docs/FILE-UPLOADS.md).

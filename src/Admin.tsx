@@ -1,3 +1,4 @@
+import type { Attachment } from "./lib/attachments";
 import { useEffect, useState, type FormEvent } from "react";
 import { LockKeyhole, LogOut, RefreshCw } from "lucide-react";
 import { db, type Order, type Payment } from "./lib/backend";
@@ -220,6 +221,28 @@ export default function Admin() {
       await load();
     }
     setBusy(false);
+  }
+  async function download(attachment: Attachment) {
+    if (!db) return;
+    try {
+      const { data, error } = await db.storage
+        .from("request-files")
+        .download(attachment.path);
+      if (error) throw error;
+      const url = URL.createObjectURL(data);
+      const link = document.createElement("a");
+      link.href = url;
+      link.download = attachment.name;
+      link.click();
+      setTimeout(() => URL.revokeObjectURL(url), 1000);
+    } catch {
+      setNotice(
+        t(
+          "تعذر تنزيل الملف. ربما لم يكتمل رفعه بعد؛ حدّث الصفحة أو تواصل مع العميل.",
+          "Could not download the file. Its upload may be incomplete; refresh or contact the client.",
+        ),
+      );
+    }
   }
   async function addPayment(e: FormEvent) {
     e.preventDefault();
@@ -526,6 +549,32 @@ export default function Admin() {
                 >
                   {t("فتح رابط الملفات", "Open file link")}
                 </a>
+              )}
+              <h3>{t("المرفقات", "Attachments")}</h3>
+              <ul className="attachment-list">
+                {(selected.attachments || []).map((file) => (
+                  <li key={file.path}>
+                    <span>
+                      <bdi>{file.name}</bdi> ·{" "}
+                      {(file.size / 1024 / 1024).toFixed(2)} MB
+                    </span>
+                    <button
+                      className="button secondary"
+                      type="button"
+                      onClick={() => void download(file)}
+                    >
+                      {t("تنزيل", "Download")}
+                    </button>
+                  </li>
+                ))}
+              </ul>
+              {!selected.attachments?.length && (
+                <p>
+                  {t(
+                    "لا توجد مرفقات مرفوعة مع الطلب.",
+                    "No attachments included with this request.",
+                  )}
+                </p>
               )}
               <form onSubmit={(e) => void update(e)} className="admin-edit">
                 <Field name="status" label={t("حالة الطلب", "Status")}>

@@ -102,3 +102,18 @@ test("messages include request detail and safely survive URL encoding", () => {
     assert.ok(message.includes(text));
   assert.equal(decodeURIComponent(encodeURIComponent(message)), message);
 });
+
+// Validation is shared by selection and submission.
+test("attachment limits reject oversized, empty, unsupported and excess files", async () => {
+  const { attachmentError } = await import("../src/lib/attachments");
+  assert.equal(attachmentError([{ name: "report.PDF", size: 1024 }], "en"), "");
+  for (const files of [
+    [{ name: "a.exe", size: 1 }],
+    [{ name: "a.pdf", size: 0 }],
+    [{ name: "a.pdf", size: 10485761 }],
+    Array.from({ length: 6 }, () => ({ name: "a.pdf", size: 1 })),
+  ]) {
+    assert.ok(attachmentError(files, "en"));
+    assert.ok(attachmentError(files, "ar"));
+  }
+});

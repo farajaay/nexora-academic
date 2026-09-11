@@ -1,3 +1,4 @@
+import type { Attachment } from "./attachments";
 import { createClient } from "@supabase/supabase-js";
 const url = import.meta.env.VITE_SUPABASE_URL;
 const key = import.meta.env.VITE_SUPABASE_PUBLISHABLE_KEY;
@@ -22,6 +23,7 @@ export type Order = {
   difficulty: string;
   extras: string[];
   files_url: string;
+  attachments: Attachment[];
   preferred_contact: string;
   status: string;
   quoted_total: number | null;

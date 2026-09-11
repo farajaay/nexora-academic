@@ -518,8 +518,8 @@ export const faqs = [
   [
     "كيف أرسل ملفاتي؟",
     "How do I share my files?",
-    "أضف رابطًا آمنًا من خدمة الملفات التي تستخدمها مع صلاحية الوصول المناسبة. تجنب مشاركة كلمات المرور أو البيانات غير اللازمة للخدمة.",
-    "Add a secure link from your file provider with appropriate access permissions. Avoid sharing passwords or information that is not needed.",
+    "ارفع حتى 5 ملفات بحجم 10 ميجابايت لكل ملف عند حفظ الطلب، أو أضف رابطًا آمنًا لملفاتك. تجنب مشاركة كلمات المرور أو البيانات غير اللازمة للخدمة.",
+    "Upload up to 5 files of 10 MB each when saving your request, or add a secure file link. Avoid sharing passwords or information that is not needed.",
   ],
   [
     "كيف تتم متابعة الطلب والدفع؟",
@@ -568,8 +568,8 @@ const legal = {
       [
         "البيانات التي نجمعها",
         "Information we collect",
-        "نجمع الاسم والجوال وبيانات الخدمة ووصف الطلب. البريد الإلكتروني ورابط الملفات اختياريان. لا نطلب معلومات البطاقات أو كلمات مرورك.",
-        "We collect your name, mobile number, service details and request description. Email and file links are optional. We do not request card details or passwords.",
+        "نجمع الاسم والجوال وبيانات الخدمة ووصف الطلب. البريد الإلكتروني ورابط الملفات والمرفقات اختيارية. لا نطلب معلومات البطاقات أو كلمات مرورك.",
+        "We collect your name, mobile number, service details and request description. Email, file links and attachments are optional. We do not request card details or passwords.",
       ],
       [
         "الاستخدام والوصول",
@@ -580,8 +580,8 @@ const legal = {
       [
         "الحفظ والخدمات الخارجية",
         "Storage and external services",
-        "عند تفعيل الحفظ الإلكتروني، تحفظ الطلبات في Supabase بصلاحيات مقيدة. عند اختيار واتساب أو البريد تنتقل البيانات إلى مزود تلك الخدمة وفق سياسته. قد تعالج البيانات خارج المملكة بحسب موقع الاستضافة.",
-        "When online storage is enabled, requests are stored in Supabase with restricted access. Choosing WhatsApp or email passes data to that provider under its policies. Data may be processed outside Saudi Arabia depending on hosting location.",
+        "عند تفعيل الحفظ الإلكتروني، تحفظ الطلبات ومرفقاتها في Supabase بصلاحيات مقيدة، ولا تتاح الملفات للعامة. عند اختيار واتساب أو البريد تنتقل البيانات إلى مزود تلك الخدمة وفق سياسته. قد تعالج البيانات خارج المملكة بحسب موقع الاستضافة.",
+        "When online storage is enabled, requests and attachments are stored in Supabase with restricted access. Files are not publicly accessible. Choosing WhatsApp or email passes data to that provider under its policies. Data may be processed outside Saudi Arabia depending on hosting location.",
       ],
       [
         "حقوقك ومدة الاحتفاظ",

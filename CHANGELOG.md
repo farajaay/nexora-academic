@@ -1,5 +1,10 @@
 # Changelog
 
+## 1.2.0
+
+- Private client request attachments with validation, upload retry and authenticated admin downloads.
+- Supabase Storage policies, attachment manifests and live upload/privacy tests.
+
 ## 1.1.0 — 2026-09-11
 
 - Connected a dedicated Supabase project and provisioned private admin access.

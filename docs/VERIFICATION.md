@@ -24,3 +24,12 @@ Business WhatsApp/email remain explicit configuration placeholders. Message vali
 ربط مشروع Supabase مستقل، وأُنشئ حساب الإدارة. نجحت اختبارات حفظ الطلبات والصلاحيات والدفعات على قاعدة البيانات الحقيقية، ونجح المسار الكامل من المتصفح على الهاتف وسطح المكتب. حذفت سجلات الاختبار. بيانات واتساب والبريد الرسمية لم تُضف، وبريد الإدارة غير منشور.
 
 Performance advisor reported two informational unused indexes on the new database. They are retained for timestamp/status queries as data grows; the final Auth advisory is documented above. [Supabase index advisor reference](https://supabase.com/docs/guides/database/database-linter?lint=0005_unused_index).
+
+## File attachments — version 1.2.0
+
+- Lint, TypeScript and production build passed.
+- Six unit tests, SEO test and eight live backend checks passed.
+- Mobile/desktop upload, interrupted upload retry, private admin download with byte comparison and guest access denials passed.
+- File picker validation/removal and responsive screenshots verified.
+- Supabase bucket is private with 10 MiB limit; wrong-order paths and malformed manifests rejected. No new security advisor findings.
+- Synthetic request attachments are removed through the Storage API after tests.

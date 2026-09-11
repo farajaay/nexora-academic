@@ -30,8 +30,31 @@ test("live flow: student request → admin quote/status → confirmed payment", 
         "طلب اختبار آلي كامل للتحقق من حفظ الطلب ومتابعة الإدارة والدفعات، يحذف بعد الاختبار.",
       );
     await page.locator("#preferred_contact").selectOption("phone");
+    await page
+      .locator("#attachments")
+      .setInputFiles({
+        name: "تعليمات.txt",
+        mimeType: "text/plain",
+        buffer: Buffer.from("Nexora attachment verification"),
+      });
+    // Simulate an interrupted first upload; retry must reuse the saved request.
+    let interrupted = false;
+    await page.route("**/storage/v1/object/request-files/**", async (route) => {
+      if (route.request().method() === "POST" && !interrupted) {
+        interrupted = true;
+        await route.abort("failed");
+      } else await route.continue();
+    });
     await page.locator("#consent").check();
     await page.getByRole("button", { name: "إرسال وحفظ الطلب" }).click();
+    await expect(page.getByRole("status")).toContainText(
+      "رفع بعض المرفقات لم يكتمل",
+      { timeout: 30000 },
+    );
+    await expect(page.locator("#attachments")).toBeDisabled();
+    await page
+      .getByRole("button", { name: "إعادة محاولة رفع الملفات" })
+      .click();
     await expect(page.locator("h1")).toContainText("تم حفظ طلبك بنجاح");
     const id = (await page.locator(".reference").textContent())!.trim();
     expect(id).toMatch(/^[0-9a-f-]{36}$/);
@@ -44,6 +67,69 @@ test("live flow: student request → admin quote/status → confirmed payment", 
     const row = page.locator(".order-row").filter({ hasText: marker });
     await expect(row).toBeVisible();
     await row.click();
+    await expect(page.locator(".attachment-list")).toContainText("تعليمات.txt");
+    const downloadEvent = page.waitForEvent("download");
+    await page.getByRole("button", { name: "تنزيل", exact: true }).click();
+    const download = await downloadEvent;
+    expect(download.suggestedFilename()).toBe("تعليمات.txt");
+    const stream = await download.createReadStream();
+    const chunks: Buffer[] = [];
+    for await (const chunk of stream!) chunks.push(Buffer.from(chunk));
+    expect(Buffer.concat(chunks).toString()).toBe(
+      "Nexora attachment verification",
+    );
+    const recordsWithFiles = await operator
+      .from("orders")
+      .select("attachments")
+      .eq("id", id)
+      .single();
+    const attachment = recordsWithFiles.data!.attachments[0];
+    const env = readFileSync(".env.local", "utf8");
+    const publicKey =
+      process.env.NEXORA_PUBLISHABLE_KEY ||
+      env.match(/VITE_SUPABASE_PUBLISHABLE_KEY=(.+)/)![1].trim();
+    const guest = createClient(url!, publicKey, {
+      auth: { persistSession: false },
+    });
+    expect(
+      (await guest.storage.from("request-files").download(attachment.path))
+        .error,
+    ).not.toBeNull();
+    expect(
+      (
+        await guest.storage
+          .from("request-files")
+          .createSignedUrl(attachment.path, 60)
+      ).error,
+    ).not.toBeNull();
+    expect(
+      (
+        await guest.storage
+          .from("request-files")
+          .upload(`${id}/${randomUUID()}.txt`, Buffer.from("unregistered"), {
+            contentType: "text/plain",
+          })
+      ).error,
+    ).not.toBeNull();
+    expect(
+      (
+        await guest.storage
+          .from("request-files")
+          .upload(attachment.path, Buffer.from("overwrite"), {
+            contentType: "text/plain",
+            upsert: true,
+          })
+      ).error,
+    ).not.toBeNull();
+    const listed = await guest.storage.from("request-files").list(id);
+    expect(listed.data?.length || 0).toBe(0);
+    const publicResponse = await page.request.get(
+      `${url}/storage/v1/object/public/request-files/${attachment.path}`,
+    );
+    expect(publicResponse.ok()).toBeFalsy();
+    expect(
+      (await operator.from("orders").select("id").eq("name", marker)).data,
+    ).toHaveLength(1);
     await page.locator("#status").selectOption("in_progress");
     await page.locator("#quote").fill("260");
     await page.getByRole("button", { name: "حفظ التغييرات" }).click();
@@ -79,9 +165,16 @@ test("live flow: student request → admin quote/status → confirmed payment", 
     // Match only this run's synthetic row, even if UI submission failed after saving.
     const records = await operator
       .from("orders")
-      .select("id")
+      .select("id,attachments")
       .eq("name", marker);
     for (const record of records.data || []) {
+      const paths = (record.attachments || []).map(
+        (f: { path: string }) => f.path,
+      );
+      if (paths.length)
+        expect(
+          (await operator.storage.from("request-files").remove(paths)).error,
+        ).toBeNull();
       expect(
         (await operator.from("payments").delete().eq("order_id", record.id))
           .error,
