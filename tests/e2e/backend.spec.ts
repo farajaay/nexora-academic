@@ -30,13 +30,11 @@ test("live flow: student request → admin quote/status → confirmed payment", 
         "طلب اختبار آلي كامل للتحقق من حفظ الطلب ومتابعة الإدارة والدفعات، يحذف بعد الاختبار.",
       );
     await page.locator("#preferred_contact").selectOption("phone");
-    await page
-      .locator("#attachments")
-      .setInputFiles({
-        name: "تعليمات.txt",
-        mimeType: "text/plain",
-        buffer: Buffer.from("Nexora attachment verification"),
-      });
+    await page.locator("#attachments").setInputFiles({
+      name: "تعليمات.txt",
+      mimeType: "text/plain",
+      buffer: Buffer.from("Nexora attachment verification"),
+    });
     // Simulate an interrupted first upload; retry must reuse the saved request.
     let interrupted = false;
     await page.route("**/storage/v1/object/request-files/**", async (route) => {
@@ -158,6 +156,48 @@ test("live flow: student request → admin quote/status → confirmed payment", 
       .select("amount")
       .eq("order_id", id);
     expect(ledger.data).toEqual([{ amount: 100 }]);
+
+    // Site theme: admin-only, site-wide, visible immediately and after reload.
+    const themeName: Record<string, string> = {
+      emerald: "Emerald Scholar",
+      violet: "Royal Violet",
+      lime: "Midnight Lime",
+    };
+    const before = await operator
+      .from("site_settings")
+      .select("theme")
+      .eq("id", 1)
+      .single();
+    const originalTheme = before.data!.theme as string;
+    const nextTheme = originalTheme === "violet" ? "lime" : "violet";
+    const themePanel = page.locator(".account-settings").first();
+    await themePanel.getByText("مظهر الموقع").click();
+    await themePanel
+      .locator(".theme-option")
+      .filter({ hasText: themeName[nextTheme] })
+      .click();
+    await expect(themePanel.getByRole("status")).toContainText(
+      "تم تحديث مظهر الموقع",
+    );
+    await expect(page.locator("html")).toHaveAttribute("data-theme", nextTheme);
+    await page.reload();
+    await expect(page.locator("html")).toHaveAttribute("data-theme", nextTheme);
+    const storedTheme = await operator
+      .from("site_settings")
+      .select("theme")
+      .eq("id", 1)
+      .single();
+    expect(storedTheme.data!.theme).toBe(nextTheme);
+    await themePanel.getByText("مظهر الموقع").click();
+    await themePanel
+      .locator(".theme-option")
+      .filter({ hasText: themeName[originalTheme] })
+      .click();
+    await expect(page.locator("html")).toHaveAttribute(
+      "data-theme",
+      originalTheme,
+    );
+
     await page.getByRole("button", { name: "خروج", exact: true }).click();
     await expect(page.locator("#admin-password")).toBeVisible();
     await expect(page.locator(".order-list")).toHaveCount(0);

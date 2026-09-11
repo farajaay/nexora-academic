@@ -1,103 +1,134 @@
 import { readFileSync, writeFileSync, mkdirSync } from "node:fs";
 import { site } from "../src/config/site.ts";
-const pages = {
-  "": [
-    "دعم أكاديمي أوضح، أسرع، وأكثر احترافية",
-    "شرح ومراجعة وتطوير للأعمال الأكاديمية للثانوية والجامعة والدراسات العليا.",
-  ],
-  services: [
-    "الخدمات والأسعار",
-    "خدمات الشرح والمراجعة والتدقيق والبرمجة وCAD بأسعار تبدأ من 40 ر.س.",
-  ],
-  "how-it-works": [
-    "آلية الطلب",
-    "خطوات إرسال الطلب ومراجعة الملف وتثبيت السعر والموعد قبل البدء.",
-  ],
-  calculator: [
-    "حاسبة السعر",
-    "احسب نطاق سعر طلبك حسب الخدمة وحجم العمل والموعد واللغة والصعوبة.",
-  ],
-  contact: [
-    "تواصل معنا واطلب الخدمة",
-    "أرسل تفاصيل طلبك بأمان أو جهز رسالة واتساب أو بريد إلكتروني.",
-  ],
-  faq: [
-    "الأسئلة الشائعة",
-    "إجابات واضحة عن الخدمات والأسعار والتعديلات والمواعيد والنزاهة الأكاديمية.",
-  ],
-  privacy: [
-    "سياسة الخصوصية",
-    "بيانات الطلبات وكيفية استخدامها وحفظها وحقوق أصحابها.",
-  ],
-  terms: [
-    "الشروط والأحكام",
-    "شروط الدعم الأكاديمي والأسعار والتعديلات والإلغاء ومسؤولية الطالب.",
-  ],
-  integrity: [
-    "سياسة النزاهة الأكاديمية",
-    "دعم تعليمي مسؤول يشمل الشرح والمراجعة والتغذية الراجعة وتحسين المهارات.",
-  ],
-  success: ["حالة الطلب", "حالة إرسال طلب الدعم الأكاديمي."],
-  admin: ["لوحة الإدارة", "مساحة خاصة لإدارة الطلبات والدفعات."],
-};
+import { privateRoutes, publicRoutes, urlFor } from "../src/config/routes.ts";
+import { DEFAULT_THEME } from "../src/config/theme.ts";
+
 const template = readFileSync("dist/index.html", "utf8");
 const escape = (s) =>
   s.replaceAll("&", "&amp;").replaceAll('"', "&quot;").replaceAll("<", "&lt;");
-for (const [path, [title, description]] of Object.entries(pages)) {
-  const url = site.url + (path ? `${path}/` : "");
-  let html = template.replace(
-    /<title>.*?<\/title>/s,
-    `<title>${title} | ${site.name.ar}</title>`,
+
+/** Directory a route's document is written to, for the given language. */
+function outDir(path, lang) {
+  const slug = path ? `${path}/` : "";
+  const dir = (lang === "en" ? `dist/en/${slug}` : `dist/${slug}`).replace(
+    /\/$/,
+    "",
   );
-  html = html
+  return dir || "dist";
+}
+
+function render(route, lang, { indexable }) {
+  const title = route.title[lang];
+  const description = route.description[lang];
+  const url = urlFor(route.path, lang);
+  let html = template
+    .replace(
+      /<html[^>]*>/,
+      `<html lang="${lang}" dir="${lang === "ar" ? "rtl" : "ltr"}" data-theme="${DEFAULT_THEME}">`,
+    )
+    .replace(
+      /<title>.*?<\/title>/s,
+      `<title>${title} | ${site.name[lang]}</title>`,
+    )
     .replace(
       /(<meta\s+name="description"\s+content=")[^"]*(")/,
       `$1${escape(description)}$2`,
     )
     .replace(
       /(<meta\s+property="og:title"\s+content=")[^"]*(")/,
-      `$1${escape(title + " | " + site.name.en)}$2`,
+      `$1${escape(title + " | " + site.name[lang])}$2`,
     )
     .replace(
       /(<meta\s+property="og:description"\s+content=")[^"]*(")/,
       `$1${escape(description)}$2`,
     )
     .replace(/(<meta\s+property="og:url"\s+content=")[^"]*(")/, `$1${url}$2`)
+    .replace(
+      /(<meta\s+property="og:locale"\s+content=")[^"]*(")/,
+      `$1${lang === "ar" ? "ar_SA" : "en_US"}$2`,
+    )
+    .replace(
+      /(<meta\s+property="og:locale:alternate"\s+content=")[^"]*(")/,
+      `$1${lang === "ar" ? "en_US" : "ar_SA"}$2`,
+    )
     .replace(/(<link\s+rel="canonical"\s+href=")[^"]*(")/, `$1${url}$2`);
-  if (["admin", "success"].includes(path))
+  if (!indexable)
     html = html.replace(
       'content="index, follow"',
       'content="noindex, nofollow"',
     );
   html = html.replace(
-    "<!--schema-->",
-    `<script type="application/ld+json">${JSON.stringify({ "@context": "https://schema.org", "@type": "EducationalOrganization", name: site.name.en, alternateName: site.name.ar, url: site.url, description: [pages[""][1], "Educational support, explanation, review and mentoring for Saudi students."], areaServed: { "@type": "Country", name: "Saudi Arabia" }, knowsLanguage: ["ar", "en"], logo: site.url + "brand-mark.svg" })}</script>`,
+    "<!--hreflang-->",
+    indexable
+      ? [
+          `<link rel="alternate" hreflang="ar" href="${urlFor(route.path, "ar")}" />`,
+          `<link rel="alternate" hreflang="en" href="${urlFor(route.path, "en")}" />`,
+          `<link rel="alternate" hreflang="x-default" href="${urlFor(route.path, "ar")}" />`,
+        ].join("\n    ")
+      : "",
   );
-  mkdirSync(`dist/${path}`, { recursive: true });
-  writeFileSync(`dist/${path ? path + "/" : ""}index.html`, html);
+  html = html.replace(
+    "<!--schema-->",
+    `<script type="application/ld+json">${JSON.stringify({ "@context": "https://schema.org", "@type": "EducationalOrganization", name: site.name.en, alternateName: site.name.ar, url: site.url, description: [publicRoutes[0].description.en, "Educational support, explanation, review and mentoring for Saudi students."], areaServed: { "@type": "Country", name: "Saudi Arabia" }, knowsLanguage: ["ar", "en"], logo: site.url + "brand-mark.svg" })}</script>`,
+  );
+  return html;
+}
+
+let count = 0;
+for (const route of publicRoutes) {
+  for (const lang of ["ar", "en"]) {
+    const dir = outDir(route.path, lang);
+    mkdirSync(dir, { recursive: true });
+    writeFileSync(
+      `${dir}/index.html`,
+      render(route, lang, { indexable: true }),
+    );
+    count++;
+  }
+}
+for (const route of privateRoutes) {
+  for (const lang of ["ar", "en"]) {
+    const dir = outDir(route.path, lang);
+    mkdirSync(dir, { recursive: true });
+    writeFileSync(
+      `${dir}/index.html`,
+      render(route, lang, { indexable: false }),
+    );
+    count++;
+  }
 }
 writeFileSync(
   "dist/404.html",
   template
     .replace('content="index, follow"', 'content="noindex, nofollow"')
+    .replace("<!--hreflang-->", "")
     .replace(
       /<title>.*?<\/title>/s,
       "<title>صفحة غير موجودة | Nexora Academic</title>",
     ),
 );
 writeFileSync("dist/.nojekyll", "");
-const paths = Object.keys(pages).filter(
-  (p) => !["admin", "success"].includes(p),
+
+const sitemapUrls = publicRoutes.flatMap((route) =>
+  ["ar", "en"].map((lang) => {
+    const alternates = ["ar", "en"]
+      .map(
+        (l) =>
+          `<xhtml:link rel="alternate" hreflang="${l}" href="${urlFor(route.path, l)}"/>`,
+      )
+      .join("");
+    const xDefault = `<xhtml:link rel="alternate" hreflang="x-default" href="${urlFor(route.path, "ar")}"/>`;
+    return `<url><loc>${urlFor(route.path, lang)}</loc>${alternates}${xDefault}</url>`;
+  }),
 );
 writeFileSync(
   "dist/sitemap.xml",
-  `<?xml version="1.0" encoding="UTF-8"?><urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">${paths.map((p) => `<url><loc>${site.url}${p ? p + "/" : ""}</loc></url>`).join("")}</urlset>`,
+  `<?xml version="1.0" encoding="UTF-8"?><urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9" xmlns:xhtml="http://www.w3.org/1999/xhtml">${sitemapUrls.join("")}</urlset>`,
 );
 writeFileSync(
   "dist/robots.txt",
-  `User-agent: *\nAllow: /\nDisallow: /nexora-academic/admin/\nDisallow: /nexora-academic/success/\nSitemap: ${site.url}sitemap.xml\n`,
+  `User-agent: *\nAllow: /\nDisallow: /nexora-academic/admin/\nDisallow: /nexora-academic/success/\nDisallow: /nexora-academic/en/admin/\nDisallow: /nexora-academic/en/success/\nSitemap: ${site.url}sitemap.xml\n`,
 );
 console.log(
-  `Generated ${Object.keys(pages).length} route documents, 404, sitemap and robots.txt.`,
+  `Generated ${count} route documents (${publicRoutes.length} public × 2 languages, ${privateRoutes.length} private × 2 languages), 404, sitemap (${sitemapUrls.length} URLs) and robots.txt.`,
 );
-

@@ -1,7 +1,9 @@
 import type { Attachment } from "./lib/attachments";
 import { useEffect, useState, type FormEvent } from "react";
-import { LockKeyhole, LogOut, RefreshCw } from "lucide-react";
+import { Check, LockKeyhole, LogOut, RefreshCw } from "lucide-react";
 import { db, type Order, type Payment } from "./lib/backend";
+import { applyTheme, loadStoredTheme, saveTheme } from "./lib/theme";
+import { themes, type ThemeId } from "./config/theme";
 import { options, services, site } from "./config/site";
 import { Field } from "./forms";
 import { PageIntro, useLanguage } from "./ui";
@@ -13,6 +15,86 @@ const statuses = [
   ["completed", "مكتمل", "Completed"],
   ["cancelled", "ملغي", "Cancelled"],
 ] as const;
+function ThemeSettings() {
+  const { t, lang } = useLanguage();
+  const [current, setCurrent] = useState<ThemeId | null>(null);
+  const [busy, setBusy] = useState(false);
+  const [message, setMessage] = useState("");
+  useEffect(() => {
+    void loadStoredTheme().then(setCurrent);
+  }, []);
+  async function choose(id: ThemeId) {
+    if (!db || busy || id === current) return;
+    setBusy(true);
+    setMessage("");
+    const ok = await saveTheme(id);
+    if (ok) {
+      setCurrent(id);
+      applyTheme(id);
+      setMessage(
+        t(
+          "تم تحديث مظهر الموقع لجميع الزوار.",
+          "Site theme updated for every visitor.",
+        ),
+      );
+    } else {
+      setMessage(
+        t(
+          "تعذر حفظ المظهر. حاول مرة أخرى.",
+          "Could not save the theme. Try again.",
+        ),
+      );
+    }
+    setBusy(false);
+  }
+  return (
+    <details className="panel account-settings">
+      <summary>{t("مظهر الموقع", "Site theme")}</summary>
+      <p className="field-hint">
+        {t(
+          "يغيّر المظهر المختار تصميم الموقع بالكامل لجميع الزوار فورًا.",
+          "The chosen theme changes the whole site's design for every visitor immediately.",
+        )}
+      </p>
+      <div className="theme-grid">
+        {themes.map((theme) => (
+          <button
+            key={theme.id}
+            type="button"
+            className="theme-option"
+            aria-pressed={current === theme.id}
+            disabled={busy || !db}
+            onClick={() => void choose(theme.id)}
+          >
+            <span className="theme-swatch" aria-hidden="true">
+              {theme.swatch.map((color, i) => (
+                <span key={i} style={{ background: color }} />
+              ))}
+            </span>
+            <strong>{theme.name[lang]}</strong>
+            <small>{theme.blurb[lang]}</small>
+            {current === theme.id && (
+              <Check className="theme-option-check" size={16} />
+            )}
+          </button>
+        ))}
+      </div>
+      {!db && (
+        <p className="notice">
+          {t(
+            "قاعدة البيانات لم تربط بعد. تبديل المظهر غير متاح.",
+            "The database is not connected yet. Switching the theme is unavailable.",
+          )}
+        </p>
+      )}
+      {message && (
+        <p role="status" className="notice">
+          {message}
+        </p>
+      )}
+    </details>
+  );
+}
 function PasswordSettings() {
   const { t } = useLanguage();
   const [next, setNext] = useState("");
@@ -682,6 +764,7 @@ export default function Admin() {
           )}
         </section>
       </div>
+      <ThemeSettings />
       <PasswordSettings />
     </>
   );

@@ -8,12 +8,13 @@
 
 ## المميزات
 
-- العربية RTL والإنجليزية LTR مع حفظ تفضيل اللغة فقط.
+- العربية RTL على المسارات الأصلية والإنجليزية LTR على مسارات `/en/` مستقلة وقابلة للفهرسة، مع وسوم hreflang متبادلة وx-default للعربية.
 - الرئيسية، الخدمات والأسعار، آلية الطلب، الحاسبة، الأسئلة، التواصل، الخصوصية، الشروط، النزاهة، حالة الطلب ولوحة الإدارة.
 - أسعار من مصدر واحد، حساب الاستعجال واللغة والصعوبة والإضافات، ونقل الاختيارات للنموذج.
 - تحقق واضح من الجوال السعودي وروابط الملفات والموافقة؛ واتساب وmailto ونسخ التفاصيل.
 - إدارة محمية عبر Supabase Auth وRLS، حالات الطلبات والأسعار وسجل دفعات يدوي بمرجع فريد.
-- تصميم متجاوب، لوحة مفاتيح، حركات مخفضة، بيانات SEO لكل مسار وروابط مباشرة متوافقة مع GitHub Pages.
+- ستة مظاهر بصرية جاهزة (زمردي أكاديمي، بنفسجي ملكي، ليموني منتصف الليل، رملي ذهبي، نيلي سديمي، طيني صخري) قابلة للتبديل من لوحة الإدارة لكل زوار الموقع فورًا.
+- تصميم متجاوب، لوحة مفاتيح، حركات مخفضة، بيانات SEO وhreflang لكل مسار بلغتيه وروابط مباشرة متوافقة مع GitHub Pages.
 - لا توجد مفاتيح سرية أو أرقام تواصل شخصية أو حسابات إدارة افتراضية.
 
 ## التشغيل
@@ -40,7 +41,7 @@ npm run preview
 
 ## النشر
 
-المستودع يستخدم `.github/workflows/deploy.yml`. من Settings → Pages اختر GitHub Actions. كل push إلى `main` يشغّل lint وtypecheck واختبارات التسعير ثم يبني وينشر. Vite base هو `/nexora-academic/`؛ يولد `scripts/seo.mjs` مستندًا لكل مسار و404 وsitemap وrobots. لا توجد حاجة إلى خادم Node في الإنتاج.
+المستودع يستخدم `.github/workflows/deploy.yml`. من Settings → Pages اختر GitHub Actions. كل push إلى `main` يشغّل lint وtypecheck واختبارات التسعير ثم يبني وينشر. Vite base هو `/nexora-academic/`؛ يولد `scripts/seo.mjs` مستندًا عربيًا (بلا بادئة، كما كان) ومستندًا إنجليزيًا مطابقًا تحت `/en/` لكل مسار عام، مع وسوم hreflang متبادلة وx-default للعربية، إضافة إلى 404 وsitemap يضم اللغتين وrobots. مصدر عناوين المسارات ووصفها الموحد `src/config/routes.ts`. لا توجد حاجة إلى خادم Node في الإنتاج.
 
 اضبط متغيري Actions `VITE_SUPABASE_URL` و`VITE_SUPABASE_PUBLISHABLE_KEY` لتفعيل قاعدة البيانات. مفتاح publishable آمن للنشر مع سياسات RLS المرفقة؛ لا تستخدم service_role أو أي مفتاح سري. إن لم تضبط الربط، تظهر حالة عدم توفر صريحة ولا تدّعي الواجهة حفظ الطلب.
 
@@ -75,7 +76,7 @@ Use Node.js 24. Run `npm ci`, copy `.env.example` to `.env.local`, and run `npm 
 
 Select GitHub Actions in repository Pages settings. Every push to main runs checks and deploys `dist`. Set the public Supabase URL/key as Actions variables. Apply the included SQL migration, create an Auth user and provision its UUID in the admins table. Never expose service-role or secret keys. Browser requests are protected by column grants and RLS.
 
-The shared configuration at `src/config/site.ts` controls names, contact placeholders, pricing, currency, timing and links. Replace only with real business details. Change `public/brand-mark.svg` and `src/index.css` for branding. Update the Vite base and site URL if renaming the repository. Each route has a generated HTML document for direct links and metadata; the build also creates a 404 page, sitemap and robots file.
+The shared configuration at `src/config/site.ts` controls names, contact placeholders, pricing, currency, timing and links. Replace only with real business details. Change `public/brand-mark.svg` and `src/index.css` for branding. Update the Vite base and site URL if renaming the repository. Route titles and descriptions live in `src/config/routes.ts`, the single source both the router and the static generator read — add a page there once, not in two places. Each public route gets its own Arabic document at its existing unprefixed URL and an English document at the matching `/en/` URL, with reciprocal `hreflang` tags (`x-default` pointing at Arabic) and both listed in the sitemap; the build also creates a single unprefixed 404 page and robots file. Six ready-made visual themes (Emerald Scholar, Royal Violet, Midnight Lime, Golden Sandstone, Nebula Indigo, Canyon Clay) are switchable from the admin panel and apply to every visitor immediately, since the choice is stored in the database, not the admin's own browser.
 
 Academic integrity is central. Testimonials are explicitly illustrative. WhatsApp/email links prepare a message; the user must complete sending in the external app. The success screen does not confuse message preparation with database submission. Payments are recorded manually after receipt, not processed by the site.
 

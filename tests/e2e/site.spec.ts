@@ -18,6 +18,7 @@ test("home, language, responsive layout and navigation", async ({
     fullPage: true,
   });
   await page.getByRole("button", { name: "Switch to English" }).click();
+  await expect(page).toHaveURL(/\/en\/?$/);
   await expect(page.locator("html")).toHaveAttribute("dir", "ltr");
   await expect(page.locator("h1")).toContainText("Clearer");
   await page.reload();
@@ -88,7 +89,11 @@ test("form validates, preserves fields on language switch and safe contact place
   await expect(
     page.getByRole("button", { name: "Email", exact: true }),
   ).toBeDisabled();
+  // Language now lives in the URL, not in memory: navigating to the
+  // unprefixed URL is Arabic regardless of the toggle clicked moments ago.
   await page.goto("./success/");
+  await expect(page.locator("h1")).toContainText("ابدأ بإرسال طلبك");
+  await page.goto("./en/success/");
   await expect(page.locator("h1")).toContainText("Start with your request");
 });
 test("all pages and FAQ work, admin is protected", async ({ page }) => {
@@ -118,18 +123,44 @@ test("all pages and FAQ work, admin is protected", async ({ page }) => {
   await page.goto("./unknown-page");
   await expect(page.locator("h1")).toContainText("غير موجودة");
 });
-test("accessibility: home, calculator, request and admin", async ({ page }) => {
-  for (const route of ["", "calculator/", "contact/", "admin/"]) {
+test("accessibility: every route", async ({ page }) => {
+  const routes = [
+    "",
+    "services/",
+    "how-it-works/",
+    "calculator/",
+    "contact/",
+    "faq/",
+    "privacy/",
+    "terms/",
+    "integrity/",
+    "success/",
+    "admin/",
+    "unknown-page",
+    "en/",
+    "en/services/",
+    "en/contact/",
+  ];
+  for (const route of routes) {
     await page.goto(`./${route}`);
     await page.locator("h1").waitFor();
     const result = await new AxeBuilder({ page })
-      .withTags(["wcag2a", "wcag2aa", "wcag21aa"])
+      .withTags([
+        "wcag2a",
+        "wcag2aa",
+        "wcag21a",
+        "wcag21aa",
+        "wcag22aa",
+        "best-practice",
+      ])
       .analyze();
     expect(
       result.violations.map((v) => ({
         id: v.id,
+        impact: v.impact,
         nodes: v.nodes.map((n) => n.target),
       })),
+      `route: ${route || "(home)"}`,
     ).toEqual([]);
   }
 });
@@ -164,4 +195,46 @@ test("attachment picker validates, removes files and fits the screen", async ({
   ).toBeTruthy();
   await page.getByRole("button", { name: "إزالة تعليمات.pdf" }).click();
   await expect(page.locator(".attachment-list li")).toHaveCount(0);
+});
+test("direct load of an /en/ URL renders English with no flash", async ({
+  page,
+}) => {
+  await page.goto("./en/services/", { waitUntil: "commit" });
+  await expect(page.locator("html")).toHaveAttribute("lang", "en");
+  await expect(page.locator("html")).toHaveAttribute("dir", "ltr");
+  await expect(page.locator("h1")).toContainText("Flexible support");
+});
+test("toggling language rewrites the current URL, and internal links stay localized", async ({
+  page,
+}) => {
+  await page.goto("./services/");
+  await page.getByRole("button", { name: "Switch to English" }).click();
+  await expect(page).toHaveURL(/\/en\/services\/?$/);
+  await expect(page.locator("h1")).toContainText("Flexible support");
+  await page
+    .locator(".footer-grid")
+    .getByRole("link", { name: "Price calculator" })
+    .click();
+  await expect(page).toHaveURL(/\/en\/calculator\/?$/);
+  // Toggling back to Arabic from a deep English page returns the matching
+  // Arabic URL for that same page, not the Arabic home page.
+  await page.getByRole("button", { name: "التبديل إلى العربية" }).click();
+  await expect(page).toHaveURL(/\/calculator\/?$/);
+  await expect(page).not.toHaveURL(/\/en\//);
+});
+test("site theme defaults to Golden Sandstone without a database", async ({
+  page,
+}) => {
+  // The admin picker itself (rendering all 6 options, disabling them and
+  // explaining why, saving, and persisting across reload) requires a real
+  // admin session and is covered by tests/e2e/backend.spec.ts, which skips
+  // without live credentials -- there is no way to reach the authorized
+  // admin view here.
+  for (const route of ["", "en/", "contact/", "admin/"]) {
+    await page.goto(`./${route}`, { waitUntil: "commit" });
+    await expect(page.locator("html")).toHaveAttribute(
+      "data-theme",
+      "sandstone",
+    );
+  }
 });

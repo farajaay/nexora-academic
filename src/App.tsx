@@ -1,15 +1,25 @@
-import { lazy, Suspense, useEffect, useState } from "react";
+import {
+  lazy,
+  Suspense,
+  useEffect,
+  useRef,
+  useState,
+  type ReactNode,
+} from "react";
 import {
   BrowserRouter,
-  Link,
-  NavLink,
   Route,
   Routes,
   useLocation,
+  useNavigate,
+  useParams,
 } from "react-router-dom";
 import { ArrowUp, Globe2, Menu, MessageCircle, X } from "lucide-react";
 import { contactReady, site, type Lang } from "./config/site";
-import { LanguageContext, Logo, useLanguage } from "./ui";
+import { allRoutes, publicRoutes, urlFor } from "./config/routes";
+import { isEnglishPath, localize } from "./lib/i18n";
+import { applyTheme, loadStoredTheme } from "./lib/theme";
+import { LanguageContext, LocalizedLink, LocalizedNavLink, Logo } from "./ui";
 import { FAQ, Home, How, Legal, NotFound, Services } from "./pages";
 import { Calculator, Contact, Success } from "./forms";
 import "./index.css";
@@ -21,87 +31,93 @@ const nav = [
   ["/calculator", "حاسبة السعر", "Price calculator"],
   ["/faq", "الأسئلة الشائعة", "FAQ"],
 ] as const;
-const meta: Record<string, [string, string, string, string]> = {
-  "/": [
-    "دعم أكاديمي أوضح، أسرع، وأكثر احترافية",
-    "Clearer academic support",
-    "شرح ومراجعة وتطوير للأعمال الأكاديمية للثانوية والجامعة والدراسات العليا.",
-    "Explanation, review and academic development for school, university and postgraduate students.",
-  ],
-  "/services": [
-    "الخدمات والأسعار",
-    "Services & pricing",
-    "أسعار تبدأ من 40 ر.س للشرح والمراجعة والتدقيق والبرمجة وCAD.",
-    "Academic support pricing from SAR 40: explanation, review, proofreading, coding and CAD.",
-  ],
-  "/how-it-works": [
-    "آلية الطلب",
-    "How it works",
-    "تعرف على خطوات إرسال الطلب ومراجعة النطاق وتأكيد السعر.",
-    "Learn how to submit a request, review scope and confirm the price.",
-  ],
-  "/calculator": [
-    "حاسبة السعر",
-    "Price calculator",
-    "احسب النطاق السعري التقديري حسب الخدمة والموعد وحجم العمل.",
-    "Estimate your price based on service, deadline and work quantity.",
-  ],
-  "/contact": [
-    "تواصل معنا واطلب الخدمة",
-    "Contact & request a service",
-    "أرسل تفاصيل طلب الدعم الأكاديمي بأمان أو جهّز رسالة واتساب وبريد.",
-    "Submit your academic support request or prepare a WhatsApp or email message.",
-  ],
-  "/faq": [
-    "الأسئلة الشائعة",
-    "Frequently asked questions",
-    "إجابات حول الأسعار والتعديلات والمواعيد والنزاهة الأكاديمية.",
-    "Answers about pricing, revisions, delivery and academic integrity.",
-  ],
-  "/privacy": [
-    "سياسة الخصوصية",
-    "Privacy policy",
-    "كيف نتعامل مع بياناتك وطلباتك وتفضيلاتك.",
-    "How we handle your information, requests and preferences.",
-  ],
-  "/terms": [
-    "الشروط والأحكام",
-    "Terms & conditions",
-    "شروط الخدمة والسعر والتعديلات ومسؤولية الطالب.",
-    "Service terms, pricing, revisions and student responsibilities.",
-  ],
-  "/integrity": [
-    "سياسة النزاهة الأكاديمية",
-    "Academic integrity policy",
-    "التزامنا بالشرح والمراجعة والإرشاد والتعلم المسؤول.",
-    "Our commitment to explanation, review, mentoring and responsible learning.",
-  ],
-  "/success": [
-    "حالة الطلب",
-    "Request status",
-    "تابع حالة إرسال طلبك.",
-    "View your request submission status.",
-  ],
-  "/admin": [
-    "لوحة الإدارة",
-    "Administration",
-    "إدارة خاصة للطلبات والدفعات.",
-    "Private order and payment administration.",
-  ],
+// One shared source of truth for route metadata (src/config/routes.ts) drives
+// both this router and scripts/seo.mjs's static document generation, so the
+// two can no longer describe the same route two different ways.
+const metaByPath = new Map(
+  allRoutes.map((r) => [r.path === "" ? "/" : `/${r.path}`, r] as const),
+);
+const publicPaths = new Set(
+  publicRoutes.map((r) => (r.path === "" ? "/" : `/${r.path}`)),
+);
+const elementByPath: Record<string, ReactNode> = {
+  "": <Home />,
+  services: <Services />,
+  "how-it-works": <How />,
+  calculator: <Calculator />,
+  contact: <Contact />,
+  faq: <FAQ />,
+  privacy: <Legal kind="privacy" />,
+  terms: <Legal kind="terms" />,
+  integrity: <Legal kind="integrity" />,
+  success: <Success />,
+  admin: <Admin />,
 };
+// A leading optional `:lang` param — rather than two separately-mirrored
+// route trees — matches both "/services" and "/en/services" as the SAME
+// route: React Router then keeps the matched page component mounted across
+// a language toggle (it only remounts when the matched route itself
+// changes), so in-progress form state survives switching language mid-form.
+// LangGuard rejects any value other than "en" so an arbitrary first segment
+// doesn't masquerade as a language and shadow a real 404.
+function LangGuard({ children }: { children: ReactNode }) {
+  const { lang } = useParams<{ lang?: string }>();
+  if (lang !== undefined && lang !== "en") return <NotFound />;
+  return children;
+}
+function routeElements() {
+  return allRoutes.map((r) => (
+    <Route
+      key={r.path || "index"}
+      path={r.path ? `:lang?/${r.path}` : ":lang?"}
+      element={<LangGuard>{elementByPath[r.path]}</LangGuard>}
+    />
+  ));
+}
 function Shell() {
-  const { lang, t, toggle } = useLanguage();
   const { pathname } = useLocation();
+  const navigate = useNavigate();
+  const lang: Lang = isEnglishPath(pathname) ? "en" : "ar";
+  const t = (ar: string, en: string) => (lang === "ar" ? ar : en);
   const [menu, setMenu] = useState(false);
   useEffect(() => {
-    window.scrollTo(0, 0);
-    const path = pathname.replace(/\/$/, "") || "/";
-    const m = meta[path] || [
-      "صفحة غير موجودة",
-      "Page not found",
-      "الرابط المطلوب غير موجود.",
-      "The requested page does not exist.",
-    ];
+    try {
+      localStorage.setItem("nexora-language", lang);
+    } catch {
+      /* Remembering the last language is a nicety, not a requirement. */
+    }
+  }, [lang]);
+  // The static document already carries the default theme (no flash for the
+  // common case); this only ever changes anything when an admin picked a
+  // different one, in which case it upgrades once, here, on mount.
+  useEffect(() => {
+    void loadStoredTheme().then(applyTheme);
+  }, []);
+  function toggle() {
+    const target: Lang = lang === "ar" ? "en" : "ar";
+    navigate(localize(pathname, target) + window.location.search);
+  }
+  useEffect(() => {
+    const bare = isEnglishPath(pathname)
+      ? pathname === "/en"
+        ? "/"
+        : pathname.slice(3)
+      : pathname;
+    const path = bare.replace(/\/$/, "") || "/";
+    const route = metaByPath.get(path);
+    const m = route
+      ? [
+          route.title.ar,
+          route.title.en,
+          route.description.ar,
+          route.description.en,
+        ]
+      : [
+          "صفحة غير موجودة",
+          "Page not found",
+          "الرابط المطلوب غير موجود.",
+          "The requested page does not exist.",
+        ];
     document.title = `${m[lang === "ar" ? 0 : 1]} | ${site.name[lang]}`;
     const set = (selector: string, value: string) =>
       document.querySelector(selector)?.setAttribute("content", value);
@@ -109,21 +125,35 @@ function Shell() {
     set('meta[property="og:title"]', document.title);
     set('meta[property="og:description"]', m[lang === "ar" ? 2 : 3]);
     set('meta[property="og:locale"]', lang === "ar" ? "ar_SA" : "en_US");
-    const url = site.url + (path === "/" ? "" : path.slice(1) + "/");
+    set(
+      'meta[property="og:locale:alternate"]',
+      lang === "ar" ? "en_US" : "ar_SA",
+    );
+    const url = urlFor(path === "/" ? "" : path.slice(1), lang);
     document.querySelector('link[rel="canonical"]')?.setAttribute("href", url);
     set('meta[property="og:url"]', url);
     set(
       'meta[name="robots"]',
-      ["/admin", "/success"].includes(path) || !meta[path]
-        ? "noindex, nofollow"
-        : "index, follow",
+      route && publicPaths.has(path) ? "index, follow" : "noindex, nofollow",
     );
     document.documentElement.lang = lang;
     document.documentElement.dir = lang === "ar" ? "rtl" : "ltr";
-    document.getElementById("main")?.focus({ preventScroll: true });
   }, [pathname, lang]);
+  // Move focus to <main> and reset scroll on client-side route changes only —
+  // never on the initial page load (that would steal focus from the normal
+  // tab order, before the user has interacted at all) and never on a language
+  // toggle alone (that would throw focus away from the toggle button).
+  const mounted = useRef(false);
+  useEffect(() => {
+    if (!mounted.current) {
+      mounted.current = true;
+      return;
+    }
+    window.scrollTo(0, 0);
+    document.getElementById("main")?.focus({ preventScroll: true });
+  }, [pathname]);
   return (
-    <>
+    <LanguageContext.Provider value={{ lang, toggle }}>
       <a className="skip-link" href="#main">
         {t("انتقل للمحتوى", "Skip to content")}
       </a>
@@ -135,9 +165,9 @@ function Shell() {
             aria-label={t("التنقل الرئيسي", "Main navigation")}
           >
             {nav.map(([to, ar, en]) => (
-              <NavLink key={to} to={to} end={to === "/"}>
+              <LocalizedNavLink key={to} to={to} end={to === "/"}>
                 {t(ar, en)}
-              </NavLink>
+              </LocalizedNavLink>
             ))}
           </nav>
           <div className="nav-actions">
@@ -149,9 +179,9 @@ function Shell() {
               <Globe2 size={17} />
               <span>{t("EN", "عربي")}</span>
             </button>
-            <Link className="button nav-cta" to="/contact">
+            <LocalizedLink className="button nav-cta" to="/contact">
               {t("اطلب الخدمة", "Get started")}
-            </Link>
+            </LocalizedLink>
             <button
               className="menu-button"
               aria-label={t("القائمة", "Menu")}
@@ -171,9 +201,13 @@ function Shell() {
           >
             {[...nav, ["/contact", "تواصل معنا", "Contact"]].map(
               ([to, ar, en]) => (
-                <NavLink key={to} to={to} onClick={() => setMenu(false)}>
+                <LocalizedNavLink
+                  key={to}
+                  to={to}
+                  onClick={() => setMenu(false)}
+                >
                   {t(ar, en)}
-                </NavLink>
+                </LocalizedNavLink>
               ),
             )}
           </nav>
@@ -186,22 +220,13 @@ function Shell() {
           }
         >
           <Routes>
-            <Route path="/" element={<Home />} />
-            <Route path="/services" element={<Services />} />
-            <Route path="/how-it-works" element={<How />} />
-            <Route path="/calculator" element={<Calculator />} />
-            <Route path="/contact" element={<Contact />} />
-            <Route path="/faq" element={<FAQ />} />
-            <Route path="/privacy" element={<Legal kind="privacy" />} />
-            <Route path="/terms" element={<Legal kind="terms" />} />
-            <Route path="/integrity" element={<Legal kind="integrity" />} />
-            <Route path="/success" element={<Success />} />
-            <Route path="/admin" element={<Admin />} />
+            {routeElements()}
             <Route path="*" element={<NotFound />} />
           </Routes>
         </Suspense>
       </main>
       <footer className="site-footer">
+        <h2 className="visually-hidden">{t("روابط الموقع", "Site links")}</h2>
         <div className="container footer-grid">
           <div>
             <Logo />
@@ -220,19 +245,27 @@ function Shell() {
           </div>
           <div>
             <h3>{t("اكتشف نيكسورا", "Explore Nexora")}</h3>
-            <Link to="/services">
+            <LocalizedLink to="/services">
               {t("الخدمات والأسعار", "Services & pricing")}
-            </Link>
-            <Link to="/calculator">{t("حاسبة السعر", "Price calculator")}</Link>
-            <Link to="/how-it-works">{t("آلية الطلب", "How it works")}</Link>
+            </LocalizedLink>
+            <LocalizedLink to="/calculator">
+              {t("حاسبة السعر", "Price calculator")}
+            </LocalizedLink>
+            <LocalizedLink to="/how-it-works">
+              {t("آلية الطلب", "How it works")}
+            </LocalizedLink>
           </div>
           <div>
             <h3>{t("نحن هنا للمساعدة", "Here to help")}</h3>
-            <Link to="/contact">{t("تواصل معنا", "Contact us")}</Link>
-            <Link to="/faq">{t("الأسئلة الشائعة", "FAQ")}</Link>
-            <Link to="/integrity">
+            <LocalizedLink to="/contact">
+              {t("تواصل معنا", "Contact us")}
+            </LocalizedLink>
+            <LocalizedLink to="/faq">
+              {t("الأسئلة الشائعة", "FAQ")}
+            </LocalizedLink>
+            <LocalizedLink to="/integrity">
               {t("النزاهة الأكاديمية", "Academic integrity")}
-            </Link>
+            </LocalizedLink>
             {Object.entries(site.social)
               .filter(([, url]) => url)
               .map(([name, url]) => (
@@ -248,11 +281,15 @@ function Shell() {
           </div>
           <div>
             <h3>{t("الثقة والشفافية", "Trust & transparency")}</h3>
-            <Link to="/privacy">{t("سياسة الخصوصية", "Privacy policy")}</Link>
-            <Link to="/terms">
+            <LocalizedLink to="/privacy">
+              {t("سياسة الخصوصية", "Privacy policy")}
+            </LocalizedLink>
+            <LocalizedLink to="/terms">
               {t("الشروط والأحكام", "Terms & conditions")}
-            </Link>
-            <Link to="/admin">{t("دخول الإدارة", "Admin sign in")}</Link>
+            </LocalizedLink>
+            <LocalizedLink to="/admin">
+              {t("دخول الإدارة", "Admin sign in")}
+            </LocalizedLink>
           </div>
         </div>
         <div className="container footer-bottom">
@@ -278,7 +315,10 @@ function Shell() {
       >
         <ArrowUp size={20} />
       </button>
-      <div className="mobile-contact">
+      <aside
+        className="mobile-contact"
+        aria-label={t("تواصل سريع", "Quick contact")}
+      >
         {contactReady.whatsapp ? (
           <a
             href={`https://wa.me/${site.whatsapp}`}
@@ -289,39 +329,19 @@ function Shell() {
             {t("تواصل معنا عبر واتساب", "Chat on WhatsApp")}
           </a>
         ) : (
-          <Link to="/contact">
+          <LocalizedLink to="/contact">
             <MessageCircle size={20} />
             {t("جهّز طلبك وتواصل معنا", "Prepare your support request")}
-          </Link>
+          </LocalizedLink>
         )}
-      </div>
-    </>
+      </aside>
+    </LanguageContext.Provider>
   );
 }
 export default function App() {
-  const [lang, setLang] = useState<Lang>(() => {
-    try {
-      return localStorage.getItem("nexora-language") === "en" ? "en" : "ar";
-    } catch {
-      return "ar";
-    }
-  });
-  function toggle() {
-    setLang((previous) => {
-      const next = previous === "ar" ? "en" : "ar";
-      try {
-        localStorage.setItem("nexora-language", next);
-      } catch {
-        /* Switching still works without storage. */
-      }
-      return next;
-    });
-  }
   return (
-    <LanguageContext.Provider value={{ lang, toggle }}>
-      <BrowserRouter basename={import.meta.env.BASE_URL}>
-        <Shell />
-      </BrowserRouter>
-    </LanguageContext.Provider>
+    <BrowserRouter basename={import.meta.env.BASE_URL}>
+      <Shell />
+    </BrowserRouter>
   );
 }

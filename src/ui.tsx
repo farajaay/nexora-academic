@@ -1,5 +1,12 @@
 import { createContext, useContext } from "react";
-import { Link } from "react-router-dom";
+import {
+  Link,
+  NavLink,
+  useNavigate,
+  type LinkProps,
+  type NavLinkProps,
+  type NavigateOptions,
+} from "react-router-dom";
 import {
   ArrowUpLeft,
   Code2,
@@ -11,6 +18,7 @@ import {
   Sparkles,
 } from "lucide-react";
 import { services, site, type Lang } from "./config/site";
+import { localize } from "./lib/i18n";
 export const LanguageContext = createContext<{
   lang: Lang;
   toggle: () => void;
@@ -23,10 +31,31 @@ export function useLanguage() {
     t: (ar: string, en: string) => (lang === "ar" ? ar : en),
   };
 }
+/** `Link` that resolves `to` under the current language's `/en` prefix. */
+export function LocalizedLink({ to, ...rest }: LinkProps) {
+  const { lang } = useLanguage();
+  return (
+    <Link to={typeof to === "string" ? localize(to, lang) : to} {...rest} />
+  );
+}
+/** `NavLink` that resolves `to` under the current language's `/en` prefix. */
+export function LocalizedNavLink({ to, ...rest }: NavLinkProps) {
+  const { lang } = useLanguage();
+  return (
+    <NavLink to={typeof to === "string" ? localize(to, lang) : to} {...rest} />
+  );
+}
+/** `useNavigate` that resolves its target under the current language's `/en` prefix. */
+export function useLocalizedNavigate() {
+  const navigate = useNavigate();
+  const { lang } = useLanguage();
+  return (to: string, options?: NavigateOptions) =>
+    navigate(localize(to, lang), options);
+}
 export function Logo() {
   const { lang } = useLanguage();
   return (
-    <Link to="/" className="brand" aria-label={site.name[lang]}>
+    <LocalizedLink to="/" className="brand" aria-label={site.name[lang]}>
       <img
         src={`${import.meta.env.BASE_URL}brand-mark.svg`}
         width="42"
@@ -41,7 +70,7 @@ export function Logo() {
           {lang === "ar" ? "تعلّم. تواصل. تقدّم." : "Learn. Connect. Progress."}
         </small>
       </span>
-    </Link>
+    </LocalizedLink>
   );
 }
 export function Icon({ name, size = 23 }: { name: string; size?: number }) {
@@ -100,7 +129,10 @@ export function ServiceCard({
 }) {
   const { lang, t } = useLanguage();
   return (
-    <Link className="service-card" to={`/contact?service=${service.id}`}>
+    <LocalizedLink
+      className="service-card"
+      to={`/contact?service=${service.id}`}
+    >
       <div className="card-top">
         <span className={`icon-box tone-${index % 3}`}>
           <Icon name={service.icon} />
@@ -123,6 +155,6 @@ export function ServiceCard({
           t("حسب النطاق", "Quoted by scope")
         )}
       </p>
-    </Link>
+    </LocalizedLink>
   );
 }
