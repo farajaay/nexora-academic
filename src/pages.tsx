@@ -386,6 +386,7 @@ export function Services() {
           </button>
         ))}
       </div>
+      <h2 className="visually-hidden">{t("قائمة الخدمات", "Services list")}</h2>
       <div className="services-grid">
         {services
           .filter((s) => filter === "all" || s.category === filter)
@@ -444,6 +445,7 @@ export function How() {
           "A simple process with clear communication at every stage.",
         )}
       />
+      <h2 className="visually-hidden">{t("خطوات الطلب", "Request steps")}</h2>
       <Steps />
       <section className="section two-cards">
         <article className="panel">

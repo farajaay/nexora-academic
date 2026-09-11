@@ -1,4 +1,4 @@
-import { lazy, Suspense, useEffect, useState } from "react";
+import { lazy, Suspense, useEffect, useRef, useState } from "react";
 import {
   BrowserRouter,
   Link,
@@ -94,7 +94,6 @@ function Shell() {
   const { pathname } = useLocation();
   const [menu, setMenu] = useState(false);
   useEffect(() => {
-    window.scrollTo(0, 0);
     const path = pathname.replace(/\/$/, "") || "/";
     const m = meta[path] || [
       "صفحة غير موجودة",
@@ -120,8 +119,20 @@ function Shell() {
     );
     document.documentElement.lang = lang;
     document.documentElement.dir = lang === "ar" ? "rtl" : "ltr";
-    document.getElementById("main")?.focus({ preventScroll: true });
   }, [pathname, lang]);
+  // Move focus to <main> and reset scroll on client-side route changes only —
+  // never on the initial page load (that would steal focus from the normal
+  // tab order, before the user has interacted at all) and never on a language
+  // toggle alone (that would throw focus away from the toggle button).
+  const mounted = useRef(false);
+  useEffect(() => {
+    if (!mounted.current) {
+      mounted.current = true;
+      return;
+    }
+    window.scrollTo(0, 0);
+    document.getElementById("main")?.focus({ preventScroll: true });
+  }, [pathname]);
   return (
     <>
       <a className="skip-link" href="#main">
@@ -202,6 +213,7 @@ function Shell() {
         </Suspense>
       </main>
       <footer className="site-footer">
+        <h2 className="visually-hidden">{t("روابط الموقع", "Site links")}</h2>
         <div className="container footer-grid">
           <div>
             <Logo />
@@ -278,7 +290,10 @@ function Shell() {
       >
         <ArrowUp size={20} />
       </button>
-      <div className="mobile-contact">
+      <aside
+        className="mobile-contact"
+        aria-label={t("تواصل سريع", "Quick contact")}
+      >
         {contactReady.whatsapp ? (
           <a
             href={`https://wa.me/${site.whatsapp}`}
@@ -294,7 +309,7 @@ function Shell() {
             {t("جهّز طلبك وتواصل معنا", "Prepare your support request")}
           </Link>
         )}
-      </div>
+      </aside>
     </>
   );
 }

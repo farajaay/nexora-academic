@@ -118,18 +118,41 @@ test("all pages and FAQ work, admin is protected", async ({ page }) => {
   await page.goto("./unknown-page");
   await expect(page.locator("h1")).toContainText("غير موجودة");
 });
-test("accessibility: home, calculator, request and admin", async ({ page }) => {
-  for (const route of ["", "calculator/", "contact/", "admin/"]) {
+test("accessibility: every route", async ({ page }) => {
+  const routes = [
+    "",
+    "services/",
+    "how-it-works/",
+    "calculator/",
+    "contact/",
+    "faq/",
+    "privacy/",
+    "terms/",
+    "integrity/",
+    "success/",
+    "admin/",
+    "unknown-page",
+  ];
+  for (const route of routes) {
     await page.goto(`./${route}`);
     await page.locator("h1").waitFor();
     const result = await new AxeBuilder({ page })
-      .withTags(["wcag2a", "wcag2aa", "wcag21aa"])
+      .withTags([
+        "wcag2a",
+        "wcag2aa",
+        "wcag21a",
+        "wcag21aa",
+        "wcag22aa",
+        "best-practice",
+      ])
       .analyze();
     expect(
       result.violations.map((v) => ({
         id: v.id,
+        impact: v.impact,
         nodes: v.nodes.map((n) => n.target),
       })),
+      `route: ${route || "(home)"}`,
     ).toEqual([]);
   }
 });

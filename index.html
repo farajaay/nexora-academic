@@ -2,6 +2,16 @@
 <html lang="ar" dir="rtl">
   <head>
     <meta charset="UTF-8" />
+    <script>
+      (function () {
+        try {
+          if (localStorage.getItem("nexora-language") === "en") {
+            document.documentElement.lang = "en";
+            document.documentElement.dir = "ltr";
+          }
+        } catch (e) {}
+      })();
+    </script>
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <meta name="theme-color" content="#2456df" />
     <meta
@@ -23,8 +33,6 @@
     <meta property="og:locale:alternate" content="en_US" />
     <link rel="canonical" href="https://farajaay.github.io/nexora-academic/" />
     <link rel="icon" type="image/svg+xml" href="%BASE_URL%brand-mark.svg" />
-    <link rel="preconnect" href="https://fonts.googleapis.com" />
-    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
     <title>Nexora Academic | نيكسورا أكاديمي</title>
     <!--schema-->
   </head>

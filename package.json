@@ -10,6 +10,7 @@
     "preview": "vite preview",
     "typecheck": "tsc -b --pretty false",
     "test:unit": "tsx --test tests/unit.test.ts",
+    "test:seo": "npm run build && node --test tests/seo.test.mjs",
     "test:e2e": "playwright test",
     "format": "prettier --write src scripts tests *.json *.ts *.js *.html *.md docs .github/workflows",
     "test:backend": "node --test tests/backend.test.mjs"
