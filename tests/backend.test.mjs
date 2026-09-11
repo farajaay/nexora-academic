@@ -3,6 +3,7 @@ import assert from "node:assert/strict";
 import { randomUUID, randomBytes } from "node:crypto";
 import { readFileSync } from "node:fs";
 import { createClient } from "@supabase/supabase-js";
+import { isThemeId } from "../src/config/theme.ts";
 const {
   NEXORA_SUPABASE_URL: url,
   NEXORA_PUBLISHABLE_KEY: key,
@@ -255,7 +256,7 @@ test(
           .eq("id", 1)
           .single();
         assert.equal(r.error, null);
-        assert.ok(["emerald", "violet", "lime"].includes(r.data.theme));
+        assert.ok(isThemeId(r.data.theme));
       });
       await t.test(
         "anonymous cannot change, insert or delete the theme",

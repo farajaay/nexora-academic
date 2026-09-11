@@ -124,7 +124,14 @@ test("attachment limits reject oversized, empty, unsupported and excess files", 
   }
 });
 test("themes: default is valid, every theme has bilingual text and a real swatch", () => {
-  const ids: ThemeId[] = ["emerald", "violet", "lime"];
+  const ids: ThemeId[] = [
+    "emerald",
+    "violet",
+    "lime",
+    "sandstone",
+    "nebula",
+    "clay",
+  ];
   assert.equal(themes.length, ids.length);
   assert.ok(isThemeId(DEFAULT_THEME));
   assert.ok(ids.includes(DEFAULT_THEME));

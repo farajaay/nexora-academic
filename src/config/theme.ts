@@ -1,6 +1,7 @@
 import type { Text } from "./site";
 
-export type ThemeId = "emerald" | "violet" | "lime";
+export type ThemeId =
+  "emerald" | "violet" | "lime" | "sandstone" | "nebula" | "clay";
 
 export const DEFAULT_THEME: ThemeId = "emerald";
 
@@ -34,6 +35,24 @@ export const themes: {
     name: { ar: "ليموني منتصف الليل", en: "Midnight Lime" },
     blurb: { ar: "عصري وحاد ونشيط", en: "Sleek, focused, energetic" },
     swatch: ["#101828", "#84cc16", "#3b5bdb"],
+  },
+  {
+    id: "sandstone",
+    name: { ar: "رملي ذهبي", en: "Golden Sandstone" },
+    blurb: { ar: "دافئ ومتفائل وقريب", en: "Warm, optimistic, approachable" },
+    swatch: ["#241c16", "#1f4436", "#c1592e"],
+  },
+  {
+    id: "nebula",
+    name: { ar: "نيلي سديمي", en: "Nebula Indigo" },
+    blurb: { ar: "مستقبلي وذكي ولافت", en: "Futuristic, smart, bold" },
+    swatch: ["#6d28d9", "#4338ca", "#0e7490"],
+  },
+  {
+    id: "clay",
+    name: { ar: "طيني صخري", en: "Canyon Clay" },
+    blurb: { ar: "ترابي وهادئ ومنضبط", en: "Earthy, grounded, disciplined" },
+    swatch: ["#8c4a2f", "#8f5713", "#3b6e71"],
   },
 ];
 

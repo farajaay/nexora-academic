@@ -15,6 +15,6 @@
 - [x] التأكد من اكتمال GitHub Actions وعمل رابط الإنتاج / Verify successful deployment and live URL.
 - [x] التحقق من مستندات `/en/` وhreflang المتبادل في كل مسار عام وsitemap / Verify `/en/` documents and reciprocal hreflang on every public route, and the sitemap.
 - [ ] تسجيل رابط sitemap.xml الجديد في Google Search Console / Submit the updated sitemap.xml in Google Search Console.
-- [ ] تطبيق migration جدول مظهر الموقع (`site_settings`) على قاعدة الإنتاج، ثم اختيار المظهر من لوحة الإدارة / Apply the site theme migration (`site_settings`) to the production database, then pick a theme from the admin panel.
+- [ ] تطبيق migrations مظهر الموقع (`site_settings` ثم `site_settings_theme_expand`) على قاعدة الإنتاج، ثم اختيار أحد المظاهر الستة من لوحة الإدارة / Apply the site theme migrations (`site_settings`, then `site_settings_theme_expand`) to the production database, then pick one of the six themes from the admin panel.
 
 إطلاق الواجهة وحده لا يعني جاهزية التشغيل التجاري. لا تفعل استقبال البيانات قبل تحديد المشغل وقنوات التواصل والاحتفاظ، ولا تعتبر رسالة واتساب مرسلة لمجرد فتح التطبيق.

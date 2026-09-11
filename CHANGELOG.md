@@ -10,7 +10,7 @@
 - Fixed a page-load focus bug that put the skip link and header navigation behind the user's starting tab position, and a related bug where switching language moved focus off the toggle button.
 - Fixed WCAG AA contrast failures on the 404/empty-state numeral, the mobile footer tag, the small brand tagline and section eyebrow labels; fixed four heading-order skips (h1 → h3) on the services, how-it-works, success and 404 views; gave the fixed mobile contact bar its own landmark.
 - Widened the accessibility test from 4 routes to every route in both languages, and the axe rule set to include WCAG 2.2 AA and best-practice checks.
-- Three switchable site themes (Emerald Scholar, Royal Violet, Midnight Lime) with their own colors, typography and icon style, changeable from the admin panel and applied to every visitor immediately via a new `public.site_settings` table (publicly readable, admin-only writable). Each theme's own fonts (Tajawal, Plus Jakarta Sans, Sora) are self-hosted the same way the site's original two are.
+- Six switchable site themes (Emerald Scholar, Royal Violet, Midnight Lime, Golden Sandstone, Nebula Indigo, Canyon Clay) with their own colors, typography and icon style, changeable from the admin panel and applied to every visitor immediately via a new `public.site_settings` table (publicly readable, admin-only writable). The themes' fonts (Tajawal, Plus Jakarta Sans, Sora, Inter, IBM Plex Sans Arabic) are self-hosted, covering all six Latin×Arabic pairings so no theme needs its own new font.
 
 ## 1.1.0 — 2026-09-11
 
