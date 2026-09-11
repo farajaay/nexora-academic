@@ -13,12 +13,13 @@ Verified against the built static site and the live GitHub Pages deployment:
 - Direct home, services, calculator, admin, sitemap and robots URLs returned HTTP 200. Unknown routes render the custom 404 interface.
 - `npm audit --omit=dev`: zero known vulnerabilities at verification time.
 
-## Explicitly pending
+## Database integration
 
-The database migration and client integration are implemented, but a dedicated Supabase project and admin provisioning are pending organization selection. No claim is made that live request persistence, RLS enforcement or payment operations have been tested against a real database yet. Submission and admin sign-in are disabled when backend settings are absent.
+A dedicated Supabase project (swgosjtqchcjuvxggxkv, eu-central-1) is provisioned. Live database tests passed: anonymous insertion, prohibited reads and field injection, input constraints, denial for non-admin users even with forged user metadata, admin login/read/update, payment insertion and duplicate/overwrite/delete rejection. Eight Node test results passed. The full browser request-to-admin-to-payment flow also passed on desktop and mobile against the built site and real database. Synthetic orders, payments and the temporary non-admin were removed. Supabase security advisors returned no findings. Public sign-up is disabled; initial credentials remain in a private local file outside Git.
 
 Business WhatsApp/email remain explicit configuration placeholders. Message validation/encoding is tested; no real message was sent to a placeholder. No personal contact information is published. Testimonials remain labeled illustrative examples.
 
 ## بالعربية
 
-الواجهة المنشورة اجتازت الاختبارات أعلاه، بما فيها الروابط المباشرة وRTL وتبديل اللغة ونقل اختيارات الحاسبة والتحقق من المدخلات. ربط قاعدة البيانات واختبار حفظ الطلبات وصلاحيات الإدارة والدفعات فعليًا ما زال ينتظر تحديد المؤسسة. لا تعتبر هذه الوظائف مفعّلة بمجرد وجود واجهتها. بيانات واتساب والبريد الرسمية لم تُضف.
+ربط مشروع Supabase مستقل، وأُنشئ حساب الإدارة. نجحت اختبارات حفظ الطلبات والصلاحيات والدفعات على قاعدة البيانات الحقيقية، ونجح المسار الكامل من المتصفح على الهاتف وسطح المكتب. حذفت سجلات الاختبار. بيانات واتساب والبريد الرسمية لم تُضف، وبريد الإدارة غير منشور.
+

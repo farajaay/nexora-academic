@@ -17,6 +17,14 @@
   --muted: #58667e;
   --border: #e3eaf2;
 }
+.account-settings {
+  margin-top: 28px;
+}
+.account-settings summary {
+  cursor: pointer;
+  font-weight: 500;
+  color: var(--navy);
+}
 * {
   box-sizing: border-box;
 }
@@ -1873,4 +1881,3 @@ legend {
     transition: none !important;
   }
 }
-

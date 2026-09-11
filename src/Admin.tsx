@@ -1,7 +1,7 @@
 import { useEffect, useState, type FormEvent } from "react";
 import { LockKeyhole, LogOut, RefreshCw } from "lucide-react";
 import { db, type Order, type Payment } from "./lib/backend";
-import { services, site } from "./config/site";
+import { options, services, site } from "./config/site";
 import { Field } from "./forms";
 import { PageIntro, useLanguage } from "./ui";
 const statuses = [
@@ -12,6 +12,99 @@ const statuses = [
   ["completed", "مكتمل", "Completed"],
   ["cancelled", "ملغي", "Cancelled"],
 ] as const;
+function PasswordSettings() {
+  const { t } = useLanguage();
+  const [next, setNext] = useState("");
+  const [confirm, setConfirm] = useState("");
+  const [busy, setBusy] = useState(false);
+  const [message, setMessage] = useState("");
+  async function change(e: FormEvent) {
+    e.preventDefault();
+    if (!db) return;
+    if (next.length < 12 || next !== confirm) {
+      setMessage(
+        t(
+          "استخدم 12 حرفًا على الأقل وتأكد من تطابق كلمتي المرور.",
+          "Use at least 12 characters and ensure both passwords match.",
+        ),
+      );
+      return;
+    }
+    setBusy(true);
+    setMessage("");
+    try {
+      const { error } = await db.auth.updateUser({ password: next });
+      if (error) throw error;
+      setNext("");
+      setConfirm("");
+      setMessage(
+        t(
+          "تم تغيير كلمة المرور. استخدم الجديدة في دخولك القادم.",
+          "Password changed. Use the new password next time you sign in.",
+        ),
+      );
+    } catch {
+      setMessage(
+        t(
+          "تعذر تغيير كلمة المرور. قد تحتاج إلى تسجيل الدخول مجددًا.",
+          "Could not change your password. You may need to sign in again.",
+        ),
+      );
+    } finally {
+      setBusy(false);
+    }
+  }
+  return (
+    <details className="panel account-settings">
+      <summary>
+        {t(
+          "أمان الحساب · تغيير كلمة المرور",
+          "Account security · change password",
+        )}
+      </summary>
+      <form className="admin-edit" onSubmit={(e) => void change(e)}>
+        <Field
+          name="new-password"
+          label={t("كلمة المرور الجديدة", "New password")}
+        >
+          <input
+            id="new-password"
+            type="password"
+            autoComplete="new-password"
+            minLength={12}
+            required
+            value={next}
+            onChange={(e) => setNext(e.target.value)}
+          />
+        </Field>
+        <Field
+          name="confirm-password"
+          label={t("تأكيد كلمة المرور", "Confirm password")}
+        >
+          <input
+            id="confirm-password"
+            type="password"
+            autoComplete="new-password"
+            minLength={12}
+            required
+            value={confirm}
+            onChange={(e) => setConfirm(e.target.value)}
+          />
+        </Field>
+        <button className="button" disabled={busy}>
+          {busy
+            ? t("جارٍ الحفظ…", "Saving…")
+            : t("تغيير كلمة المرور", "Change password")}
+        </button>
+      </form>
+      {message && (
+        <p role="status" className="notice">
+          {message}
+        </p>
+      )}
+    </details>
+  );
+}
 export default function Admin() {
   const { t, lang } = useLanguage();
   const [authorized, setAuthorized] = useState(false);
@@ -135,13 +228,11 @@ export default function Admin() {
     if (!Number.isFinite(n) || n <= 0 || n > 1000000 || !reference.trim())
       return;
     setBusy(true);
-    const { error } = await db
-      .from("payments")
-      .insert({
-        order_id: selected.id,
-        amount: n,
-        reference: reference.trim(),
-      });
+    const { error } = await db.from("payments").insert({
+      order_id: selected.id,
+      amount: n,
+      reference: reference.trim(),
+    });
     if (error)
       setNotice(
         t(
@@ -357,22 +448,65 @@ export default function Admin() {
                   ["الجوال", "Mobile", selected.phone],
                   ["البريد", "Email", selected.email || "—"],
                   ["التخصص", "Major", selected.major],
-                  ["المرحلة", "Stage", selected.stage],
-                  ["الخدمة", "Service", selected.service],
+                  [
+                    "المرحلة",
+                    "Stage",
+                    options.stage.find((x) => x.id === selected.stage)?.[
+                      lang
+                    ] || selected.stage,
+                  ],
+                  [
+                    "الخدمة",
+                    "Service",
+                    services.find((x) => x.id === selected.service)?.[lang] ||
+                      selected.service,
+                  ],
                   ["حجم العمل", "Quantity", String(selected.quantity)],
                   [
                     "الصفحات / الأسئلة",
                     "Pages / questions",
                     String(selected.pages),
                   ],
-                  ["اللغة", "Language", selected.language],
-                  ["الموعد", "Deadline", selected.deadline],
-                  ["الصعوبة", "Difficulty", selected.difficulty],
-                  ["الإضافات", "Extras", selected.extras.join(", ") || "—"],
+                  [
+                    "اللغة",
+                    "Language",
+                    options.language.find((x) => x.id === selected.language)?.[
+                      lang
+                    ] || selected.language,
+                  ],
+                  [
+                    "الموعد",
+                    "Deadline",
+                    options.deadline.find((x) => x.id === selected.deadline)?.[
+                      lang
+                    ] || selected.deadline,
+                  ],
+                  [
+                    "الصعوبة",
+                    "Difficulty",
+                    options.difficulty.find(
+                      (x) => x.id === selected.difficulty,
+                    )?.[lang] || selected.difficulty,
+                  ],
+                  [
+                    "الإضافات",
+                    "Extras",
+                    selected.extras
+                      .map((x) =>
+                        x === "feedback"
+                          ? t("تغذية راجعة موسعة", "Extended feedback")
+                          : t("مراجعة المراجع", "Reference review"),
+                      )
+                      .join(", ") || "—",
+                  ],
                   [
                     "التواصل المفضل",
                     "Preferred contact",
-                    selected.preferred_contact,
+                    selected.preferred_contact === "email"
+                      ? t("البريد الإلكتروني", "Email")
+                      : selected.preferred_contact === "phone"
+                        ? t("اتصال هاتفي", "Phone call")
+                        : t("واتساب", "WhatsApp"),
                   ],
                 ].map(([ar, en, v]) => (
                   <div key={en}>
@@ -499,6 +633,7 @@ export default function Admin() {
           )}
         </section>
       </div>
+      <PasswordSettings />
     </>
   );
 }

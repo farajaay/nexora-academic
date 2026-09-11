@@ -23,8 +23,11 @@ import {
   type Choices,
 } from "./lib/pricing";
 import { orderMessage, validateOrder, type OrderInput } from "./lib/orders";
-import { db } from "./lib/backend";
 import { PageIntro, useLanguage } from "./ui";
+const backendReady = Boolean(
+  import.meta.env.VITE_SUPABASE_URL &&
+  import.meta.env.VITE_SUPABASE_PUBLISHABLE_KEY,
+);
 export function Field({
   name,
   label,
@@ -357,7 +360,7 @@ export function Contact() {
       navigate("/success", { state: { channel } });
       return;
     }
-    if (!db) {
+    if (!backendReady) {
       setMessage(
         t(
           "الحفظ الإلكتروني غير متاح حاليًا. يمكنك نسخ تفاصيل الطلب.",
@@ -368,18 +371,18 @@ export function Contact() {
     }
     setBusy(true);
     try {
+      const { db } = await import("./lib/backend");
+      if (!db) throw new Error("Database is not configured");
       const { consent, ...payload } = value;
       const id = crypto.randomUUID();
-      const { error } = await db
-        .from("orders")
-        .insert({
-          ...payload,
-          id,
-          consent,
-          phone: value.phone.replace(/[\s-]/g, ""),
-          name: value.name.trim(),
-          description: value.description.trim(),
-        });
+      const { error } = await db.from("orders").insert({
+        ...payload,
+        id,
+        consent,
+        phone: value.phone.replace(/[\s-]/g, ""),
+        name: value.name.trim(),
+        description: value.description.trim(),
+      });
       if (error) throw error;
       navigate("/success", { state: { channel: "save", id } });
     } catch {
@@ -486,6 +489,7 @@ export function Contact() {
             </Field>
             <Field
               name="preferred_contact"
+              error={errors.preferred_contact}
               label={t("طريقة التواصل المفضلة", "Preferred contact")}
             >
               <select
@@ -552,13 +556,13 @@ export function Contact() {
               {message}
             </p>
           )}
-          <button className="button wide" disabled={busy || !db}>
+          <button className="button wide" disabled={busy || !backendReady}>
             {busy
               ? t("جارٍ حفظ الطلب…", "Saving request…")
               : t("إرسال وحفظ الطلب", "Submit & save request")}
             <ArrowLeft size={18} />
           </button>
-          {!db && (
+          {!backendReady && (
             <p className="notice">
               {t(
                 "استقبال الطلبات الإلكتروني قيد الإعداد. يمكنك تجهيز تفاصيلك ونسخها.",

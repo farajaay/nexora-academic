@@ -1,7 +1,7 @@
 {
   "name": "nexora-academic",
   "private": true,
-  "version": "1.0.0",
+  "version": "1.1.0",
   "type": "module",
   "scripts": {
     "dev": "vite",
@@ -11,7 +11,8 @@
     "typecheck": "tsc -b --pretty false",
     "test:unit": "tsx --test tests/unit.test.ts",
     "test:e2e": "playwright test",
-    "format": "prettier --write src scripts tests *.json *.ts *.js *.html *.md docs .github/workflows"
+    "format": "prettier --write src scripts tests *.json *.ts *.js *.html *.md docs .github/workflows",
+    "test:backend": "node --test tests/backend.test.mjs"
   },
   "dependencies": {
     "@supabase/supabase-js": "2.116.0",

@@ -1,0 +1,7 @@
+project_id = "nexora-academic"
+
+[auth]
+site_url = "https://farajaay.github.io/nexora-academic/"
+additional_redirect_urls = ["https://farajaay.github.io/nexora-academic/admin/"]
+enable_signup = false
+minimum_password_length = 12

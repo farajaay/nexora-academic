@@ -29,12 +29,15 @@ export function validateOrder(
       "أدخل رقم جوال سعودي صحيحًا، مثل 05XXXXXXXX.",
       "Enter a valid Saudi mobile number: 05XXXXXXXX.",
     );
-  if (o.email && !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(o.email))
+  if (
+    o.email.length > 254 ||
+    (o.email && !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(o.email))
+  )
     e.email = t(
       "أدخل بريدًا إلكترونيًا صحيحًا.",
       "Enter a valid email address.",
     );
-  if (o.major.trim().length < 2)
+  if (o.major.trim().length < 2 || o.major.length > 100)
     e.major = t(
       "أدخل تخصصك أو مسارك الدراسي.",
       "Enter your major or study track.",
@@ -53,7 +56,12 @@ export function validateOrder(
     e.quantity = t("أدخل حجم عمل صحيحًا.", "Enter a valid work quantity.");
   if (o.files_url) {
     try {
-      if (new URL(o.files_url).protocol !== "https:") throw Error();
+      if (
+        new URL(o.files_url).protocol !== "https:" ||
+        o.files_url.length > 2048 ||
+        /\s/.test(o.files_url)
+      )
+        throw Error();
     } catch {
       e.files_url = t(
         "استخدم رابط ملفات آمنًا يبدأ بـ https://.",
@@ -71,6 +79,14 @@ export function validateOrder(
       e[field] = t("اختر قيمة صحيحة.", "Select a valid option.");
   if (!services.some((s) => s.id === o.service))
     e.service = t("اختر خدمة صحيحة.", "Select a valid service.");
+  if (
+    !["whatsapp", "phone", "email"].includes(o.preferred_contact) ||
+    (o.preferred_contact === "email" && !o.email)
+  )
+    e.preferred_contact = t(
+      "أضف بريدًا صحيحًا أو اختر طريقة تواصل أخرى.",
+      "Add a valid email or choose another contact method.",
+    );
   return e;
 }
 export function orderMessage(o: OrderInput, lang: Lang) {

@@ -1,5 +1,13 @@
 # Changelog
 
+## 1.1.0 — 2026-09-11
+
+- Connected a dedicated Supabase project and provisioned private admin access.
+- Verified live request persistence, admin order updates and payment recording, including unauthorized access rejection.
+- Disabled public account sign-up and added password changes within the admin dashboard.
+- Deferred the database SDK until request submission or administration to keep the landing page fast.
+- Added reusable live database and complete browser-flow tests with automatic synthetic-data cleanup.
+
 ## 1.0.0 — 2026-09-11
 
 - Bilingual Arabic/English academic support website with RTL, mobile navigation and a geometric brand mark.
