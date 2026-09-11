@@ -3,7 +3,7 @@ import type { Text } from "./site";
 export type ThemeId =
   "emerald" | "violet" | "lime" | "sandstone" | "nebula" | "clay";
 
-export const DEFAULT_THEME: ThemeId = "emerald";
+export const DEFAULT_THEME: ThemeId = "sandstone";
 
 // Pure data, no browser or database dependency, so it is safe to import from
 // both the client (src/App.tsx, src/Admin.tsx) and the static document

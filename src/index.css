@@ -612,15 +612,39 @@
   --color-ink: #0b3b33;
   --font-sans: "Tajawal", "Plus Jakarta Sans", sans-serif;
 }
-/* Theme system — three switchable identities (admin-controlled site-wide via
+/* Theme system — six switchable identities (admin-controlled site-wide via
    src/lib/theme.ts), applied through a `data-theme` attribute on <html>.
-   :root holds the default (Emerald Scholar); [data-theme="…"] overrides it.
+   :root holds the default (src/config/theme.ts's DEFAULT_THEME, currently
+   Golden Sandstone -- keep this block and that constant in sync);
+   [data-theme="…"] overrides it for every other theme, including a
+   standalone "sandstone" block so setting the attribute explicitly (as
+   every real page does) behaves identically to the bare :root fallback.
    Every theme defines the same token set so the rest of this file only ever
    references the tokens, never a literal brand color. Derived tints/shades
    were generated from each theme's base colors and verified to hold WCAG AA
    contrast (≥4.5:1 for text/links/buttons, ≥3:1 for icons and focus rings)
    against that theme's own background — see docs/CONFIGURATION.md. */
 :root,
+[data-theme="sandstone"] {
+  --font-family: "Tajawal", "Inter", sans-serif;
+  --font-family-ltr: "Inter", "Tajawal", sans-serif;
+  --primary: #241c16;
+  --primary-dark: #1d1612;
+  --primary-tint: #f0efef;
+  --primary-tint-2: #aca9a6;
+  --primary-border: #cfcdcc;
+  --accent: #1f4436;
+  --accent-bright: #3f8a6a;
+  --accent-tint: #e9ecea;
+  --accent-border: #ced6d3;
+  --tertiary: #c1592e;
+  --tertiary-tint: #f9eeea;
+  --navy: #241c16;
+  --muted: #6b6259;
+  --border: #e8dfd2;
+  --bg: #fbf7f0;
+  --bg-tinted: #f4f4f3;
+}
 [data-theme="emerald"] {
   --font-family: "Tajawal", "Plus Jakarta Sans", sans-serif;
   --font-family-ltr: "Plus Jakarta Sans", "Tajawal", sans-serif;
@@ -680,26 +704,6 @@
   --border: #e2e8f0;
   --bg: #f8fafc;
   --bg-tinted: #f3f3f4;
-}
-[data-theme="sandstone"] {
-  --font-family: "Tajawal", "Inter", sans-serif;
-  --font-family-ltr: "Inter", "Tajawal", sans-serif;
-  --primary: #241c16;
-  --primary-dark: #1d1612;
-  --primary-tint: #f0efef;
-  --primary-tint-2: #aca9a6;
-  --primary-border: #cfcdcc;
-  --accent: #1f4436;
-  --accent-bright: #3f8a6a;
-  --accent-tint: #e9ecea;
-  --accent-border: #ced6d3;
-  --tertiary: #c1592e;
-  --tertiary-tint: #f9eeea;
-  --navy: #241c16;
-  --muted: #6b6259;
-  --border: #e8dfd2;
-  --bg: #fbf7f0;
-  --bg-tinted: #f4f4f3;
 }
 [data-theme="nebula"] {
   --font-family: "Tajawal", "Sora", sans-serif;
