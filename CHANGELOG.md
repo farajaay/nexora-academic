@@ -2,6 +2,7 @@
 
 ## Unreleased
 
+- New default theme "Dreamy Night | حالم ليلي": dark aurora background, glass cards, gradient headings and glowing gradient buttons; WCAG AA verified. Migration `20261017150000_site_settings_theme_dreamy.sql` allows it and sets it as the site-wide default.
 - Renamed the brand from "Nexora Academic | نيكسورا أكاديمي" to "Nexora | نيكسورا" so it covers academic and business services; tagline now "Learn. Build. Progress.". URLs unchanged.
 - New bilingual Studio tab (`/studio`, `/en/studio`) with tabbed services: branding design, product development, web app development and industrial consultation. Quote-on-request, linked from the main nav and footer.
 

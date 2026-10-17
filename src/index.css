@@ -612,6 +612,8 @@
   --border: #e8dfd2;
   --bg: #fbf7f0;
   --bg-tinted: #f4f4f3;
+  --surface: #fff;
+  --surface-glass: rgba(255, 255, 255, 0.96);
 }
 [data-theme="emerald"] {
   --font-family: "Tajawal", "Plus Jakarta Sans", sans-serif;
@@ -713,6 +715,33 @@
   --bg: #fbf5ec;
   --bg-tinted: #f9f6f5;
 }
+/* Dreamy: a dark, aurora-lit theme. Unlike the light themes, --primary here
+   is a light violet tuned for text on the dark background; filled controls
+   use --dreamy-gradient instead (overrides at the end of this file). */
+[data-theme="dreamy"] {
+  --font-family: "Tajawal", "Inter", sans-serif;
+  --font-family-ltr: "Inter", "Tajawal", sans-serif;
+  --primary: #b9a7ff;
+  --primary-dark: #7c3aed;
+  --primary-tint: #221d4d;
+  --primary-tint-2: #5b4bb3;
+  --primary-border: #3b3475;
+  --accent: #7ee0f0;
+  --accent-bright: #22d3ee;
+  --accent-tint: #10283a;
+  --accent-border: #1f4d5c;
+  --tertiary: #f9a8d4;
+  --tertiary-tint: #3b1734;
+  --navy: #eeecff;
+  --muted: #aaa6d6;
+  --border: #2b2860;
+  --bg: #0b0a1f;
+  --bg-tinted: #131133;
+  --surface: #17153d;
+  --surface-glass: rgba(14, 12, 38, 0.8);
+  --dreamy-gradient: linear-gradient(135deg, #7c3aed, #c026d3);
+  color-scheme: dark;
+}
 :root {
   font-family: var(--font-family);
   color: var(--navy);
@@ -744,7 +773,7 @@
   padding: 16px;
   border: 1px solid var(--border);
   border-radius: 12px;
-  background: white;
+  background: var(--surface);
   text-align: start;
   transition:
     border-color 0.2s,
@@ -861,7 +890,7 @@ textarea {
   border: 1px solid var(--border);
   border-radius: 10px;
   padding: 12px 14px;
-  background: #fff;
+  background: var(--surface);
   color: var(--navy);
   min-height: 48px;
 }
@@ -901,7 +930,7 @@ main {
   position: sticky;
   top: 0;
   z-index: 40;
-  background: rgba(255, 255, 255, 0.96);
+  background: var(--surface-glass);
   border-bottom: 1px solid var(--border);
   backdrop-filter: blur(16px);
 }
@@ -1002,7 +1031,7 @@ main {
   transform: translateY(-2px);
 }
 .button.secondary {
-  background: white;
+  background: var(--surface);
   color: var(--navy);
   border-color: var(--primary-border);
   box-shadow: none;
@@ -1011,7 +1040,7 @@ main {
   background: var(--primary-tint);
 }
 .button.white {
-  background: white;
+  background: var(--surface);
   color: var(--primary);
   white-space: nowrap;
 }
@@ -1203,7 +1232,7 @@ main {
   align-items: center;
   gap: 10px;
   z-index: 3;
-  background: #ffffffed;
+  background: var(--surface-glass);
   border: 1px solid white;
   border-radius: 12px;
   padding: 12px 16px;
@@ -1262,7 +1291,7 @@ main {
   padding: 24px 13px;
   border: 1px solid var(--border);
   border-radius: 13px;
-  background: white;
+  background: var(--surface);
   box-shadow: 0 5px 25px color-mix(in srgb, var(--primary) 4%, transparent);
 }
 .trust-strip > div {
@@ -1332,7 +1361,7 @@ main {
   gap: 17px;
 }
 .service-card {
-  background: #fff;
+  background: var(--surface);
   border: 1px solid var(--border);
   padding: 24px;
   border-radius: 13px;
@@ -1450,13 +1479,13 @@ main {
 .testimonial-grid article {
   border: 1px solid var(--border);
   border-radius: 13px;
-  background: white;
+  background: var(--surface);
   padding: 27px;
 }
 .sample-badge {
-  color: #657087;
+  color: var(--muted);
   font-size: 10px;
-  background: #f1f4f9;
+  background: var(--bg-tinted);
   border-radius: 4px;
   padding: 4px 8px;
 }
@@ -1512,7 +1541,7 @@ main {
   margin-bottom: 27px;
 }
 .filter-row button {
-  background: white;
+  background: var(--surface);
   border: 1px solid var(--border);
   padding: 8px 18px;
   border-radius: 30px;
@@ -1549,7 +1578,7 @@ main {
   gap: 24px;
 }
 .panel {
-  background: white;
+  background: var(--surface);
   border: 1px solid var(--border);
   padding: 30px;
   border-radius: 15px;
@@ -1569,7 +1598,7 @@ main {
 .faq-list details {
   border: 1px solid var(--border);
   border-radius: 11px;
-  background: white;
+  background: var(--surface);
   margin-bottom: 12px;
 }
 .faq-list summary {
@@ -1842,7 +1871,7 @@ legend {
 }
 .admin-stats article {
   border: 1px solid var(--border);
-  background: white;
+  background: var(--surface);
   border-radius: 12px;
   padding: 23px;
 }
@@ -1884,7 +1913,7 @@ legend {
   display: flex;
   flex-direction: column;
   gap: 7px;
-  background: white;
+  background: var(--surface);
   border: 1px solid var(--border);
   border-radius: 10px;
   padding: 18px;
@@ -1941,7 +1970,7 @@ legend {
   overflow-wrap: anywhere;
 }
 .site-footer {
-  background: white;
+  background: var(--surface);
   border-top: 1px solid var(--border);
   padding-top: 44px;
 }
@@ -1995,7 +2024,7 @@ legend {
   height: 39px;
   border: 1px solid var(--primary-border);
   border-radius: 10px;
-  background: white;
+  background: var(--surface);
   color: var(--primary);
   z-index: 20;
   display: flex;
@@ -2572,7 +2601,7 @@ legend {
     right: 0;
     z-index: 35;
     padding: 10px 20px calc(10px + env(safe-area-inset-bottom));
-    background: #ffffffed;
+    background: var(--surface-glass);
     border-top: 1px solid var(--border);
     backdrop-filter: blur(10px);
   }
@@ -2662,10 +2691,10 @@ legend {
   min-width: 0;
 }
 .attachment-picker {
-  border: 1px dashed #64748b;
+  border: 1px dashed var(--muted);
   padding: 1rem;
   border-radius: 1rem;
-  background: #f8fafc;
+  background: var(--bg-tinted);
 }
 .attachment-list {
   list-style: none;
@@ -2788,7 +2817,7 @@ input[type="file"]::file-selector-button {
   display: inline-flex;
   align-items: center;
   gap: 8px;
-  background: #fff;
+  background: var(--surface);
   border: 1px solid var(--border);
   padding: 10px 18px;
   border-radius: 30px;
@@ -2801,7 +2830,7 @@ input[type="file"]::file-selector-button {
   color: #fff;
 }
 .studio-panel {
-  background: #fff;
+  background: var(--surface);
   border: 1px solid var(--border);
   border-radius: 16px;
   padding: 30px;
@@ -2898,4 +2927,74 @@ input[type="file"]::file-selector-button {
     flex: 1 1 calc(50% - 9px);
     justify-content: center;
   }
+}
+
+/* Dreamy theme overrides: aurora background, glass surfaces, gradient
+   headings and glowing gradient buttons. */
+[data-theme="dreamy"] body {
+  background:
+    radial-gradient(60% 45% at 12% 0%, #7c3aed40, transparent 70%),
+    radial-gradient(45% 40% at 92% 8%, #db277730, transparent 70%),
+    radial-gradient(60% 45% at 50% 100%, #22d3ee1f, transparent 70%), var(--bg);
+  background-attachment: fixed;
+}
+[data-theme="dreamy"] :is(.hero h1 > span, .gradient-text, .page-intro h1) {
+  background: linear-gradient(
+    90deg,
+    #e9e5ff,
+    #c4b5fd 35%,
+    #f9a8d4 70%,
+    #7ee0f0
+  );
+  -webkit-background-clip: text;
+  background-clip: text;
+  color: transparent;
+}
+[data-theme="dreamy"]
+  :is(
+    .button:not(.secondary, .white),
+    .studio-tabs button[aria-selected="true"],
+    .skip-link,
+    .mobile-contact a
+  ) {
+  background: var(--dreamy-gradient);
+  border-color: transparent;
+  color: #fff;
+  box-shadow: 0 10px 30px -10px #c026d3b3;
+}
+[data-theme="dreamy"] .button:not(.secondary, .white):hover:not(:disabled) {
+  background: var(--dreamy-gradient);
+  box-shadow: 0 14px 36px -8px #c026d3d9;
+}
+[data-theme="dreamy"] .cta {
+  background:
+    radial-gradient(80% 120% at 100% 0%, #c026d366, transparent 60%),
+    linear-gradient(110deg, #2a1a6b, #4c1d95);
+  border: 1px solid var(--primary-border);
+}
+[data-theme="dreamy"]
+  :is(
+    .service-card,
+    .studio-panel,
+    .testimonial-grid article,
+    .tinted,
+    .pricing-notes,
+    .float-card
+  ) {
+  border-color: var(--border);
+  box-shadow: inset 0 1px 0 #ffffff0f;
+}
+[data-theme="dreamy"] :is(.service-card, .studio-panel):hover {
+  border-color: var(--primary-tint-2);
+  box-shadow:
+    inset 0 1px 0 #ffffff14,
+    0 20px 50px -24px #7c3aedcc;
+}
+[data-theme="dreamy"] .site-header {
+  border-bottom-color: #ffffff12;
+}
+[data-theme="dreamy"] .notice {
+  background: #2a2210;
+  border-color: #6b5a24;
+  color: #f5dfa0 !important;
 }

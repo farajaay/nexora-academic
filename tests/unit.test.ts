@@ -131,6 +131,7 @@ test("themes: default is valid, every theme has bilingual text and a real swatch
     "sandstone",
     "nebula",
     "clay",
+    "dreamy",
   ];
   assert.equal(themes.length, ids.length);
   assert.ok(isThemeId(DEFAULT_THEME));

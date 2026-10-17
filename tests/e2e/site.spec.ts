@@ -222,21 +222,18 @@ test("toggling language rewrites the current URL, and internal links stay locali
   await expect(page).toHaveURL(/\/calculator\/?$/);
   await expect(page).not.toHaveURL(/\/en\//);
 });
-test("site theme defaults to Golden Sandstone without a database", async ({
+test("site theme defaults to Dreamy Night without a database", async ({
   page,
 }) => {
   await page.route("**/rest/v1/site_settings*", (route) => route.abort());
-  // The admin picker itself (rendering all 6 options, disabling them and
+  // The admin picker itself (rendering all 7 options, disabling them and
   // explaining why, saving, and persisting across reload) requires a real
   // admin session and is covered by tests/e2e/backend.spec.ts, which skips
   // without live credentials -- there is no way to reach the authorized
   // admin view here.
   for (const route of ["", "en/", "contact/", "admin/"]) {
     await page.goto(`./${route}`, { waitUntil: "commit" });
-    await expect(page.locator("html")).toHaveAttribute(
-      "data-theme",
-      "sandstone",
-    );
+    await expect(page.locator("html")).toHaveAttribute("data-theme", "dreamy");
   }
 });
 
@@ -244,7 +241,7 @@ test("visitor themes persist across routes, languages and reloads; reset follows
   page,
 }, info) => {
   await page.route("**/rest/v1/site_settings*", (route) =>
-    route.fulfill({ json: { theme: "sandstone" } }),
+    route.fulfill({ json: { theme: "dreamy" } }),
   );
   await page.goto("./en/contact/");
   await page.locator("#name").fill("Theme preservation");
@@ -255,6 +252,7 @@ test("visitor themes persist across routes, languages and reloads; reset follows
     ["lime", "Midnight Lime"],
     ["sandstone", "Golden Sandstone"],
     ["nebula", "Nebula Indigo"],
+    ["dreamy", "Dreamy Night"],
     ["clay", "Canyon Clay"],
   ]) {
     await page.getByRole("button", { name, exact: true }).click();
@@ -276,10 +274,10 @@ test("visitor themes persist across routes, languages and reloads; reset follows
   await page
     .getByRole("button", { name: "استخدام مظهر الموقع الافتراضي" })
     .click();
-  await expect(page.locator("html")).toHaveAttribute("data-theme", "sandstone");
+  await expect(page.locator("html")).toHaveAttribute("data-theme", "dreamy");
 });
 
-test("all six theme menus meet contrast requirements", async ({ page }) => {
+test("all seven theme menus meet contrast requirements", async ({ page }) => {
   await page.goto("./en/");
   await page.getByLabel("Choose theme", { exact: true }).click();
   for (const name of [
@@ -289,6 +287,7 @@ test("all six theme menus meet contrast requirements", async ({ page }) => {
     "Golden Sandstone",
     "Nebula Indigo",
     "Canyon Clay",
+    "Dreamy Night",
   ]) {
     await page.getByRole("button", { name, exact: true }).click();
     const result = await new AxeBuilder({ page })

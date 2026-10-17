@@ -1,9 +1,9 @@
 import type { Text } from "./site";
 
 export type ThemeId =
-  "emerald" | "violet" | "lime" | "sandstone" | "nebula" | "clay";
+  "emerald" | "violet" | "lime" | "sandstone" | "nebula" | "clay" | "dreamy";
 
-export const DEFAULT_THEME: ThemeId = "sandstone";
+export const DEFAULT_THEME: ThemeId = "dreamy";
 
 // Pure data, no browser or database dependency, so it is safe to import from
 // both the client (src/App.tsx, src/Admin.tsx) and the static document
@@ -53,6 +53,12 @@ export const themes: {
     name: { ar: "طيني صخري", en: "Canyon Clay" },
     blurb: { ar: "ترابي وهادئ ومنضبط", en: "Earthy, grounded, disciplined" },
     swatch: ["#8c4a2f", "#8f5713", "#3b6e71"],
+  },
+  {
+    id: "dreamy",
+    name: { ar: "حالم ليلي", en: "Dreamy Night" },
+    blurb: { ar: "داكن وحالم ومبدع", en: "Dark, dreamy, creative" },
+    swatch: ["#7c3aed", "#c026d3", "#22d3ee"],
   },
 ];
 
