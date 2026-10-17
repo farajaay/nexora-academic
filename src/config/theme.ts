@@ -2,7 +2,7 @@ import type { Text } from "./site";
 
 export type ThemeId = "light" | "dark";
 
-export const DEFAULT_THEME: ThemeId = "light";
+export const DEFAULT_THEME: ThemeId = "dark";
 
 // Pure data, no browser or database dependency, so it is safe to import from
 // both the client (src/App.tsx, src/Admin.tsx) and the static document
@@ -18,14 +18,17 @@ export const themes: {
   {
     id: "light",
     name: { ar: "فاتح", en: "Light" },
-    blurb: { ar: "ليلكي هادئ وواضح", en: "Calm lilac, clear" },
-    swatch: ["#efe9f7", "#3d2a6b", "#7a3ea6"],
+    blurb: { ar: "أزرق ليلكي فاتح وواضح", en: "Light periwinkle, clear" },
+    swatch: ["#eceef9", "#2e3570", "#4a55b8"],
   },
   {
     id: "dark",
     name: { ar: "داكن", en: "Dark" },
-    blurb: { ar: "مريح للعين ليلًا", en: "Easy on the eyes at night" },
-    swatch: ["#14111c", "#cdb8f5", "#d9b8ff"],
+    blurb: {
+      ar: "أزرق ليلكي داكن (الافتراضي)",
+      en: "Dark periwinkle (default)",
+    },
+    swatch: ["#0f1120", "#b3bcf5", "#c0c6ff"],
   },
 ];
 

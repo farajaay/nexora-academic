@@ -226,13 +226,13 @@ test("toggling language rewrites the current URL, and internal links stay locali
   await expect(page).toHaveURL(/\/calculator\/?$/);
   await expect(page).not.toHaveURL(/\/en\//);
 });
-test("site theme defaults to light without a database", async ({ page }) => {
+test("site theme defaults to dark without a database", async ({ page }) => {
   await page.route("**/rest/v1/site_settings*", (route) => route.abort());
   // The admin default picker requires a real admin session and is covered
   // by tests/e2e/backend.spec.ts, which skips without live credentials.
   for (const route of ["", "en/", "contact/", "admin/"]) {
     await page.goto(`./${route}`, { waitUntil: "commit" });
-    await expect(page.locator("html")).toHaveAttribute("data-theme", "light");
+    await expect(page.locator("html")).toHaveAttribute("data-theme", "dark");
   }
 });
 
@@ -243,18 +243,23 @@ test("dark mode persists across routes, languages and reloads", async ({
     route.fulfill({ json: { theme: "light" } }),
   );
   await page.goto("./en/contact/");
+  await page.waitForLoadState("networkidle");
+  const html = page.locator("html");
   await page.locator("#name").fill("Mode preservation");
   const toggle = page.getByRole("button", { name: "Dark mode", exact: true });
+  // Turn dark mode on from whichever mode the site default produced.
+  if ((await html.getAttribute("data-theme")) === "dark") await toggle.click();
+  await expect(html).toHaveAttribute("data-theme", "light");
   await toggle.click();
-  await expect(page.locator("html")).toHaveAttribute("data-theme", "dark");
+  await expect(html).toHaveAttribute("data-theme", "dark");
   await expect(toggle).toHaveAttribute("aria-pressed", "true");
   await expect(page.locator("#name")).toHaveValue("Mode preservation");
   await page.reload();
-  await expect(page.locator("html")).toHaveAttribute("data-theme", "dark");
+  await expect(html).toHaveAttribute("data-theme", "dark");
   await page.getByRole("button", { name: "التبديل إلى العربية" }).click();
-  await expect(page.locator("html")).toHaveAttribute("data-theme", "dark");
+  await expect(html).toHaveAttribute("data-theme", "dark");
   await page.getByRole("button", { name: "الوضع الداكن", exact: true }).click();
-  await expect(page.locator("html")).toHaveAttribute("data-theme", "light");
+  await expect(html).toHaveAttribute("data-theme", "light");
 });
 
 test("light and dark modes meet contrast requirements", async ({ page }) => {

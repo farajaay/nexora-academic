@@ -3,7 +3,7 @@
 ## Unreleased
 
 - Full redesign: new editorial identity (adapted from the Dreamy Developer portfolio) with a new logo mark, Newsreader display headings, pill navigation and flat, very round surfaces.
-- One identity in two modes (light/dark) replaces the seven named themes; visitors switch with a header toggle. Migration `20261017160000_site_settings_theme_modes.sql`.
+- One blue-lilac identity in two modes (dark by default, plus light) replaces the seven named themes; visitors switch with a header toggle. Migration `20261017160000_site_settings_theme_modes.sql`.
 - Home rebuilt to give Academic and Studio equal weight; navigation is now Home · Academic · Studio · How we work · FAQ.
 - Rewritten Arabic and English copy across Home, Academic, Studio, How we work, FAQ and Contact; Studio gains direct WhatsApp/email quote buttons.
 - New default theme "Dreamy Developer | المطوّر الحالم", adapted from the Dreamy Developer portfolio (Dream-World-Coder/portfolio): warm peach/rose surfaces, slate buttons, 30–45px rounded cards, pill navigation, flat shadowless surfaces; WCAG AA verified. Migration `20261017150000_site_settings_theme_dreamy.sql` allows it and sets it as the site-wide default.
