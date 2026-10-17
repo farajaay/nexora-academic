@@ -96,8 +96,8 @@ export function orderMessage(o: OrderInput, lang: Lang) {
     options[key].find((x) => x.id === o[key])?.[lang];
   return [
     t(
-      "طلب دعم أكاديمي | نيكسورا أكاديمي",
-      "Academic support request | Nexora Academic",
+      "طلب دعم أكاديمي | نيكسورا",
+      "Academic support request | Nexora",
     ),
     `${t("الاسم", "Name")}: ${o.name}`,
     `${t("الجوال", "Mobile")}: ${o.phone}`,

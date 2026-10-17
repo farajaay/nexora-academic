@@ -241,8 +241,8 @@ function Shell() {
             </p>
             <span className="footer-tag">
               {t(
-                "دعم أكاديمي سعودي، برؤية أوضح.",
-                "Saudi academic support. A clearer perspective.",
+                "حلول أكاديمية وأعمال سعودية، برؤية أوضح.",
+                "Saudi academic & business solutions. A clearer perspective.",
               )}
             </span>
           </div>
@@ -300,10 +300,10 @@ function Shell() {
         </div>
         <div className="container footer-bottom">
           <span>
-            © {new Date().getFullYear()} Nexora Academic.{" "}
+            © {new Date().getFullYear()} Nexora.{" "}
             {t("جميع الحقوق محفوظة.", "All rights reserved.")}
           </span>
-          <span>LEARN · CONNECT · PROGRESS</span>
+          <span>LEARN · BUILD · PROGRESS</span>
         </div>
       </footer>
       <button

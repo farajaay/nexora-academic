@@ -104,7 +104,7 @@ writeFileSync(
     .replace("<!--hreflang-->", "")
     .replace(
       /<title>.*?<\/title>/s,
-      "<title>صفحة غير موجودة | Nexora Academic</title>",
+      "<title>صفحة غير موجودة | Nexora</title>",
     ),
 );
 writeFileSync("dist/.nojekyll", "");

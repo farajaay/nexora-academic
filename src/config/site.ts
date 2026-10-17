@@ -1,7 +1,7 @@
 export type Lang = "ar" | "en";
 export type Text = Record<Lang, string>;
 export const site = {
-  name: { ar: "نيكسورا أكاديمي", en: "Nexora Academic" },
+  name: { ar: "نيكسورا", en: "Nexora" },
   url: "https://farajaay.github.io/nexora-academic/",
   whatsapp: "REPLACE_WITH_WHATSAPP_NUMBER",
   email: "REPLACE_WITH_BUSINESS_EMAIL",

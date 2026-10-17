@@ -63,11 +63,9 @@ export function Logo() {
         alt=""
       />
       <span dir="ltr">
-        <strong>
-          Nexora<span> Academic</span>
-        </strong>
+        <strong>Nexora</strong>
         <small>
-          {lang === "ar" ? "تعلّم. تواصل. تقدّم." : "Learn. Connect. Progress."}
+          {lang === "ar" ? "تعلّم. ابنِ. تقدّم." : "Learn. Build. Progress."}
         </small>
       </span>
     </LocalizedLink>
@@ -114,7 +112,7 @@ export function PageIntro({
 }) {
   return (
     <div className="page-intro">
-      <span className="eyebrow">{eyebrow || "NEXORA ACADEMIC"}</span>
+      <span className="eyebrow">{eyebrow || "NEXORA"}</span>
       <h1>{title}</h1>
       <p>{subtitle}</p>
     </div>
