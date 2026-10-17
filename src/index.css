@@ -715,32 +715,32 @@
   --bg: #fbf5ec;
   --bg-tinted: #f9f6f5;
 }
-/* Dreamy: a dark, aurora-lit theme. Unlike the light themes, --primary here
-   is a light violet tuned for text on the dark background; filled controls
-   use --dreamy-gradient instead (overrides at the end of this file). */
+/* Dreamy: adapted from the "Dreamy Developer" portfolio (github.com/
+   Dream-World-Coder/portfolio): warm peach/rose surfaces, near-black text,
+   slate filled controls, very round corners, pill navigation, no shadows. */
 [data-theme="dreamy"] {
   --font-family: "Tajawal", "Inter", sans-serif;
   --font-family-ltr: "Inter", "Tajawal", sans-serif;
-  --primary: #b9a7ff;
-  --primary-dark: #7c3aed;
-  --primary-tint: #221d4d;
-  --primary-tint-2: #5b4bb3;
-  --primary-border: #3b3475;
-  --accent: #7ee0f0;
-  --accent-bright: #22d3ee;
-  --accent-tint: #10283a;
-  --accent-border: #1f4d5c;
-  --tertiary: #f9a8d4;
-  --tertiary-tint: #3b1734;
-  --navy: #eeecff;
-  --muted: #aaa6d6;
-  --border: #2b2860;
-  --bg: #0b0a1f;
-  --bg-tinted: #131133;
-  --surface: #17153d;
-  --surface-glass: rgba(14, 12, 38, 0.8);
-  --dreamy-gradient: linear-gradient(135deg, #7c3aed, #c026d3);
-  color-scheme: dark;
+  --primary: #37474f;
+  --primary-dark: #263238;
+  --primary-tint: #dcc0b2;
+  --primary-tint-2: #b89a8c;
+  --primary-border: #d2b6a8;
+  --accent: #7a3b2e;
+  --accent-bright: #a0523f;
+  --accent-tint: #f3d6cc;
+  --accent-border: #d9b3a6;
+  --tertiary: #8a4b2f;
+  --tertiary-tint: #f6dcd5;
+  --navy: #0a0a0a;
+  --muted: #5a554d;
+  --border: #d9bcb0;
+  --bg: #ecd2cb;
+  --bg-tinted: #f6dcd5;
+  --surface: #f6dcd5;
+  --surface-glass: rgba(236, 210, 203, 0.94);
+  --dreamy-hero: #fadfd0;
+  --dreamy-pill-border: rgba(95, 95, 95, 0.37);
 }
 :root {
   font-family: var(--font-family);
@@ -2929,49 +2929,9 @@ input[type="file"]::file-selector-button {
   }
 }
 
-/* Dreamy theme overrides: aurora background, glass surfaces, gradient
-   headings and glowing gradient buttons. */
-[data-theme="dreamy"] body {
-  background:
-    radial-gradient(60% 45% at 12% 0%, #7c3aed40, transparent 70%),
-    radial-gradient(45% 40% at 92% 8%, #db277730, transparent 70%),
-    radial-gradient(60% 45% at 50% 100%, #22d3ee1f, transparent 70%), var(--bg);
-  background-attachment: fixed;
-}
-[data-theme="dreamy"] :is(.hero h1 > span, .gradient-text, .page-intro h1) {
-  background: linear-gradient(
-    90deg,
-    #e9e5ff,
-    #c4b5fd 35%,
-    #f9a8d4 70%,
-    #7ee0f0
-  );
-  -webkit-background-clip: text;
-  background-clip: text;
-  color: transparent;
-}
-[data-theme="dreamy"]
-  :is(
-    .button:not(.secondary, .white),
-    .studio-tabs button[aria-selected="true"],
-    .skip-link,
-    .mobile-contact a
-  ) {
-  background: var(--dreamy-gradient);
-  border-color: transparent;
-  color: #fff;
-  box-shadow: 0 10px 30px -10px #c026d3b3;
-}
-[data-theme="dreamy"] .button:not(.secondary, .white):hover:not(:disabled) {
-  background: var(--dreamy-gradient);
-  box-shadow: 0 14px 36px -8px #c026d3d9;
-}
-[data-theme="dreamy"] .cta {
-  background:
-    radial-gradient(80% 120% at 100% 0%, #c026d366, transparent 60%),
-    linear-gradient(110deg, #2a1a6b, #4c1d95);
-  border: 1px solid var(--primary-border);
-}
+/* Dreamy theme overrides: the source design's 30px cards, 45px hero
+   panels, pill buttons and nav, flat (shadowless) surfaces, tight display
+   headings and dashed-underline links. */
 [data-theme="dreamy"]
   :is(
     .service-card,
@@ -2979,22 +2939,64 @@ input[type="file"]::file-selector-button {
     .testimonial-grid article,
     .tinted,
     .pricing-notes,
-    .float-card
+    .float-card,
+    .cta
   ) {
-  border-color: var(--border);
-  box-shadow: inset 0 1px 0 #ffffff0f;
+  border-radius: 30px;
+  box-shadow: none;
 }
 [data-theme="dreamy"] :is(.service-card, .studio-panel):hover {
-  border-color: var(--primary-tint-2);
-  box-shadow:
-    inset 0 1px 0 #ffffff14,
-    0 20px 50px -24px #7c3aedcc;
+  border-color: var(--primary);
+  box-shadow: none;
+}
+[data-theme="dreamy"] .hero-visual {
+  background: var(--dreamy-hero);
+  border-color: var(--primary-border);
+  border-radius: 45px;
+}
+[data-theme="dreamy"] .visual-grid {
+  border-radius: 45px;
+}
+[data-theme="dreamy"] .button {
+  border-radius: 999px;
+  box-shadow: none;
+}
+[data-theme="dreamy"] .desktop-nav {
+  gap: 8px;
+}
+[data-theme="dreamy"] .desktop-nav a {
+  padding: 4px 13px;
+  border-radius: 999px;
+  background: var(--primary-tint);
+  border: 1px solid var(--dreamy-pill-border);
+  color: #3f3a33;
+}
+[data-theme="dreamy"] .desktop-nav a:hover {
+  color: var(--navy);
+}
+[data-theme="dreamy"] .desktop-nav a.active {
+  background: var(--primary);
+  border-color: var(--primary);
+  color: #fff;
+}
+[data-theme="dreamy"] .desktop-nav a.active:after {
+  display: none;
+}
+[data-theme="dreamy"] :is(.hero h1, .page-intro h1, .section-heading h2) {
+  font-weight: 700;
+}
+[dir="ltr"][data-theme="dreamy"]
+  :is(.hero h1, .page-intro h1, .section-heading h2) {
+  letter-spacing: -0.05em;
+}
+[data-theme="dreamy"] main p a,
+[data-theme="dreamy"] .studio-cta a:not(.button) {
+  text-decoration: underline dashed 1px;
+  text-underline-offset: 4px;
+}
+[data-theme="dreamy"] main p a:hover {
+  text-decoration-style: solid;
 }
 [data-theme="dreamy"] .site-header {
-  border-bottom-color: #ffffff12;
-}
-[data-theme="dreamy"] .notice {
-  background: #2a2210;
-  border-color: #6b5a24;
-  color: #f5dfa0 !important;
+  border-bottom-color: var(--primary-border);
 }

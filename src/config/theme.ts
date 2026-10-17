@@ -56,9 +56,9 @@ export const themes: {
   },
   {
     id: "dreamy",
-    name: { ar: "حالم ليلي", en: "Dreamy Night" },
-    blurb: { ar: "داكن وحالم ومبدع", en: "Dark, dreamy, creative" },
-    swatch: ["#7c3aed", "#c026d3", "#22d3ee"],
+    name: { ar: "المطوّر الحالم", en: "Dreamy Developer" },
+    blurb: { ar: "ناعم وأنيق ودافئ", en: "Soft, editorial, warm" },
+    swatch: ["#37474f", "#7a3b2e", "#8a4b2f"],
   },
 ];
 

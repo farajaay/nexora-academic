@@ -222,7 +222,7 @@ test("toggling language rewrites the current URL, and internal links stay locali
   await expect(page).toHaveURL(/\/calculator\/?$/);
   await expect(page).not.toHaveURL(/\/en\//);
 });
-test("site theme defaults to Dreamy Night without a database", async ({
+test("site theme defaults to Dreamy Developer without a database", async ({
   page,
 }) => {
   await page.route("**/rest/v1/site_settings*", (route) => route.abort());
@@ -252,7 +252,7 @@ test("visitor themes persist across routes, languages and reloads; reset follows
     ["lime", "Midnight Lime"],
     ["sandstone", "Golden Sandstone"],
     ["nebula", "Nebula Indigo"],
-    ["dreamy", "Dreamy Night"],
+    ["dreamy", "Dreamy Developer"],
     ["clay", "Canyon Clay"],
   ]) {
     await page.getByRole("button", { name, exact: true }).click();
@@ -287,7 +287,7 @@ test("all seven theme menus meet contrast requirements", async ({ page }) => {
     "Golden Sandstone",
     "Nebula Indigo",
     "Canyon Clay",
-    "Dreamy Night",
+    "Dreamy Developer",
   ]) {
     await page.getByRole("button", { name, exact: true }).click();
     const result = await new AxeBuilder({ page })
