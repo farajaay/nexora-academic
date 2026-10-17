@@ -3,7 +3,7 @@ export type Text = Record<Lang, string>;
 export const site = {
   name: { ar: "نيكسورا", en: "Nexora" },
   url: "https://farajaay.github.io/nexora-academic/",
-  whatsapp: "REPLACE_WITH_WHATSAPP_NUMBER",
+  whatsapp: "966554517103",
   email: "REPLACE_WITH_BUSINESS_EMAIL",
   currency: { ar: "ر.س", en: "SAR" },
   social: { instagram: "", x: "", linkedin: "" },

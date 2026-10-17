@@ -72,7 +72,7 @@ test("calculator computes prices and prefills every selection", async ({
   await expect(page.locator("#language")).toHaveValue("specialized");
   await expect(page.getByRole("checkbox").first()).toBeChecked();
 });
-test("form validates, preserves fields on language switch and safe contact placeholders", async ({
+test("form validates, preserves fields on language switch and gates unconfigured contact channels", async ({
   page,
 }) => {
   await page.goto("./contact/");
@@ -83,9 +83,10 @@ test("form validates, preserves fields on language switch and safe contact place
   await page.locator("#name").fill("اختبار نيكسورا");
   await page.getByRole("button", { name: "Switch to English" }).click();
   await expect(page.locator("#name")).toHaveValue("اختبار نيكسورا");
+  // WhatsApp is configured (src/config/site.ts); email is still a placeholder.
   await expect(
     page.getByRole("button", { name: "WhatsApp", exact: true }),
-  ).toBeDisabled();
+  ).toBeEnabled();
   await expect(
     page.getByRole("button", { name: "Email", exact: true }),
   ).toBeDisabled();
