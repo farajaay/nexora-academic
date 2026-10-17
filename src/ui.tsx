@@ -72,7 +72,7 @@ export function BrandMark({ size = 40 }: { size?: number }) {
         strokeLinecap="round"
         strokeLinejoin="round"
       />
-      <circle cx="34" cy="14.5" r="3.4" fill="var(--accent-bright)" />
+      <circle cx="34" cy="14.5" r="3.4" fill="var(--logo-dot)" />
     </svg>
   );
 }

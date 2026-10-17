@@ -18,14 +18,14 @@ export const themes: {
   {
     id: "light",
     name: { ar: "فاتح", en: "Light" },
-    blurb: { ar: "دافئ وهادئ وواضح", en: "Warm, calm, clear" },
-    swatch: ["#f2e1d9", "#263238", "#8a3f2c"],
+    blurb: { ar: "ليلكي هادئ وواضح", en: "Calm lilac, clear" },
+    swatch: ["#efe9f7", "#3d2a6b", "#7a3ea6"],
   },
   {
     id: "dark",
     name: { ar: "داكن", en: "Dark" },
     blurb: { ar: "مريح للعين ليلًا", en: "Easy on the eyes at night" },
-    swatch: ["#121110", "#f0d4c6", "#f2a68f"],
+    swatch: ["#14111c", "#cdb8f5", "#d9b8ff"],
   },
 ];
 
