@@ -37,6 +37,14 @@ export const publicRoutes: RouteMeta[] = [
     },
   },
   {
+    path: "studio",
+    title: { ar: "خدمات الاستوديو", en: "Studio services" },
+    description: {
+      ar: "تصميم الهوية التجارية وتطوير المنتجات وتطبيقات الويب والاستشارات الصناعية.",
+      en: "Branding design, product and web app development, and industrial consultation.",
+    },
+  },
+  {
     path: "how-it-works",
     title: { ar: "آلية الطلب", en: "How it works" },
     description: {
