@@ -1,5 +1,9 @@
 # Changelog
 
+## Unreleased
+
+- New bilingual Studio tab (`/studio`, `/en/studio`) with tabbed services: branding design, product development, web app development and industrial consultation. Quote-on-request, linked from the main nav and footer.
+
 ## 1.2.0
 
 - Private client request attachments with validation, upload retry and authenticated admin downloads.

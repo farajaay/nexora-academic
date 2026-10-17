@@ -23,11 +23,13 @@ import { ThemePicker } from "./ThemePicker";
 import { LanguageContext, LocalizedLink, LocalizedNavLink, Logo } from "./ui";
 import { FAQ, Home, How, Legal, NotFound, Services } from "./pages";
 import { Calculator, Contact, Success } from "./forms";
+import { Studio } from "./Studio";
 import "./index.css";
 const Admin = lazy(() => import("./Admin"));
 const nav = [
   ["/", "الرئيسية", "Home"],
   ["/services", "الخدمات والأسعار", "Services & pricing"],
+  ["/studio", "الاستوديو", "Studio"],
   ["/how-it-works", "آلية الطلب", "How it works"],
   ["/calculator", "حاسبة السعر", "Price calculator"],
   ["/faq", "الأسئلة الشائعة", "FAQ"],
@@ -44,6 +46,7 @@ const publicPaths = new Set(
 const elementByPath: Record<string, ReactNode> = {
   "": <Home />,
   services: <Services />,
+  studio: <Studio />,
   "how-it-works": <How />,
   calculator: <Calculator />,
   contact: <Contact />,
@@ -247,6 +250,9 @@ function Shell() {
             <h3>{t("اكتشف نيكسورا", "Explore Nexora")}</h3>
             <LocalizedLink to="/services">
               {t("الخدمات والأسعار", "Services & pricing")}
+            </LocalizedLink>
+            <LocalizedLink to="/studio">
+              {t("خدمات الاستوديو", "Studio services")}
             </LocalizedLink>
             <LocalizedLink to="/calculator">
               {t("حاسبة السعر", "Price calculator")}
