@@ -95,10 +95,7 @@ export function orderMessage(o: OrderInput, lang: Lang) {
   const label = (key: "stage" | "language" | "deadline" | "difficulty") =>
     options[key].find((x) => x.id === o[key])?.[lang];
   return [
-    t(
-      "طلب دعم أكاديمي | نيكسورا",
-      "Academic support request | Nexora",
-    ),
+    t("طلب دعم أكاديمي | نيكسورا", "Academic support request | Nexora"),
     `${t("الاسم", "Name")}: ${o.name}`,
     `${t("الجوال", "Mobile")}: ${o.phone}`,
     `${t("البريد", "Email")}: ${o.email || "—"}`,
