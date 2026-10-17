@@ -2,13 +2,12 @@ import {
   ArrowLeft,
   ArrowRight,
   Check,
-  CheckCheck,
   CircleHelp,
   Clock3,
   MessageCircle,
+  GraduationCap,
+  Layers,
   ShieldCheck,
-  Sparkles,
-  Target,
   Zap,
 } from "lucide-react";
 import { useState } from "react";
@@ -17,6 +16,7 @@ import {
   LocalizedLink,
   PageIntro,
   SectionHeading,
+  BrandMark,
   ServiceCard,
   useLanguage,
 } from "./ui";
@@ -26,24 +26,24 @@ export function Steps() {
     <div className="steps-grid">
       {[
         [
-          t("أخبرنا بما تحتاج", "Tell us what you need"),
+          t("شاركنا التفاصيل", "Share the brief"),
           t(
-            "اختر الخدمة وأرسل التعليمات ورابط الملفات.",
-            "Choose a service and share your instructions and file link.",
+            "أخبرنا بما تحتاجه، وأرفق ما لديك من ملفات أو روابط.",
+            "Tell us what you need and attach any files or links you have.",
           ),
         ],
         [
-          t("نراجع ونوضح السعر", "Review & agree on a price"),
+          t("نتفق على النطاق", "Agree on the scope"),
           t(
-            "نراجع النطاق والموعد ونثبت السعر قبل البدء.",
-            "We review the scope and deadline, then confirm the price before starting.",
+            "نراجع طلبك ونؤكد النطاق والسعر والموعد قبل أن نبدأ.",
+            "We review your request and confirm scope, price and timeline before we start.",
           ),
         ],
         [
-          t("تعلّم وارتقِ بعملك", "Learn & improve your work"),
+          t("ننجز ونتابع", "Deliver and follow through"),
           t(
-            "تحصل على شرح وملاحظات، وجولة تعديل ضمن النطاق.",
-            "Receive guidance, actionable feedback and one in-scope revision.",
+            "نسلّم العمل مع الشرح أو التوثيق اللازم، ونتابع معك حتى يكتمل.",
+            "We deliver with the explanation or documentation you need, and follow up until it is complete.",
           ),
         ],
       ].map(([title, text], i) => (
@@ -61,24 +61,22 @@ export function CTA() {
   return (
     <section className="cta">
       <div>
-        <span className="eyebrow">
-          {t("خطوة صغيرة. فرق كبير.", "SMALL STEPS. BIG POSSIBILITIES.")}
-        </span>
+        <span className="eyebrow">{t("لنبدأ", "LET’S BEGIN")}</span>
         <h2>
           {t(
-            "جاهز لخطوتك الأكاديمية القادمة؟",
-            "Ready for your next academic step?",
+            "لديك مهمة أو مشروع؟ لنجعله أوضح.",
+            "Have an assignment or a project? Let’s make it clear.",
           )}
         </h2>
         <p>
           {t(
-            "شاركنا ما تحتاج، ولنبدأ من حيث أنت.",
-            "Tell us what you need. Let’s start where you are.",
+            "أرسل التفاصيل، وسنعود إليك بنطاق وسعر واضحين.",
+            "Send the details and we will come back with a clear scope and price.",
           )}
         </p>
       </div>
       <LocalizedLink className="button white" to="/contact">
-        {t("أرسل طلبك الآن", "Send your request")}
+        {t("ابدأ طلبك", "Start your request")}
         <ArrowLeft size={18} />
       </LocalizedLink>
     </section>
@@ -86,121 +84,180 @@ export function CTA() {
 }
 export function Home() {
   const { t } = useLanguage();
+  const paths = [
+    {
+      id: "academic",
+      Icon: GraduationCap,
+      label: t("نيكسورا أكاديمي", "Nexora Academic"),
+      title: t("للطلاب والباحثين", "For students and researchers"),
+      text: t(
+        "شرح ومراجعة وتدقيق وإرشاد يعمّق فهمك ويرفع جودة عملك، بأسعار معلنة تبدأ من 40 ر.س.",
+        "Explanation, review, proofreading and mentoring that deepen your understanding and raise the quality of your work, with published prices from SAR 40.",
+      ),
+      items: [
+        t("شرح الواجبات والمسائل", "Assignment and problem-set guidance"),
+        t("مراجعة التقارير والأبحاث", "Report and research review"),
+        t("العروض التقديمية والتدقيق", "Presentations and proofreading"),
+        t(
+          "البرمجة وCAD ومشاريع التخرج",
+          "Programming, CAD and graduation projects",
+        ),
+      ],
+      links: [
+        ["/services", t("الخدمات والأسعار", "Services & pricing")],
+        ["/calculator", t("احسب السعر", "Estimate a price")],
+      ],
+    },
+    {
+      id: "studio",
+      Icon: Layers,
+      label: t("استوديو نيكسورا", "Nexora Studio"),
+      title: t("للشركات ورواد الأعمال", "For companies and founders"),
+      text: t(
+        "هوية تجارية، ومنتجات رقمية، وتطبيقات ويب، واستشارات صناعية تحوّل الأفكار إلى نتائج قابلة للقياس.",
+        "Brand identity, digital products, web apps and industrial consulting that turn ideas into measurable results.",
+      ),
+      items: [
+        t("تصميم الهوية التجارية", "Branding design"),
+        t("تطوير المنتجات", "Product development"),
+        t("تطوير تطبيقات الويب", "Web app development"),
+        t("الاستشارات الصناعية", "Industrial consultation"),
+      ],
+      links: [
+        ["/studio", t("خدمات الاستوديو", "Studio services")],
+        ["/contact", t("اطلب عرض سعر", "Request a quote")],
+      ],
+    },
+  ];
   return (
     <>
       <section className="hero">
         <div className="hero-copy">
           <span className="pill">
             <span />
-            {t("معك في كل خطوة أكاديمية", "WITH YOU AT EVERY ACADEMIC STEP")}
+            {t("أكاديمي · استوديو", "ACADEMIC · STUDIO")}
           </span>
           <h1>
-            {t("دعم أكاديمي أوضح،", "Clearer academic support.")}
+            {t("نصنع الوضوح", "We craft clarity")}
             <br />
-            <span>{t("أسرع، وأكثر احترافية", "A brighter way forward.")}</span>
+            <span>
+              {t("في التعلّم والأعمال.", "for learners and businesses.")}
+            </span>
           </h1>
           <p>
             {t(
-              "شرح ومراجعة وتطوير للأعمال الأكاديمية بما يساعدك على التعلم وتحسين جودة مخرجاتك.",
-              "Explanation, review and development of academic work to help you learn and improve the quality of your outcomes.",
+              "دعم أكاديمي يرسّخ الفهم، وخدمات احترافية تبني الهوية والمنتج وتطوّر العمليات — بمعيار واحد: الدقة والشفافية والالتزام.",
+              "Academic support that builds real understanding, and professional services that shape brands, products and operations — held to one standard: precision, transparency and commitment.",
             )}
           </p>
           <div className="hero-actions">
             <LocalizedLink className="button" to="/contact">
-              {t("اطلب الخدمة", "Request a service")}
+              {t("ابدأ طلبك", "Start your request")}
               <ArrowLeft size={18} />
             </LocalizedLink>
-            <LocalizedLink className="button secondary" to="/services">
-              {t("استعرض الأسعار", "Explore pricing")}
-            </LocalizedLink>
-          </div>
-          <div className="hero-notes">
-            <span>
-              <Check size={16} />
-              {t("أسعار واضحة", "Transparent pricing")}
-            </span>
-            <span>
-              <Check size={16} />
-              {t("خصوصية وأمان", "Privacy first")}
-            </span>
-            <span>
-              <Check size={16} />
-              {t("دعم يساعدك تتعلّم", "Support that helps you learn")}
-            </span>
+            <a className="button secondary" href="#paths">
+              {t("استكشف خدماتنا", "Explore our services")}
+            </a>
           </div>
         </div>
-        <div
-          className="hero-visual"
-          aria-label={t(
-            "رحلتك من الفهم إلى التطور",
-            "Your journey from understanding to progress",
-          )}
+        <aside
+          className="hero-panel"
+          aria-label={t("نيكسورا في أرقام", "Nexora at a glance")}
         >
-          <div className="visual-grid" />
-          <span className="visual-caption">LEARN. CONNECT. PROGRESS.</span>
-          <div className="orbit orbit-one" />
-          <div className="orbit orbit-two" />
-          <div className="growth-block block-one">
-            <span>01</span>
-          </div>
-          <div className="growth-block block-two">
-            <span>02</span>
-          </div>
-          <div className="growth-block block-three">
-            <span>03</span>
-          </div>
-          <div className="growth-block block-four">
-            <Sparkles size={30} />
-          </div>
-          <div className="float-card float-top">
-            <span className="icon-box">
-              <Target size={21} />
-            </span>
+          <BrandMark size={84} />
+          <dl>
             <div>
-              <strong>{t("فهم أعمق", "Deeper understanding")}</strong>
-              <small>
-                {t("خطوة أقرب لهدفك", "One step closer to your goal")}
-              </small>
+              <dt>{services.length}</dt>
+              <dd>{t("خدمة أكاديمية", "academic services")}</dd>
             </div>
-          </div>
-          <div className="float-card float-bottom">
-            <span className="icon-box teal">
-              <CheckCheck size={22} />
-            </span>
             <div>
-              <strong>{t("تقدّم بثقة", "Progress with confidence")}</strong>
-              <small>
-                {t(
-                  "معرفة اليوم. فرص الغد.",
-                  "Knowledge today. Possibilities tomorrow.",
-                )}
-              </small>
+              <dt>4</dt>
+              <dd>{t("مسارات أعمال", "business practices")}</dd>
             </div>
-          </div>
-          <span className="visual-bottom">N / A — YOUR NEXT CHAPTER</span>
+            <div>
+              <dt>{site.minimum}</dt>
+              <dd>{t("ر.س تبدأ منها الأسعار", "SAR starting price")}</dd>
+            </div>
+            <div>
+              <dt lang="en">AR · EN</dt>
+              <dd>{t("بلغتين", "bilingual")}</dd>
+            </div>
+          </dl>
+          <span className="hero-panel-foot" dir="ltr">
+            LEARN · BUILD · PROGRESS
+          </span>
+        </aside>
+      </section>
+      <section className="section" id="paths">
+        <SectionHeading
+          eyebrow={t("مساران، معيار واحد", "TWO PATHS, ONE STANDARD")}
+          title={t("اختر المسار الذي يناسبك", "Choose the path that fits you")}
+        />
+        <div className="paths">
+          {paths.map(({ id, Icon, label, title, text, items, links }) => (
+            <article className={`path-card path-${id}`} key={id}>
+              <div className="path-head">
+                <span className="icon-box">
+                  <Icon size={22} />
+                </span>
+                <span className="path-label">{label}</span>
+              </div>
+              <h3>{title}</h3>
+              <p>{text}</p>
+              <ul>
+                {items.map((item) => (
+                  <li key={item}>
+                    <Check size={16} />
+                    {item}
+                  </li>
+                ))}
+              </ul>
+              <div className="path-links">
+                {links.map(([to, text], i) => (
+                  <LocalizedLink
+                    key={to}
+                    to={to}
+                    className={i === 0 ? "button" : "button secondary"}
+                  >
+                    {text}
+                    {i === 0 && <ArrowLeft size={17} />}
+                  </LocalizedLink>
+                ))}
+              </div>
+            </article>
+          ))}
         </div>
       </section>
       <div className="trust-strip">
         {[
           [
             ShieldCheck,
-            t("نزاهة أكاديمية", "Academic integrity"),
-            t("تعلّم بمسؤولية", "Learn responsibly"),
+            t("الشفافية أولًا", "Transparency first"),
+            t("سعر ونطاق متفق عليهما مسبقًا", "Price and scope agreed upfront"),
           ],
           [
             Clock3,
-            t("مرونة في المواعيد", "Flexible deadlines"),
-            t("بما يناسب احتياجك", "Built around your needs"),
+            t("التزام بالمواعيد", "Reliable timelines"),
+            t(
+              "جداول واضحة ومتابعة مستمرة",
+              "Clear schedules, steady follow-up",
+            ),
           ],
           [
             MessageCircle,
-            t("تواصل مباشر", "Direct communication"),
-            t("كل التفاصيل أوضح", "Clarity at every step"),
+            t("بلغتين", "Bilingual by default"),
+            t(
+              "عربي وإنجليزي بالجودة نفسها",
+              "Arabic and English, same quality",
+            ),
           ],
           [
             Zap,
-            t("دعم متعدد التخصصات", "Across disciplines"),
-            t("من الشرح إلى CAD", "From guidance to CAD"),
+            t("خصوصية محفوظة", "Privacy respected"),
+            t(
+              "نطّلع فقط على ما تحتاجه الخدمة",
+              "We access only what the work needs",
+            ),
           ],
         ].map(([C, title, text]) => {
           const Comp = C as typeof ShieldCheck;
@@ -215,41 +272,13 @@ export function Home() {
           );
         })}
       </div>
-      <section className="section">
-        <div className="section-row">
-          <SectionHeading
-            eyebrow={t("مساحة أكبر لإمكاناتك", "MORE ROOM FOR YOUR POTENTIAL")}
-            title={t("دعم يناسب رحلتك", "Support for your journey")}
-            text={t(
-              "من أول سؤال إلى آخر مراجعة، نساعدك تفهم وتطوّر.",
-              "From your first question to your final review, build understanding and better work.",
-            )}
-          />
-          <LocalizedLink className="text-link" to="/services">
-            {t("جميع الخدمات والأسعار", "All services & pricing")}
-            <ArrowLeft size={17} />
-          </LocalizedLink>
-        </div>
-        <div className="services-grid">
-          {[
-            services[0],
-            services[2],
-            services[4],
-            services[1],
-            services[7],
-            services[8],
-          ].map((s, i) => (
-            <ServiceCard key={s.id} service={s} index={i} />
-          ))}
-        </div>
-      </section>
       <section className="section tinted">
         <SectionHeading
-          eyebrow={t(
-            "ببساطة، من البداية للنهاية",
-            "SIMPLE FROM START TO FINISH",
+          eyebrow={t("كيف نعمل", "HOW WE WORK")}
+          title={t(
+            "من الفكرة إلى النتيجة في ثلاث خطوات",
+            "From brief to result in three steps",
           )}
-          title={t("ثلاث خطوات، ورؤية أوضح", "Three steps. A clearer path.")}
         />
         <Steps />
       </section>
@@ -257,44 +286,47 @@ export function Home() {
         <div>
           <span className="eyebrow">{t("لماذا نيكسورا؟", "WHY NEXORA?")}</span>
           <h2>
-            {t("لأن الفهم هو", "Because understanding is")}
+            {t("انضباط المهندس،", "An engineer’s discipline,")}
             <br />
             <span className="gradient-text">
-              {t("بداية كل تقدّم.", "where progress begins.")}
+              {t("وحسّ الفنان.", "an artist’s eye.")}
             </span>
           </h2>
           <p>
             {t(
-              "دعم يضع تعلّمك أولًا، ويمنح عملك العناية التي يستحقها.",
-              "Support that puts your learning first and gives your work the attention it deserves.",
+              "نجمع خبرة عملية في الأتمتة والعمليات والتخطيط المالي مع حسٍّ فني يهتم بالتفاصيل، فيأتي العمل دقيقًا وجميلًا معًا.",
+              "We pair hands-on experience in automation, operations and financial planning with an artistic eye for detail, so the work is both rigorous and beautiful.",
             )}
           </p>
           <LocalizedLink className="text-link" to="/integrity">
-            {t("تعرّف على التزامنا الأكاديمي", "Our academic commitment")}
+            {t(
+              "التزامنا بالنزاهة الأكاديمية",
+              "Our academic integrity commitment",
+            )}
             <ArrowLeft size={17} />
           </LocalizedLink>
         </div>
         <div className="benefits">
           {[
             [
-              t("ملاحظات يمكنك العمل بها", "Feedback you can act on"),
+              t("نتائج يمكنك البناء عليها", "Results you can build on"),
               t(
-                "شرح واضح يساعدك تفهم أسباب التعديل وتطبّقه بنفسك.",
-                "Clear explanations help you understand each improvement and apply it yourself.",
+                "نشرح أسباب كل قرار وتعديل، لتفهم العمل وتطوّره بنفسك.",
+                "We explain the reasoning behind every decision and change, so you can understand and extend the work yourself.",
               ),
             ],
             [
               t("اتفاق واضح قبل البدء", "Clarity before we start"),
               t(
-                "نطاق وسعر وموعد متفق عليها، بلا مفاجآت.",
-                "An agreed scope, price and deadline, without surprises.",
+                "نطاق وسعر وموعد مكتوبة ومتفق عليها، بلا مفاجآت.",
+                "A written, agreed scope, price and timeline, without surprises.",
               ),
             ],
             [
-              t("عناية بالتفاصيل وبخصوصيتك", "Care for your work and privacy"),
+              t("عناية بالتفاصيل", "Care in every detail"),
               t(
-                "مراجعة منظمة، ومشاركة ملفاتك بالقدر اللازم للخدمة.",
-                "Structured review and access to files limited to what the service needs.",
+                "مراجعة منظّمة لكل تسليم، وحماية لملفاتك وبياناتك.",
+                "A structured review of every delivery, and protection for your files and data.",
               ),
             ],
           ].map(([a, b]) => (
@@ -312,7 +344,10 @@ export function Home() {
       </section>
       <section className="section testimonials">
         <SectionHeading
-          title={t("تجربة نتطلع إلى تقديمها", "The experience we aim to offer")}
+          title={t(
+            "التجربة التي نعمل لتقديمها",
+            "The experience we work to deliver",
+          )}
           text={t(
             "نماذج توضيحية مؤقتة — ليست شهادات عملاء حقيقيين.",
             "Temporary illustrative examples — not real customer testimonials.",
@@ -322,8 +357,8 @@ export function Home() {
           {[
             [
               t(
-                "«الملاحظات خطوة بخطوة جعلت نقاط التحسين أوضح بالنسبة لي.»",
-                "“Step-by-step feedback made it easier to see how to improve.”",
+                "«الملاحظات خطوة بخطوة جعلت نقاط التحسين في تقريري واضحة.»",
+                "“Step-by-step feedback made it clear how to improve my report.”",
               ),
               t(
                 "نموذج تجربة · مراجعة تقرير",
@@ -332,12 +367,12 @@ export function Home() {
             ],
             [
               t(
-                "«فهمت سبب الخطأ البرمجي، وصرت أقدر أصححه بنفسي.»",
-                "“I understood the cause of the bug and how to fix it myself.”",
+                "«خرجنا بهوية متكاملة ودليل استخدام يسهّل عمل فريقنا.»",
+                "“We came away with a complete identity and a guide our team can actually use.”",
               ),
               t(
-                "نموذج تجربة · دعم برمجي",
-                "Example experience · coding guidance",
+                "نموذج تجربة · هوية تجارية",
+                "Example experience · brand identity",
               ),
             ],
           ].map(([a, b]) => (
@@ -361,13 +396,14 @@ export function Services() {
   return (
     <>
       <PageIntro
+        eyebrow="NEXORA ACADEMIC"
         title={t(
-          "خدمات مرنة. أسعار واضحة.",
-          "Flexible support. Transparent pricing.",
+          "دعم أكاديمي بأسعار واضحة.",
+          "Academic support, clearly priced.",
         )}
         subtitle={t(
-          "اختر الدعم الذي تحتاجه، واترك مساحة للتقدّم.",
-          "Choose the support you need and make room for progress.",
+          "اختر ما تحتاجه — من شرح مسألة إلى إرشاد مشروع تخرج — واعرف السعر قبل أن تبدأ.",
+          "Choose what you need — from a single problem to a graduation project — and know the price before you start.",
         )}
       />
       <div
@@ -441,13 +477,10 @@ export function How() {
   return (
     <>
       <PageIntro
-        title={t(
-          "من احتياجك إلى خطوتك القادمة",
-          "From your needs to your next step",
-        )}
+        title={t("كيف نعمل", "How we work")}
         subtitle={t(
-          "رحلة بسيطة، وتواصل واضح في كل مرحلة.",
-          "A simple process with clear communication at every stage.",
+          "الخطوات نفسها لكل طلب، أكاديميًا كان أو مشروع أعمال: تواصل واضح واتفاق مكتوب قبل البدء.",
+          "The same steps for every request, academic or business: clear communication and a written agreement before we start.",
         )}
       />
       <h2 className="visually-hidden">{t("خطوات الطلب", "Request steps")}</h2>
@@ -495,8 +528,14 @@ export const faqs = [
   [
     "ما الخدمات التي تقدمها نيكسورا؟",
     "What does Nexora offer?",
-    "نقدم الشرح والمراجعة والتدقيق وتطوير التقارير والعروض، ودعم البرمجة وCAD والإرشاد في مشاريع التخرج.",
-    "Explanation, review, proofreading, report and presentation improvement, programming and CAD support, and graduation project mentoring.",
+    "مساران: نيكسورا أكاديمي (شرح ومراجعة وتدقيق، وتطوير التقارير والعروض، ودعم البرمجة وCAD، وإرشاد مشاريع التخرج)، واستوديو نيكسورا للأعمال (الهوية التجارية، وتطوير المنتجات وتطبيقات الويب، والاستشارات الصناعية).",
+    "Two paths: Nexora Academic (explanation, review, proofreading, report and presentation improvement, programming and CAD support, graduation project mentoring) and Nexora Studio for businesses (branding, product and web app development, industrial consulting).",
+  ],
+  [
+    "كيف تُسعّر مشاريع الاستوديو؟",
+    "How are Studio projects priced?",
+    "كل مشروع يُسعّر حسب نطاقه بعد جلسة تعريفية مجانية، ونرسل عرضًا مكتوبًا بالمخرجات والجدول الزمني قبل البدء.",
+    "Each project is quoted on its scope after a free discovery call. You receive a written proposal with deliverables and timeline before we start.",
   ],
   [
     "هل تنفذون الاختبارات أو الأعمال بدلًا عن الطالب؟",

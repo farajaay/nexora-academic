@@ -6,7 +6,7 @@ test("home, language, responsive layout and navigation", async ({
   const errors: string[] = [];
   page.on("pageerror", (e) => errors.push(e.message));
   await page.goto("./");
-  await expect(page.locator("h1")).toContainText("دعم أكاديمي");
+  await expect(page.locator("h1")).toContainText("نصنع الوضوح");
   await expect(page.locator("html")).toHaveAttribute("dir", "rtl");
   expect(
     await page.evaluate(
@@ -20,7 +20,7 @@ test("home, language, responsive layout and navigation", async ({
   await page.getByRole("button", { name: "Switch to English" }).click();
   await expect(page).toHaveURL(/\/en\/?$/);
   await expect(page.locator("html")).toHaveAttribute("dir", "ltr");
-  await expect(page.locator("h1")).toContainText("Clearer");
+  await expect(page.locator("h1")).toContainText("We craft clarity");
   await page.reload();
   await expect(page.locator("html")).toHaveAttribute("lang", "en");
   expect(
@@ -36,14 +36,14 @@ test("home, language, responsive layout and navigation", async ({
     await page.getByRole("button", { name: "Menu", exact: true }).click();
     await page
       .locator("#mobile-nav")
-      .getByRole("link", { name: "Price calculator" })
+      .getByRole("link", { name: "Studio" })
       .click();
   } else
     await page
       .locator(".desktop-nav")
-      .getByRole("link", { name: "Price calculator" })
+      .getByRole("link", { name: "Studio" })
       .click();
-  await expect(page).toHaveURL(/calculator/);
+  await expect(page).toHaveURL(/studio/);
   expect(errors).toEqual([]);
 });
 test("calculator computes prices and prefills every selection", async ({
@@ -202,7 +202,9 @@ test("direct load of an /en/ URL renders English with no flash", async ({
   await page.goto("./en/services/", { waitUntil: "commit" });
   await expect(page.locator("html")).toHaveAttribute("lang", "en");
   await expect(page.locator("html")).toHaveAttribute("dir", "ltr");
-  await expect(page.locator("h1")).toContainText("Flexible support");
+  await expect(page.locator("h1")).toContainText(
+    "Academic support, clearly priced",
+  );
 });
 test("toggling language rewrites the current URL, and internal links stay localized", async ({
   page,
@@ -210,7 +212,9 @@ test("toggling language rewrites the current URL, and internal links stay locali
   await page.goto("./services/");
   await page.getByRole("button", { name: "Switch to English" }).click();
   await expect(page).toHaveURL(/\/en\/services\/?$/);
-  await expect(page.locator("h1")).toContainText("Flexible support");
+  await expect(page.locator("h1")).toContainText(
+    "Academic support, clearly priced",
+  );
   await page
     .locator(".footer-grid")
     .getByRole("link", { name: "Price calculator" })
@@ -222,74 +226,49 @@ test("toggling language rewrites the current URL, and internal links stay locali
   await expect(page).toHaveURL(/\/calculator\/?$/);
   await expect(page).not.toHaveURL(/\/en\//);
 });
-test("site theme defaults to Dreamy Developer without a database", async ({
-  page,
-}) => {
+test("site theme defaults to dark without a database", async ({ page }) => {
   await page.route("**/rest/v1/site_settings*", (route) => route.abort());
-  // The admin picker itself (rendering all 7 options, disabling them and
-  // explaining why, saving, and persisting across reload) requires a real
-  // admin session and is covered by tests/e2e/backend.spec.ts, which skips
-  // without live credentials -- there is no way to reach the authorized
-  // admin view here.
+  // The admin default picker requires a real admin session and is covered
+  // by tests/e2e/backend.spec.ts, which skips without live credentials.
   for (const route of ["", "en/", "contact/", "admin/"]) {
     await page.goto(`./${route}`, { waitUntil: "commit" });
-    await expect(page.locator("html")).toHaveAttribute("data-theme", "dreamy");
+    await expect(page.locator("html")).toHaveAttribute("data-theme", "dark");
   }
 });
 
-test("visitor themes persist across routes, languages and reloads; reset follows default", async ({
+test("dark mode persists across routes, languages and reloads", async ({
   page,
-}, info) => {
+}) => {
   await page.route("**/rest/v1/site_settings*", (route) =>
-    route.fulfill({ json: { theme: "dreamy" } }),
+    route.fulfill({ json: { theme: "light" } }),
   );
   await page.goto("./en/contact/");
-  await page.locator("#name").fill("Theme preservation");
-  await page.getByLabel("Choose theme", { exact: true }).click();
-  for (const [id, name] of [
-    ["emerald", "Emerald Scholar"],
-    ["violet", "Royal Violet"],
-    ["lime", "Midnight Lime"],
-    ["sandstone", "Golden Sandstone"],
-    ["nebula", "Nebula Indigo"],
-    ["dreamy", "Dreamy Developer"],
-    ["clay", "Canyon Clay"],
-  ]) {
-    await page.getByRole("button", { name, exact: true }).click();
-    await expect(page.locator("html")).toHaveAttribute("data-theme", id);
-    await expect(page.locator("#name")).toHaveValue("Theme preservation");
-  }
-  await page.keyboard.press("Escape");
+  await page.waitForLoadState("networkidle");
+  const html = page.locator("html");
+  await page.locator("#name").fill("Mode preservation");
+  const toggle = page.getByRole("button", { name: "Dark mode", exact: true });
+  // Turn dark mode on from whichever mode the site default produced.
+  if ((await html.getAttribute("data-theme")) === "dark") await toggle.click();
+  await expect(html).toHaveAttribute("data-theme", "light");
+  await toggle.click();
+  await expect(html).toHaveAttribute("data-theme", "dark");
+  await expect(toggle).toHaveAttribute("aria-pressed", "true");
+  await expect(page.locator("#name")).toHaveValue("Mode preservation");
   await page.reload();
-  await expect(page.locator("html")).toHaveAttribute("data-theme", "clay");
+  await expect(html).toHaveAttribute("data-theme", "dark");
   await page.getByRole("button", { name: "التبديل إلى العربية" }).click();
-  await expect(page.locator("html")).toHaveAttribute("data-theme", "clay");
-  await page.getByLabel("اختيار المظهر", { exact: true }).click();
-  await page.screenshot({ path: `artifacts/${info.project.name}-themes.png` });
-  expect(
-    await page.evaluate(
-      () => document.documentElement.scrollWidth <= innerWidth,
-    ),
-  ).toBeTruthy();
-  await page
-    .getByRole("button", { name: "استخدام مظهر الموقع الافتراضي" })
-    .click();
-  await expect(page.locator("html")).toHaveAttribute("data-theme", "dreamy");
+  await expect(html).toHaveAttribute("data-theme", "dark");
+  await page.getByRole("button", { name: "الوضع الداكن", exact: true }).click();
+  await expect(html).toHaveAttribute("data-theme", "light");
 });
 
-test("all seven theme menus meet contrast requirements", async ({ page }) => {
+test("light and dark modes meet contrast requirements", async ({ page }) => {
   await page.goto("./en/");
-  await page.getByLabel("Choose theme", { exact: true }).click();
-  for (const name of [
-    "Emerald Scholar",
-    "Royal Violet",
-    "Midnight Lime",
-    "Golden Sandstone",
-    "Nebula Indigo",
-    "Canyon Clay",
-    "Dreamy Developer",
-  ]) {
-    await page.getByRole("button", { name, exact: true }).click();
+  const toggle = page.getByRole("button", { name: "Dark mode", exact: true });
+  for (const mode of ["light", "dark"]) {
+    if ((await page.locator("html").getAttribute("data-theme")) !== mode)
+      await toggle.click();
+    await expect(page.locator("html")).toHaveAttribute("data-theme", mode);
     const result = await new AxeBuilder({ page })
       .withTags(["wcag2a", "wcag2aa", "wcag21aa"])
       .analyze();
@@ -298,7 +277,7 @@ test("all seven theme menus meet contrast requirements", async ({ page }) => {
         id: v.id,
         nodes: v.nodes.map((n) => n.target),
       })),
-      name,
+      mode,
     ).toEqual([]);
   }
 });

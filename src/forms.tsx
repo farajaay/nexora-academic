@@ -480,10 +480,10 @@ export function Contact() {
   return (
     <>
       <PageIntro
-        title={t("لنبدأ من احتياجك", "Let’s start with what you need")}
+        title={t("ابدأ طلبك", "Start your request")}
         subtitle={t(
-          "أخبرنا بالتفاصيل، ونراجعها معك خطوة بخطوة.",
-          "Share the details and we’ll review them with you, step by step.",
+          "هذا النموذج للطلبات الأكاديمية. لمشاريع الاستوديو، تواصل معنا مباشرة من صفحة الاستوديو.",
+          "This form is for academic requests. For Studio projects, contact us directly from the Studio page.",
         )}
       />
       <div className="form-layout">

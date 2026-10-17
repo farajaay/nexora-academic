@@ -52,20 +52,39 @@ export function useLocalizedNavigate() {
   return (to: string, options?: NavigateOptions) =>
     navigate(localize(to, lang), options);
 }
+// The mark: an N whose last stroke rises toward a spark -- learning that
+// turns into building. Drawn inline so it follows the light/dark tokens.
+export function BrandMark({ size = 40 }: { size?: number }) {
+  return (
+    <svg
+      className="brand-mark"
+      viewBox="0 0 48 48"
+      width={size}
+      height={size}
+      aria-hidden="true"
+    >
+      <rect width="48" height="48" rx="14" fill="var(--primary)" />
+      <path
+        d="M14 34V14l20 20V23"
+        fill="none"
+        stroke="var(--on-primary)"
+        strokeWidth="4.5"
+        strokeLinecap="round"
+        strokeLinejoin="round"
+      />
+      <circle cx="34" cy="14.5" r="3.4" fill="var(--logo-dot)" />
+    </svg>
+  );
+}
 export function Logo() {
   const { lang } = useLanguage();
   return (
     <LocalizedLink to="/" className="brand" aria-label={site.name[lang]}>
-      <img
-        src={`${import.meta.env.BASE_URL}brand-mark.svg`}
-        width="42"
-        height="46"
-        alt=""
-      />
+      <BrandMark />
       <span dir="ltr">
         <strong>Nexora</strong>
         <small>
-          {lang === "ar" ? "تعلّم. ابنِ. تقدّم." : "Learn. Build. Progress."}
+          {lang === "ar" ? "تعلّم · ابنِ · تقدّم" : "Learn · Build · Progress"}
         </small>
       </span>
     </LocalizedLink>

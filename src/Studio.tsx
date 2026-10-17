@@ -2,12 +2,15 @@ import {
   Check,
   Code2,
   Factory,
+  Mail,
+  MessageCircle,
   Palette,
   Smartphone,
   type LucideIcon,
 } from "lucide-react";
 import { useRef, useState, type KeyboardEvent } from "react";
-import { LocalizedLink, PageIntro, useLanguage } from "./ui";
+import { contactReady, site } from "./config/site";
+import { PageIntro, useLanguage } from "./ui";
 
 type Bi = readonly [ar: string, en: string];
 type StudioService = {
@@ -150,18 +153,19 @@ export function Studio() {
     tabs.current[next]?.focus();
   }
   const s = studio[active];
+  const inquiry = t(
+    `استفسار استوديو نيكسورا: ${s.name[0]}`,
+    `Nexora Studio inquiry: ${s.name[1]}`,
+  );
   const Icon = s.icon;
   return (
     <>
       <PageIntro
         eyebrow="NEXORA STUDIO"
-        title={t(
-          "خدمات احترافية للأعمال.",
-          "Professional services for business.",
-        )}
+        title={t("من الفكرة إلى أثر ملموس.", "From idea to measurable impact.")}
         subtitle={t(
-          "هوية، منتجات، تطبيقات ويب، واستشارات صناعية — بنفس الوضوح والدقة.",
-          "Branding, products, web apps and industrial consulting — with the same clarity and care.",
+          "هوية تجارية، ومنتجات رقمية، وتطبيقات ويب، واستشارات صناعية — بانضباط هندسي وحسٍّ فني.",
+          "Brand identity, digital products, web apps and industrial consulting — with engineering discipline and an artist’s eye.",
         )}
       />
       <div
@@ -236,9 +240,36 @@ export function Studio() {
               "Every project is quoted on its scope after a free discovery call.",
             )}
           </p>
-          <LocalizedLink to="/contact" className="button">
-            {t("اطلب عرض سعر", "Request a quote")}
-          </LocalizedLink>
+          <div className="studio-contact">
+            {contactReady.whatsapp && (
+              <a
+                className="button"
+                href={`https://wa.me/${site.whatsapp}?text=${encodeURIComponent(inquiry)}`}
+                target="_blank"
+                rel="noopener noreferrer"
+              >
+                <MessageCircle size={18} aria-hidden="true" />
+                {t("اطلب عرض سعر عبر واتساب", "Request a quote on WhatsApp")}
+              </a>
+            )}
+            {contactReady.email && (
+              <a
+                className="button secondary"
+                href={`mailto:${site.email}?subject=${encodeURIComponent(inquiry)}`}
+              >
+                <Mail size={18} aria-hidden="true" />
+                {t("راسلنا بالبريد", "Email us")}
+              </a>
+            )}
+            {!contactReady.whatsapp && !contactReady.email && (
+              <span className="field-hint">
+                {t(
+                  "قنوات التواصل قيد التجهيز وستظهر هنا قريبًا.",
+                  "Contact channels are being set up and will appear here soon.",
+                )}
+              </span>
+            )}
+          </div>
         </div>
       </section>
     </>
