@@ -28,10 +28,9 @@ import "./index.css";
 const Admin = lazy(() => import("./Admin"));
 const nav = [
   ["/", "الرئيسية", "Home"],
-  ["/services", "الخدمات والأسعار", "Services & pricing"],
+  ["/services", "الأكاديمي", "Academic"],
   ["/studio", "الاستوديو", "Studio"],
-  ["/how-it-works", "آلية الطلب", "How it works"],
-  ["/calculator", "حاسبة السعر", "Price calculator"],
+  ["/how-it-works", "كيف نعمل", "How we work"],
   ["/faq", "الأسئلة الشائعة", "FAQ"],
 ] as const;
 // One shared source of truth for route metadata (src/config/routes.ts) drives
@@ -183,7 +182,7 @@ function Shell() {
               <span>{t("EN", "عربي")}</span>
             </button>
             <LocalizedLink className="button nav-cta" to="/contact">
-              {t("اطلب الخدمة", "Get started")}
+              {t("ابدأ طلبك", "Start a request")}
             </LocalizedLink>
             <button
               className="menu-button"
@@ -235,21 +234,21 @@ function Shell() {
             <Logo />
             <p>
               {t(
-                "معرفة اليوم. إمكانات أكبر للغد.",
-                "Knowledge today. Greater possibilities tomorrow.",
+                "نصنع الوضوح في التعلّم والأعمال.",
+                "We craft clarity for learners and businesses.",
               )}
             </p>
             <span className="footer-tag">
               {t(
-                "حلول أكاديمية وأعمال سعودية، برؤية أوضح.",
-                "Saudi academic & business solutions. A clearer perspective.",
+                "من السعودية، بلغتين، وبمعيار واحد.",
+                "From Saudi Arabia. Bilingual. One standard.",
               )}
             </span>
           </div>
           <div>
             <h3>{t("اكتشف نيكسورا", "Explore Nexora")}</h3>
             <LocalizedLink to="/services">
-              {t("الخدمات والأسعار", "Services & pricing")}
+              {t("الخدمات الأكاديمية", "Academic services")}
             </LocalizedLink>
             <LocalizedLink to="/studio">
               {t("خدمات الاستوديو", "Studio services")}
@@ -258,7 +257,7 @@ function Shell() {
               {t("حاسبة السعر", "Price calculator")}
             </LocalizedLink>
             <LocalizedLink to="/how-it-works">
-              {t("آلية الطلب", "How it works")}
+              {t("كيف نعمل", "How we work")}
             </LocalizedLink>
           </div>
           <div>

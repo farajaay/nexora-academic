@@ -20,17 +20,20 @@ export const publicRoutes: RouteMeta[] = [
   {
     path: "",
     title: {
-      ar: "دعم أكاديمي أوضح، أسرع، وأكثر احترافية",
-      en: "Clearer academic support",
+      ar: "دعم أكاديمي واستوديو أعمال",
+      en: "Academic support & business studio",
     },
     description: {
-      ar: "شرح ومراجعة وتطوير للأعمال الأكاديمية للثانوية والجامعة والدراسات العليا.",
-      en: "Explanation, review and academic development for school, university and postgraduate students.",
+      ar: "دعم أكاديمي يرسّخ الفهم، وخدمات هوية ومنتجات وتطبيقات ويب واستشارات صناعية للأعمال.",
+      en: "Academic support that builds understanding, plus branding, product, web app and industrial consulting for businesses.",
     },
   },
   {
     path: "services",
-    title: { ar: "الخدمات والأسعار", en: "Services & pricing" },
+    title: {
+      ar: "الخدمات الأكاديمية والأسعار",
+      en: "Academic services & pricing",
+    },
     description: {
       ar: "أسعار تبدأ من 40 ر.س للشرح والمراجعة والتدقيق والبرمجة وCAD.",
       en: "Academic support pricing from SAR 40: explanation, review, proofreading, coding and CAD.",
@@ -46,10 +49,10 @@ export const publicRoutes: RouteMeta[] = [
   },
   {
     path: "how-it-works",
-    title: { ar: "آلية الطلب", en: "How it works" },
+    title: { ar: "كيف نعمل", en: "How we work" },
     description: {
-      ar: "تعرف على خطوات إرسال الطلب ومراجعة النطاق وتأكيد السعر.",
-      en: "Learn how to submit a request, review scope and confirm the price.",
+      ar: "خطوات واضحة من إرسال التفاصيل إلى الاتفاق على النطاق والتسليم.",
+      en: "Clear steps from sharing your brief to agreeing scope and delivery.",
     },
   },
   {
@@ -62,7 +65,7 @@ export const publicRoutes: RouteMeta[] = [
   },
   {
     path: "contact",
-    title: { ar: "تواصل معنا واطلب الخدمة", en: "Contact & request a service" },
+    title: { ar: "ابدأ طلبك", en: "Start your request" },
     description: {
       ar: "أرسل تفاصيل طلب الدعم الأكاديمي بأمان أو جهّز رسالة واتساب وبريد.",
       en: "Submit your academic support request or prepare a WhatsApp or email message.",

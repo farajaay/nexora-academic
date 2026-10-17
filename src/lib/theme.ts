@@ -59,6 +59,10 @@ let preference: ThemeId | null = null;
 export function getThemePreference() {
   return preference;
 }
+/** The mode currently shown: the visitor's choice, else the site default. */
+export function getActiveTheme(): ThemeId {
+  return preference ?? siteTheme;
+}
 export function updateSiteTheme(id: ThemeId) {
   siteTheme = id;
   applyTheme(preference ?? siteTheme);

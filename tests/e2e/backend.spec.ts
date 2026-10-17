@@ -208,7 +208,7 @@ test("admin publishes site default while visitors keep personal choices", async 
     .single();
   expect(before.error).toBeNull();
   const original = before.data!.theme;
-  const next = original === "violet" ? "emerald" : "violet";
+  const next = original === "dark" ? "light" : "dark";
   try {
     await page.goto("./en/admin/");
     await page.locator("#admin-email").fill(creds.email);
@@ -218,10 +218,10 @@ test("admin publishes site default while visitors keep personal choices", async 
       .locator(".account-settings")
       .filter({ has: page.locator(".theme-grid") });
     await panel.locator("summary").click();
-    await expect(panel.locator(".theme-option")).toHaveCount(6);
+    await expect(panel.locator(".theme-option")).toHaveCount(2);
     await panel
       .getByRole("button", {
-        name: next === "violet" ? /Royal Violet/ : /Emerald Scholar/,
+        name: next === "dark" ? /Dark/ : /Light/,
       })
       .click();
     await expect(panel.getByRole("status")).toContainText(
@@ -230,15 +230,15 @@ test("admin publishes site default while visitors keep personal choices", async 
     const visitor = await context.newPage();
     await visitor.goto("./en/");
     await expect(visitor.locator("html")).toHaveAttribute("data-theme", next);
-    await visitor.getByLabel("Choose theme", { exact: true }).click();
+    const mine = next === "dark" ? "light" : "dark";
     await visitor
-      .getByRole("button", { name: "Canyon Clay", exact: true })
+      .getByRole("button", { name: "Dark mode", exact: true })
       .click();
     await visitor.reload();
-    await expect(visitor.locator("html")).toHaveAttribute("data-theme", "clay");
+    await expect(visitor.locator("html")).toHaveAttribute("data-theme", mine);
     await page.reload(); // auth intentionally expires on reload
     await expect(page.locator("#admin-password")).toBeVisible();
-    await expect(page.locator("html")).toHaveAttribute("data-theme", "clay");
+    await expect(page.locator("html")).toHaveAttribute("data-theme", mine);
     expect(
       (
         await operator
