@@ -40,9 +40,9 @@ navy + electric blue, device mockups, "Your Vision. Our Digital Expertise.").
    its own nav item; keep all existing URLs working.
 3. **Agency lead form:** new Supabase table + RLS + admin list; WhatsApp and
    email handoff.
-4. **Pages:** Home (agency hero + services grid + portfolio teaser + process
-   - CTA), About, Portfolio, service detail pages, Contact; restyle the
-     Academic pages.
+4. **Pages:** Home (agency hero, services grid, portfolio teaser, process,
+   call to action), About, Portfolio, service detail pages, Contact; restyle
+   the Academic pages.
 5. **Copy:** agency-voice rewrite in Arabic and English.
 6. **SEO:** schema `Organization` / `ProfessionalService`, titles, sitemap,
    and a custom domain if one is owned (CNAME + Vite `base` + `site.url`).
