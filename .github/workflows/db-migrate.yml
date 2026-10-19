@@ -1,0 +1,53 @@
+name: Apply database migration
+# Manually runs ONE migration file from supabase/migrations against the
+# Supabase Postgres database, inside a single transaction.
+# Requires the repository secret SUPABASE_DB_URL: the database connection
+# string from Supabase → Project Settings → Database → Connection string
+# (URI, with the password filled in). Never commit it.
+on:
+  workflow_dispatch:
+    inputs:
+      migration:
+        description: "Migration file name in supabase/migrations"
+        required: true
+        default: "20261017160000_site_settings_theme_modes.sql"
+permissions:
+  contents: read
+concurrency:
+  group: db-migrate
+  cancel-in-progress: false
+jobs:
+  migrate:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - name: Check inputs and secret
+        env:
+          MIGRATION: ${{ inputs.migration }}
+          SUPABASE_DB_URL: ${{ secrets.SUPABASE_DB_URL }}
+        run: |
+          if [ -z "$SUPABASE_DB_URL" ]; then
+            echo "::error::Repository secret SUPABASE_DB_URL is not set."
+            exit 1
+          fi
+          if ! printf '%s' "$MIGRATION" | grep -Eq '^[0-9]{14}_[a-z0-9_]+\.sql$'; then
+            echo "::error::Invalid migration name: $MIGRATION"
+            exit 1
+          fi
+          test -f "supabase/migrations/$MIGRATION" || {
+            echo "::error::Not found: supabase/migrations/$MIGRATION"
+            exit 1
+          }
+      - name: Install PostgreSQL client
+        run: sudo apt-get update -q && sudo apt-get install -yq postgresql-client
+      - name: Apply migration
+        env:
+          MIGRATION: ${{ inputs.migration }}
+          SUPABASE_DB_URL: ${{ secrets.SUPABASE_DB_URL }}
+        run: |
+          psql "$SUPABASE_DB_URL" -v ON_ERROR_STOP=1 --single-transaction \
+            -f "supabase/migrations/$MIGRATION"
+      - name: Show stored site theme
+        env:
+          SUPABASE_DB_URL: ${{ secrets.SUPABASE_DB_URL }}
+        run: psql "$SUPABASE_DB_URL" -c "select id, theme from public.site_settings;"
