@@ -6,7 +6,7 @@ test("home, language, responsive layout and navigation", async ({
   const errors: string[] = [];
   page.on("pageerror", (e) => errors.push(e.message));
   await page.goto("./");
-  await expect(page.locator("h1")).toContainText("نصنع الوضوح");
+  await expect(page.locator("h1")).toContainText("رؤيتك");
   await expect(page.locator("html")).toHaveAttribute("dir", "rtl");
   expect(
     await page.evaluate(
@@ -20,7 +20,7 @@ test("home, language, responsive layout and navigation", async ({
   await page.getByRole("button", { name: "Switch to English" }).click();
   await expect(page).toHaveURL(/\/en\/?$/);
   await expect(page.locator("html")).toHaveAttribute("dir", "ltr");
-  await expect(page.locator("h1")).toContainText("We craft clarity");
+  await expect(page.locator("h1")).toContainText("Your Vision");
   await page.reload();
   await expect(page.locator("html")).toHaveAttribute("lang", "en");
   expect(
@@ -36,14 +36,14 @@ test("home, language, responsive layout and navigation", async ({
     await page.getByRole("button", { name: "Menu", exact: true }).click();
     await page
       .locator("#mobile-nav")
-      .getByRole("link", { name: "Studio" })
+      .getByRole("link", { name: "Portfolio" })
       .click();
   } else
     await page
       .locator(".desktop-nav")
-      .getByRole("link", { name: "Studio" })
+      .getByRole("link", { name: "Portfolio" })
       .click();
-  await expect(page).toHaveURL(/studio/);
+  await expect(page).toHaveURL(/portfolio/);
   expect(errors).toEqual([]);
 });
 test("calculator computes prices and prefills every selection", async ({
@@ -75,7 +75,7 @@ test("calculator computes prices and prefills every selection", async ({
 test("form validates, preserves fields on language switch and gates unconfigured contact channels", async ({
   page,
 }) => {
-  await page.goto("./contact/");
+  await page.goto("./contact/?type=academic");
   await page.getByRole("button", { name: "نسخ الطلب" }).click();
   await expect(page.locator("#name-error")).toBeVisible();
   await expect(page.locator("#phone-error")).toBeVisible();
@@ -131,6 +131,9 @@ test("accessibility: every route", async ({ page }) => {
     "how-it-works/",
     "calculator/",
     "contact/",
+    "studio/",
+    "portfolio/",
+    "about/",
     "faq/",
     "privacy/",
     "terms/",
@@ -169,7 +172,7 @@ test("accessibility: every route", async ({ page }) => {
 test("attachment picker validates, removes files and fits the screen", async ({
   page,
 }, info) => {
-  await page.goto("./contact/");
+  await page.goto("./contact/?type=academic");
   const input = page.locator("#attachments");
   await input.setInputFiles({
     name: "bad.exe",
@@ -243,7 +246,7 @@ test("dark mode persists across routes, languages and reloads", async ({
   await page.route("**/rest/v1/site_settings*", (route) =>
     route.fulfill({ json: { theme: "light" } }),
   );
-  await page.goto("./en/contact/");
+  await page.goto("./en/contact/?type=academic");
   await page.waitForLoadState("networkidle");
   const html = page.locator("html");
   await page.locator("#name").fill("Mode preservation");
@@ -281,4 +284,33 @@ test("light and dark modes meet contrast requirements", async ({ page }) => {
       mode,
     ).toEqual([]);
   }
+});
+
+test("project brief opens WhatsApp with the chosen service", async ({
+  page,
+}) => {
+  await page.addInitScript(() => {
+    (window as unknown as { opened: string[] }).opened = [];
+    window.open = (url?: string | URL) => {
+      (window as unknown as { opened: string[] }).opened.push(String(url));
+      return null;
+    };
+  });
+  await page.goto("./en/studio/#uiux");
+  await expect(
+    page.getByRole("tab", { name: "UI/UX design", exact: true }),
+  ).toHaveAttribute("aria-selected", "true");
+  const form = page.locator("#start");
+  await form.getByRole("button", { name: "Send via WhatsApp" }).click();
+  await expect(page.locator("#pf-name-error")).toBeVisible();
+  await page.locator("#pf-name").fill("Test Client");
+  await page.locator("#pf-details").fill("A redesign for our clinic website.");
+  await expect(page.locator("#pf-service")).toHaveValue("uiux");
+  await form.getByRole("button", { name: "Send via WhatsApp" }).click();
+  const opened = await page.evaluate(
+    () => (window as unknown as { opened: string[] }).opened,
+  );
+  expect(opened).toHaveLength(1);
+  expect(opened[0]).toContain("https://wa.me/966554517103?text=");
+  expect(decodeURIComponent(opened[0])).toContain("UI/UX design");
 });

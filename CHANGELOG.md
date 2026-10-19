@@ -2,6 +2,11 @@
 
 ## Unreleased
 
+- Redesign v2 — NEXORA Digital Solutions: agency-first site with a new X mark and NEXORA wordmark (gradient X), dark navy + electric blue identity (dark default, light optional), Montserrat display type.
+- Seven agency services (website development, brand identity, UI/UX, content production, digital solutions, product development, industrial consultation) with deep links (`/studio#<id>`).
+- New pages: Portfolio (clearly labelled concept projects with generated covers) and About. Navigation: Home · Services · Portfolio · About · Academic · Contact.
+- Project brief form (name, company, service, budget, timeline, details) that opens WhatsApp; the Contact page switches between it and the academic request form (`?type=academic`).
+- Academic support kept as a secondary section; schema type is now `ProfessionalService`.
 - Full redesign: new editorial identity (adapted from the Dreamy Developer portfolio) with a new logo mark, Newsreader display headings, pill navigation and flat, very round surfaces.
 - One blue-lilac identity in two modes (dark by default, plus light) replaces the seven named themes; visitors switch with a header toggle. Migration `20261017160000_site_settings_theme_modes.sql`.
 - Home rebuilt to give Academic and Studio equal weight; navigation is now Home · Academic · Studio · How we work · FAQ.

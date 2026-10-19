@@ -24,14 +24,16 @@ import { LanguageContext, LocalizedLink, LocalizedNavLink, Logo } from "./ui";
 import { FAQ, Home, How, Legal, NotFound, Services } from "./pages";
 import { Calculator, Contact, Success } from "./forms";
 import { Studio } from "./Studio";
+import { About, Portfolio } from "./Agency";
 import "./index.css";
 const Admin = lazy(() => import("./Admin"));
 const nav = [
   ["/", "الرئيسية", "Home"],
+  ["/studio", "الخدمات", "Services"],
+  ["/portfolio", "أعمالنا", "Portfolio"],
+  ["/about", "من نحن", "About"],
   ["/services", "الأكاديمي", "Academic"],
-  ["/studio", "الاستوديو", "Studio"],
-  ["/how-it-works", "كيف نعمل", "How we work"],
-  ["/faq", "الأسئلة الشائعة", "FAQ"],
+  ["/contact", "تواصل", "Contact"],
 ] as const;
 // One shared source of truth for route metadata (src/config/routes.ts) drives
 // both this router and scripts/seo.mjs's static document generation, so the
@@ -46,6 +48,8 @@ const elementByPath: Record<string, ReactNode> = {
   "": <Home />,
   services: <Services />,
   studio: <Studio />,
+  portfolio: <Portfolio />,
+  about: <About />,
   "how-it-works": <How />,
   calculator: <Calculator />,
   contact: <Contact />,
@@ -181,8 +185,8 @@ function Shell() {
               <Globe2 size={17} />
               <span>{t("EN", "عربي")}</span>
             </button>
-            <LocalizedLink className="button nav-cta" to="/contact">
-              {t("ابدأ طلبك", "Start a request")}
+            <LocalizedLink className="button nav-cta" to="/studio#start">
+              {t("ابدأ مشروعك", "Start a project")}
             </LocalizedLink>
             <button
               className="menu-button"
@@ -201,17 +205,11 @@ function Shell() {
             className="mobile-nav"
             aria-label={t("قائمة الهاتف", "Mobile navigation")}
           >
-            {[...nav, ["/contact", "تواصل معنا", "Contact"]].map(
-              ([to, ar, en]) => (
-                <LocalizedNavLink
-                  key={to}
-                  to={to}
-                  onClick={() => setMenu(false)}
-                >
-                  {t(ar, en)}
-                </LocalizedNavLink>
-              ),
-            )}
+            {nav.map(([to, ar, en]) => (
+              <LocalizedNavLink key={to} to={to} onClick={() => setMenu(false)}>
+                {t(ar, en)}
+              </LocalizedNavLink>
+            ))}
           </nav>
         )}
       </header>
@@ -234,8 +232,8 @@ function Shell() {
             <Logo />
             <p>
               {t(
-                "نصنع الوضوح في التعلّم والأعمال.",
-                "We craft clarity for learners and businesses.",
+                "نصمّم ونطوّر ونبني تجارب رقمية ترتقي بعلامتك.",
+                "We design, develop and build digital experiences that elevate your brand.",
               )}
             </p>
             <span className="footer-tag">
@@ -247,11 +245,15 @@ function Shell() {
           </div>
           <div>
             <h3>{t("اكتشف نيكسورا", "Explore Nexora")}</h3>
+            <LocalizedLink to="/studio">
+              {t("خدماتنا", "Our services")}
+            </LocalizedLink>
+            <LocalizedLink to="/portfolio">
+              {t("أعمالنا", "Portfolio")}
+            </LocalizedLink>
+            <LocalizedLink to="/about">{t("من نحن", "About us")}</LocalizedLink>
             <LocalizedLink to="/services">
               {t("الخدمات الأكاديمية", "Academic services")}
-            </LocalizedLink>
-            <LocalizedLink to="/studio">
-              {t("خدمات الاستوديو", "Studio services")}
             </LocalizedLink>
             <LocalizedLink to="/calculator">
               {t("حاسبة السعر", "Price calculator")}
@@ -299,10 +301,10 @@ function Shell() {
         </div>
         <div className="container footer-bottom">
           <span>
-            © {new Date().getFullYear()} Nexora.{" "}
+            © {new Date().getFullYear()} NEXORA Digital Solutions.{" "}
             {t("جميع الحقوق محفوظة.", "All rights reserved.")}
           </span>
-          <span>LEARN · BUILD · PROGRESS</span>
+          <span>IDEAS · BRANDS · WEBSITES · GROWTH</span>
         </div>
       </footer>
       <button

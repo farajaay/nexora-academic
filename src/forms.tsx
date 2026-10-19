@@ -30,6 +30,7 @@ import {
   useLanguage,
   useLocalizedNavigate,
 } from "./ui";
+import { ProjectForm } from "./ProjectForm";
 const backendReady = Boolean(
   import.meta.env.VITE_SUPABASE_URL &&
   import.meta.env.VITE_SUPABASE_PUBLISHABLE_KEY,
@@ -291,6 +292,13 @@ export function Calculator() {
 export function Contact() {
   const { t, lang } = useLanguage();
   const [query] = useSearchParams();
+  // Calculator handoffs (?service=...) and ?type=academic open the academic
+  // form; everything else starts with the agency project brief.
+  const [kind, setKind] = useState<"project" | "academic">(() =>
+    query.has("service") || query.get("type") === "academic"
+      ? "academic"
+      : "project",
+  );
   const [value, setValue] = useState<OrderInput>(() => ({
     ...choicesFromQuery(query),
     name: "",
@@ -480,313 +488,348 @@ export function Contact() {
   return (
     <>
       <PageIntro
-        title={t("ابدأ طلبك", "Start your request")}
+        title={t("تواصل معنا", "Contact us")}
         subtitle={t(
-          "هذا النموذج للطلبات الأكاديمية. لمشاريع الاستوديو، تواصل معنا مباشرة من صفحة الاستوديو.",
-          "This form is for academic requests. For Studio projects, contact us directly from the Studio page.",
+          "اختر نوع طلبك: مشروع رقمي لأعمالك، أو طلب دعم أكاديمي.",
+          "Choose your request type: a digital project for your business, or academic support.",
         )}
       />
-      <div className="form-layout">
-        <form
-          className="panel order-form"
-          onSubmit={(e) => void send("save", e)}
-          noValidate
-        >
-          <h2>{t("طلب دعم أكاديمي", "Academic support request")}</h2>
-          <p>
-            {t(
-              "جميع الحقول مطلوبة ما لم يذكر أنها اختيارية.",
-              "All fields are required unless marked optional.",
-            )}
-          </p>
-          <fieldset
-            className="request-fields"
-            disabled={busy || Boolean(pending.current)}
+      <div
+        className="filter-row request-switch"
+        role="group"
+        aria-label={t("نوع الطلب", "Request type")}
+      >
+        {(
+          [
+            ["project", t("مشروع رقمي", "Digital project")],
+            ["academic", t("طلب أكاديمي", "Academic request")],
+          ] as const
+        ).map(([id, label]) => (
+          <button
+            key={id}
+            type="button"
+            className={kind === id ? "selected" : ""}
+            aria-pressed={kind === id}
+            onClick={() => setKind(id)}
           >
-            <div className="form-grid">
-              {(
-                [
-                  ["name", t("الاسم", "Name"), "text", "name"],
-                  ["phone", t("رقم الجوال", "Mobile number"), "tel", "tel"],
-                  [
-                    "email",
-                    t("البريد الإلكتروني (اختياري)", "Email (optional)"),
-                    "email",
-                    "email",
-                  ],
-                  [
-                    "major",
-                    t("التخصص / المسار", "Major / study track"),
-                    "text",
-                    "off",
-                  ],
-                ] as const
-              ).map(([key, label, type, auto]) => (
-                <Field key={key} name={key} label={label} error={errors[key]}>
-                  <input
-                    id={key}
-                    type={type}
-                    autoComplete={auto}
-                    maxLength={key === "email" ? 254 : 100}
-                    value={value[key]}
-                    aria-invalid={Boolean(errors[key])}
-                    aria-describedby={errors[key] ? `${key}-error` : undefined}
-                    onChange={(e) => patch({ [key]: e.target.value })}
-                  />
-                </Field>
-              ))}
-              <ChoiceFields value={value} change={patch} errors={errors} />
-              <div className="full">
-                <Field
-                  name="description"
-                  label={t(
-                    "وصف الطلب وما تحتاج فهمه أو تحسينه",
-                    "Request description and what you want to understand or improve",
-                  )}
-                  error={errors.description}
-                >
-                  <textarea
-                    id="description"
-                    rows={5}
-                    maxLength={4000}
-                    value={value.description}
-                    aria-invalid={Boolean(errors.description)}
-                    aria-describedby={
-                      errors.description ? "description-error" : undefined
-                    }
-                    onChange={(e) => patch({ description: e.target.value })}
-                  />
-                </Field>
-              </div>
-              <Field
-                name="pages"
-                label={t("عدد الصفحات أو الأسئلة", "Pages or questions")}
-                error={errors.pages}
-              >
-                <input
-                  id="pages"
-                  type="number"
-                  min="1"
-                  max="10000"
-                  value={value.pages}
-                  onChange={(e) => patch({ pages: Number(e.target.value) })}
-                />
-              </Field>
-              <Field
-                name="preferred_contact"
-                error={errors.preferred_contact}
-                label={t("طريقة التواصل المفضلة", "Preferred contact")}
-              >
-                <select
-                  id="preferred_contact"
-                  value={value.preferred_contact}
-                  onChange={(e) => patch({ preferred_contact: e.target.value })}
-                >
-                  <option value="whatsapp">{t("واتساب", "WhatsApp")}</option>
-                  <option value="phone">
-                    {t("اتصال هاتفي", "Phone call")}
-                  </option>
-                  <option value="email" disabled={!value.email}>
-                    {t("البريد الإلكتروني", "Email")}
-                  </option>
-                </select>
-              </Field>
-              <div className="full attachment-picker">
-                <Field
-                  name="attachments"
-                  label={t("إرفاق ملفات (اختياري)", "Attach files (optional)")}
-                  error={fileError}
-                >
-                  <div className="file-control">
-                    <span aria-hidden="true">
-                      {t("اختيار ملفات", "Choose files")} ·{" "}
-                      {files.length
-                        ? t(
-                            `${files.length} ملفات محددة`,
-                            `${files.length} files selected`,
-                          )
-                        : t("لم تحدد ملفات بعد", "No files selected yet")}
-                    </span>
-                    <input
-                      id="attachments"
-                      type="file"
-                      multiple
-                      accept={fileAccept}
-                      aria-describedby={
-                        fileError
-                          ? "attachment-help attachments-error"
-                          : "attachment-help"
-                      }
-                      aria-invalid={Boolean(fileError)}
-                      onChange={(e) => {
-                        const next = [
-                          ...files,
-                          ...Array.from(e.target.files || []),
-                        ];
-                        const error = attachmentError(next, lang);
-                        setFileError(error);
-                        if (!error) setFiles(next);
-                        e.target.value = "";
-                      }}
-                    />
-                  </div>
-                </Field>
-                <p id="attachment-help" className="field-hint">
-                  {t(
-                    "حتى 5 ملفات، 10 ميجابايت لكل ملف. PDF، Word، PowerPoint، Excel، TXT، CSV، PNG، JPG، ZIP، DWG، DXF. ترفع عند حفظ الطلب، وتتاح للإدارة فقط.",
-                    "Up to 5 files, 10 MB each. PDF, Word, PowerPoint, Excel, TXT, CSV, PNG, JPG, ZIP, DWG, DXF. Uploaded when saving your request; accessible only to administrators.",
-                  )}
-                </p>
-                <ul className="attachment-list">
-                  {files.map((file, i) => (
-                    <li key={i}>
-                      <span>
-                        <bdi>{file.name}</bdi> ·{" "}
-                        {(file.size / 1024 / 1024).toFixed(2)} MB
-                      </span>
-                      <button
-                        type="button"
-                        className="text-link"
-                        aria-label={t("إزالة ", "Remove ") + file.name}
-                        onClick={() => {
-                          setFiles(files.filter((_, index) => index !== i));
-                          setFileError("");
-                        }}
-                      >
-                        {t("إزالة", "Remove")}
-                      </button>
-                    </li>
-                  ))}
-                </ul>
-              </div>
-              <div className="full">
-                <Field
-                  name="files_url"
-                  label={t("رابط الملفات (اختياري)", "File link (optional)")}
-                  error={errors.files_url}
-                >
-                  <input
-                    id="files_url"
-                    type="url"
-                    dir="ltr"
-                    placeholder="https://"
-                    value={value.files_url}
-                    onChange={(e) => patch({ files_url: e.target.value })}
-                  />
-                </Field>
-                <p className="field-hint">
-                  {t(
-                    "شارك فقط الملفات اللازمة، وتأكد من صلاحية الوصول للرابط.",
-                    "Share only necessary files and check the link’s access permissions.",
-                  )}
-                </p>
-              </div>
-            </div>
-            <label className="check-row consent">
-              <input
-                id="consent"
-                type="checkbox"
-                checked={value.consent}
-                onChange={(e) => patch({ consent: e.target.checked })}
-              />
-              <span>
-                {t("أوافق على", "I accept the")}{" "}
-                <LocalizedLink to="/terms" target="_blank">
-                  {t("شروط الاستخدام", "terms")}
-                </LocalizedLink>{" "}
-                {t("و", "and")}{" "}
-                <LocalizedLink to="/privacy" target="_blank">
-                  {t("الخصوصية", "privacy")}
-                </LocalizedLink>{" "}
-                {t("و", "and")}{" "}
-                <LocalizedLink to="/integrity" target="_blank">
-                  {t("سياسة النزاهة الأكاديمية", "academic integrity policy")}
-                </LocalizedLink>
-                .
-              </span>
-            </label>
-            {errors.consent && <p className="field-error">{errors.consent}</p>}
-          </fieldset>
-          {receipt && (
-            <p className="field-hint">
-              {t("رقم الطلب المحفوظ: ", "Saved request reference: ")}
-              <bdi>{receipt}</bdi>
-            </p>
-          )}
-          {message && (
-            <p className="notice" role="status">
-              {message}
-            </p>
-          )}
-          <button className="button wide" disabled={busy || !backendReady}>
-            {busy
-              ? t("جارٍ حفظ الطلب…", "Saving request…")
-              : receipt
-                ? t("إعادة محاولة رفع الملفات", "Retry file uploads")
-                : t("إرسال وحفظ الطلب", "Submit & save request")}
-            <ArrowLeft size={18} />
+            {label}
           </button>
-          {!backendReady && (
-            <p className="notice">
-              {t(
-                "استقبال الطلبات الإلكتروني قيد الإعداد. يمكنك تجهيز تفاصيلك ونسخها.",
-                "Online request submission is being set up. You can prepare and copy your details.",
-              )}
-            </p>
-          )}
-          <div className="contact-buttons">
-            <button
-              className="button secondary"
-              type="button"
-              disabled={!contactReady.whatsapp}
-              onClick={() => void send("whatsapp")}
-            >
-              <MessageCircle size={18} />
-              {t("عبر واتساب", "WhatsApp")}
-            </button>
-            <button
-              className="button secondary"
-              type="button"
-              disabled={!contactReady.email}
-              onClick={() => void send("email")}
-            >
-              <Mail size={18} />
-              {t("عبر البريد", "Email")}
-            </button>
-            <button
-              className="button secondary"
-              type="button"
-              onClick={() => void send("copy")}
-            >
-              <Copy size={18} />
-              {t("نسخ الطلب", "Copy request")}
-            </button>
-          </div>
-          {(!contactReady.whatsapp || !contactReady.email) && (
-            <p className="field-hint">
-              {t(
-                "قنوات التواصل المباشر قيد التجهيز؛ تتفعّل عند إضافة بيانات المنصة الرسمية.",
-                "Direct contact channels are being prepared and activate when official business details are added.",
-              )}
-            </p>
-          )}
-        </form>
-        <div>
-          <PriceSummary value={value} />
-          <div className="support-note">
-            <ShieldCheck size={24} />
-            <h3>
-              {t("دعم يحترم رحلتك", "Support that respects your journey")}
-            </h3>
+        ))}
+      </div>
+      {kind === "project" ? (
+        <ProjectForm />
+      ) : (
+        <div className="form-layout">
+          <form
+            className="panel order-form"
+            onSubmit={(e) => void send("save", e)}
+            noValidate
+          >
+            <h2>{t("طلب دعم أكاديمي", "Academic support request")}</h2>
             <p>
               {t(
-                "نشرح ونراجع ونرشد. يبقى فهم العمل والالتزام بأنظمة المؤسسة مسؤوليتك.",
-                "We explain, review and guide. Understanding the work and following institutional rules remain your responsibility.",
+                "جميع الحقول مطلوبة ما لم يذكر أنها اختيارية.",
+                "All fields are required unless marked optional.",
               )}
             </p>
+            <fieldset
+              className="request-fields"
+              disabled={busy || Boolean(pending.current)}
+            >
+              <div className="form-grid">
+                {(
+                  [
+                    ["name", t("الاسم", "Name"), "text", "name"],
+                    ["phone", t("رقم الجوال", "Mobile number"), "tel", "tel"],
+                    [
+                      "email",
+                      t("البريد الإلكتروني (اختياري)", "Email (optional)"),
+                      "email",
+                      "email",
+                    ],
+                    [
+                      "major",
+                      t("التخصص / المسار", "Major / study track"),
+                      "text",
+                      "off",
+                    ],
+                  ] as const
+                ).map(([key, label, type, auto]) => (
+                  <Field key={key} name={key} label={label} error={errors[key]}>
+                    <input
+                      id={key}
+                      type={type}
+                      autoComplete={auto}
+                      maxLength={key === "email" ? 254 : 100}
+                      value={value[key]}
+                      aria-invalid={Boolean(errors[key])}
+                      aria-describedby={
+                        errors[key] ? `${key}-error` : undefined
+                      }
+                      onChange={(e) => patch({ [key]: e.target.value })}
+                    />
+                  </Field>
+                ))}
+                <ChoiceFields value={value} change={patch} errors={errors} />
+                <div className="full">
+                  <Field
+                    name="description"
+                    label={t(
+                      "وصف الطلب وما تحتاج فهمه أو تحسينه",
+                      "Request description and what you want to understand or improve",
+                    )}
+                    error={errors.description}
+                  >
+                    <textarea
+                      id="description"
+                      rows={5}
+                      maxLength={4000}
+                      value={value.description}
+                      aria-invalid={Boolean(errors.description)}
+                      aria-describedby={
+                        errors.description ? "description-error" : undefined
+                      }
+                      onChange={(e) => patch({ description: e.target.value })}
+                    />
+                  </Field>
+                </div>
+                <Field
+                  name="pages"
+                  label={t("عدد الصفحات أو الأسئلة", "Pages or questions")}
+                  error={errors.pages}
+                >
+                  <input
+                    id="pages"
+                    type="number"
+                    min="1"
+                    max="10000"
+                    value={value.pages}
+                    onChange={(e) => patch({ pages: Number(e.target.value) })}
+                  />
+                </Field>
+                <Field
+                  name="preferred_contact"
+                  error={errors.preferred_contact}
+                  label={t("طريقة التواصل المفضلة", "Preferred contact")}
+                >
+                  <select
+                    id="preferred_contact"
+                    value={value.preferred_contact}
+                    onChange={(e) =>
+                      patch({ preferred_contact: e.target.value })
+                    }
+                  >
+                    <option value="whatsapp">{t("واتساب", "WhatsApp")}</option>
+                    <option value="phone">
+                      {t("اتصال هاتفي", "Phone call")}
+                    </option>
+                    <option value="email" disabled={!value.email}>
+                      {t("البريد الإلكتروني", "Email")}
+                    </option>
+                  </select>
+                </Field>
+                <div className="full attachment-picker">
+                  <Field
+                    name="attachments"
+                    label={t(
+                      "إرفاق ملفات (اختياري)",
+                      "Attach files (optional)",
+                    )}
+                    error={fileError}
+                  >
+                    <div className="file-control">
+                      <span aria-hidden="true">
+                        {t("اختيار ملفات", "Choose files")} ·{" "}
+                        {files.length
+                          ? t(
+                              `${files.length} ملفات محددة`,
+                              `${files.length} files selected`,
+                            )
+                          : t("لم تحدد ملفات بعد", "No files selected yet")}
+                      </span>
+                      <input
+                        id="attachments"
+                        type="file"
+                        multiple
+                        accept={fileAccept}
+                        aria-describedby={
+                          fileError
+                            ? "attachment-help attachments-error"
+                            : "attachment-help"
+                        }
+                        aria-invalid={Boolean(fileError)}
+                        onChange={(e) => {
+                          const next = [
+                            ...files,
+                            ...Array.from(e.target.files || []),
+                          ];
+                          const error = attachmentError(next, lang);
+                          setFileError(error);
+                          if (!error) setFiles(next);
+                          e.target.value = "";
+                        }}
+                      />
+                    </div>
+                  </Field>
+                  <p id="attachment-help" className="field-hint">
+                    {t(
+                      "حتى 5 ملفات، 10 ميجابايت لكل ملف. PDF، Word، PowerPoint، Excel، TXT، CSV، PNG، JPG، ZIP، DWG، DXF. ترفع عند حفظ الطلب، وتتاح للإدارة فقط.",
+                      "Up to 5 files, 10 MB each. PDF, Word, PowerPoint, Excel, TXT, CSV, PNG, JPG, ZIP, DWG, DXF. Uploaded when saving your request; accessible only to administrators.",
+                    )}
+                  </p>
+                  <ul className="attachment-list">
+                    {files.map((file, i) => (
+                      <li key={i}>
+                        <span>
+                          <bdi>{file.name}</bdi> ·{" "}
+                          {(file.size / 1024 / 1024).toFixed(2)} MB
+                        </span>
+                        <button
+                          type="button"
+                          className="text-link"
+                          aria-label={t("إزالة ", "Remove ") + file.name}
+                          onClick={() => {
+                            setFiles(files.filter((_, index) => index !== i));
+                            setFileError("");
+                          }}
+                        >
+                          {t("إزالة", "Remove")}
+                        </button>
+                      </li>
+                    ))}
+                  </ul>
+                </div>
+                <div className="full">
+                  <Field
+                    name="files_url"
+                    label={t("رابط الملفات (اختياري)", "File link (optional)")}
+                    error={errors.files_url}
+                  >
+                    <input
+                      id="files_url"
+                      type="url"
+                      dir="ltr"
+                      placeholder="https://"
+                      value={value.files_url}
+                      onChange={(e) => patch({ files_url: e.target.value })}
+                    />
+                  </Field>
+                  <p className="field-hint">
+                    {t(
+                      "شارك فقط الملفات اللازمة، وتأكد من صلاحية الوصول للرابط.",
+                      "Share only necessary files and check the link’s access permissions.",
+                    )}
+                  </p>
+                </div>
+              </div>
+              <label className="check-row consent">
+                <input
+                  id="consent"
+                  type="checkbox"
+                  checked={value.consent}
+                  onChange={(e) => patch({ consent: e.target.checked })}
+                />
+                <span>
+                  {t("أوافق على", "I accept the")}{" "}
+                  <LocalizedLink to="/terms" target="_blank">
+                    {t("شروط الاستخدام", "terms")}
+                  </LocalizedLink>{" "}
+                  {t("و", "and")}{" "}
+                  <LocalizedLink to="/privacy" target="_blank">
+                    {t("الخصوصية", "privacy")}
+                  </LocalizedLink>{" "}
+                  {t("و", "and")}{" "}
+                  <LocalizedLink to="/integrity" target="_blank">
+                    {t("سياسة النزاهة الأكاديمية", "academic integrity policy")}
+                  </LocalizedLink>
+                  .
+                </span>
+              </label>
+              {errors.consent && (
+                <p className="field-error">{errors.consent}</p>
+              )}
+            </fieldset>
+            {receipt && (
+              <p className="field-hint">
+                {t("رقم الطلب المحفوظ: ", "Saved request reference: ")}
+                <bdi>{receipt}</bdi>
+              </p>
+            )}
+            {message && (
+              <p className="notice" role="status">
+                {message}
+              </p>
+            )}
+            <button className="button wide" disabled={busy || !backendReady}>
+              {busy
+                ? t("جارٍ حفظ الطلب…", "Saving request…")
+                : receipt
+                  ? t("إعادة محاولة رفع الملفات", "Retry file uploads")
+                  : t("إرسال وحفظ الطلب", "Submit & save request")}
+              <ArrowLeft size={18} />
+            </button>
+            {!backendReady && (
+              <p className="notice">
+                {t(
+                  "استقبال الطلبات الإلكتروني قيد الإعداد. يمكنك تجهيز تفاصيلك ونسخها.",
+                  "Online request submission is being set up. You can prepare and copy your details.",
+                )}
+              </p>
+            )}
+            <div className="contact-buttons">
+              <button
+                className="button secondary"
+                type="button"
+                disabled={!contactReady.whatsapp}
+                onClick={() => void send("whatsapp")}
+              >
+                <MessageCircle size={18} />
+                {t("عبر واتساب", "WhatsApp")}
+              </button>
+              <button
+                className="button secondary"
+                type="button"
+                disabled={!contactReady.email}
+                onClick={() => void send("email")}
+              >
+                <Mail size={18} />
+                {t("عبر البريد", "Email")}
+              </button>
+              <button
+                className="button secondary"
+                type="button"
+                onClick={() => void send("copy")}
+              >
+                <Copy size={18} />
+                {t("نسخ الطلب", "Copy request")}
+              </button>
+            </div>
+            {(!contactReady.whatsapp || !contactReady.email) && (
+              <p className="field-hint">
+                {t(
+                  "قنوات التواصل المباشر قيد التجهيز؛ تتفعّل عند إضافة بيانات المنصة الرسمية.",
+                  "Direct contact channels are being prepared and activate when official business details are added.",
+                )}
+              </p>
+            )}
+          </form>
+          <div>
+            <PriceSummary value={value} />
+            <div className="support-note">
+              <ShieldCheck size={24} />
+              <h3>
+                {t("دعم يحترم رحلتك", "Support that respects your journey")}
+              </h3>
+              <p>
+                {t(
+                  "نشرح ونراجع ونرشد. يبقى فهم العمل والالتزام بأنظمة المؤسسة مسؤوليتك.",
+                  "We explain, review and guide. Understanding the work and following institutional rules remain your responsibility.",
+                )}
+              </p>
+            </div>
           </div>
         </div>
-      </div>
+      )}
     </>
   );
 }

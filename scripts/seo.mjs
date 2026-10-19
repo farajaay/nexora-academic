@@ -69,7 +69,7 @@ function render(route, lang, { indexable }) {
   );
   html = html.replace(
     "<!--schema-->",
-    `<script type="application/ld+json">${JSON.stringify({ "@context": "https://schema.org", "@type": "EducationalOrganization", name: site.name.en, alternateName: site.name.ar, url: site.url, description: [publicRoutes[0].description.en, "Educational support, explanation, review and mentoring for Saudi students."], areaServed: { "@type": "Country", name: "Saudi Arabia" }, knowsLanguage: ["ar", "en"], logo: site.url + "brand-mark.svg" })}</script>`,
+    `<script type="application/ld+json">${JSON.stringify({ "@context": "https://schema.org", "@type": "ProfessionalService", name: site.name.en, alternateName: site.name.ar, url: site.url, telephone: "+" + site.whatsapp, description: [publicRoutes[0].description.en, "Website development, brand identity, UI/UX, content production, digital solutions, product development and industrial consultation, plus academic support."], areaServed: { "@type": "Country", name: "Saudi Arabia" }, knowsLanguage: ["ar", "en"], logo: site.url + "brand-mark.svg" })}</script>`,
   );
   return html;
 }
@@ -104,7 +104,7 @@ writeFileSync(
     .replace("<!--hreflang-->", "")
     .replace(
       /<title>.*?<\/title>/s,
-      "<title>صفحة غير موجودة | Nexora</title>",
+      "<title>صفحة غير موجودة | NEXORA</title>",
     ),
 );
 writeFileSync("dist/.nojekyll", "");

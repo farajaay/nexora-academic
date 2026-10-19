@@ -20,12 +20,12 @@ export const publicRoutes: RouteMeta[] = [
   {
     path: "",
     title: {
-      ar: "دعم أكاديمي واستوديو أعمال",
-      en: "Academic support & business studio",
+      ar: "رؤيتك، بخبرتنا الرقمية",
+      en: "Your vision. Our digital expertise.",
     },
     description: {
-      ar: "دعم أكاديمي يرسّخ الفهم، وخدمات هوية ومنتجات وتطبيقات ويب واستشارات صناعية للأعمال.",
-      en: "Academic support that builds understanding, plus branding, product, web app and industrial consulting for businesses.",
+      ar: "نيكسورا للحلول الرقمية: مواقع وتطبيقات، هوية تجارية، تجربة مستخدم، محتوى، حلول رقمية واستشارات صناعية — مع قسم للدعم الأكاديمي.",
+      en: "NEXORA Digital Solutions: websites and apps, brand identity, UI/UX, content, digital solutions and industrial consulting — plus academic support.",
     },
   },
   {
@@ -41,10 +41,26 @@ export const publicRoutes: RouteMeta[] = [
   },
   {
     path: "studio",
-    title: { ar: "خدمات الاستوديو", en: "Studio services" },
+    title: { ar: "خدماتنا", en: "Our services" },
     description: {
-      ar: "تصميم الهوية التجارية وتطوير المنتجات وتطبيقات الويب والاستشارات الصناعية.",
-      en: "Branding design, product and web app development, and industrial consultation.",
+      ar: "تطوير المواقع، والهوية التجارية، وتجربة المستخدم، وإنتاج المحتوى، والحلول الرقمية، وتطوير المنتجات، والاستشارات الصناعية.",
+      en: "Website development, brand identity, UI/UX, content production, digital solutions, product development and industrial consultation.",
+    },
+  },
+  {
+    path: "portfolio",
+    title: { ar: "أعمالنا", en: "Portfolio" },
+    description: {
+      ar: "مشاريع مفاهيمية توضّح طريقتنا في الهوية والمواقع والمنتجات والحلول الرقمية.",
+      en: "Concept projects showing how we approach identity, websites, products and digital solutions.",
+    },
+  },
+  {
+    path: "about",
+    title: { ar: "من نحن", en: "About us" },
+    description: {
+      ar: "نيكسورا: انضباط هندسي وحسّ فني لبناء حلول رقمية واضحة وقابلة للقياس.",
+      en: "NEXORA: engineering discipline and an artist’s eye for clear, measurable digital solutions.",
     },
   },
   {
