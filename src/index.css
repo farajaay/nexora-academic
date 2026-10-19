@@ -2400,7 +2400,8 @@ body {
 /* NEXORA wordmark: heavy geometric caps with a gradient X. */
 .wordmark {
   display: grid;
-  gap: 3px;
+  justify-items: center;
+  gap: 4px;
   line-height: 1;
 }
 .wordmark strong {
@@ -2811,4 +2812,9 @@ body {
     grid-template-columns: 1fr;
     gap: 36px;
   }
+}
+.wordmark small.wordmark-ar {
+  font: 600 11px/1.1 var(--font-family);
+  letter-spacing: 0;
+  color: var(--navy);
 }

@@ -83,6 +83,9 @@ export function Logo() {
         <strong>
           NE<span>X</span>ORA
         </strong>
+        <small className="wordmark-ar" dir="rtl" lang="ar">
+          نيكسورا للحلول الرقمية
+        </small>
         <small>DIGITAL SOLUTIONS</small>
       </span>
     </LocalizedLink>
