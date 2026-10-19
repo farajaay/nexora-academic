@@ -6,12 +6,13 @@ import {
   Clock3,
   MessageCircle,
   GraduationCap,
-  Layers,
   ShieldCheck,
   Zap,
 } from "lucide-react";
 import { useState } from "react";
+import { agencyServices, conceptProjects } from "./config/agency";
 import { integrity, services, site } from "./config/site";
+import { ProjectCard } from "./Agency";
 import {
   LocalizedLink,
   PageIntro,
@@ -61,172 +62,100 @@ export function CTA() {
   return (
     <section className="cta">
       <div>
-        <span className="eyebrow">{t("لنبدأ", "LET’S BEGIN")}</span>
+        <span className="eyebrow">
+          {t("لنبنِ معًا", "LET’S BUILD TOGETHER")}
+        </span>
         <h2>
           {t(
-            "لديك مهمة أو مشروع؟ لنجعله أوضح.",
-            "Have an assignment or a project? Let’s make it clear.",
+            "جاهز لتحويل فكرتك إلى واقع؟",
+            "Ready to bring your idea to life?",
           )}
         </h2>
         <p>
           {t(
-            "أرسل التفاصيل، وسنعود إليك بنطاق وسعر واضحين.",
-            "Send the details and we will come back with a clear scope and price.",
+            "أخبرنا بما تحتاجه، وسنعود إليك بنطاق وسعر واضحين.",
+            "Tell us what you need and we will come back with a clear scope and price.",
           )}
         </p>
       </div>
-      <LocalizedLink className="button white" to="/contact">
-        {t("ابدأ طلبك", "Start your request")}
+      <LocalizedLink className="button white" to="/studio#start">
+        {t("ابدأ مشروعك", "Start your project")}
         <ArrowLeft size={18} />
       </LocalizedLink>
     </section>
   );
 }
+/** Hero illustration: a laptop and phone showing a NEXORA-style site. */
+function Devices() {
+  const screen = (
+    <>
+      <span className="mini-nav">
+        <b>NEXORA</b>
+        <i />
+        <i />
+        <i />
+        <em />
+      </span>
+      <span className="mini-hero">
+        <span className="mini-text">
+          <i className="l1" />
+          <i className="l2" />
+          <i className="l3 accent" />
+          <em />
+        </span>
+        <span className="mini-img" />
+      </span>
+    </>
+  );
+  return (
+    <div className="devices" aria-hidden="true" dir="ltr">
+      <div className="laptop">
+        <div className="laptop-screen">{screen}</div>
+        <div className="laptop-base" />
+      </div>
+      <div className="phone">
+        <div className="phone-screen">{screen}</div>
+      </div>
+      <span className="device-chip chip-one">
+        <BrandMark size={22} /> Ideas → Impact
+      </span>
+    </div>
+  );
+}
 export function Home() {
   const { t } = useLanguage();
-  const paths = [
-    {
-      id: "academic",
-      Icon: GraduationCap,
-      label: t("نيكسورا أكاديمي", "Nexora Academic"),
-      title: t("للطلاب والباحثين", "For students and researchers"),
-      text: t(
-        "شرح ومراجعة وتدقيق وإرشاد يعمّق فهمك ويرفع جودة عملك، بأسعار معلنة تبدأ من 40 ر.س.",
-        "Explanation, review, proofreading and mentoring that deepen your understanding and raise the quality of your work, with published prices from SAR 40.",
-      ),
-      items: [
-        t("شرح الواجبات والمسائل", "Assignment and problem-set guidance"),
-        t("مراجعة التقارير والأبحاث", "Report and research review"),
-        t("العروض التقديمية والتدقيق", "Presentations and proofreading"),
-        t(
-          "البرمجة وCAD ومشاريع التخرج",
-          "Programming, CAD and graduation projects",
-        ),
-      ],
-      links: [
-        ["/services", t("الخدمات والأسعار", "Services & pricing")],
-        ["/calculator", t("احسب السعر", "Estimate a price")],
-      ],
-    },
-    {
-      id: "studio",
-      Icon: Layers,
-      label: t("استوديو نيكسورا", "Nexora Studio"),
-      title: t("للشركات ورواد الأعمال", "For companies and founders"),
-      text: t(
-        "هوية تجارية، ومنتجات رقمية، وتطبيقات ويب، واستشارات صناعية تحوّل الأفكار إلى نتائج قابلة للقياس.",
-        "Brand identity, digital products, web apps and industrial consulting that turn ideas into measurable results.",
-      ),
-      items: [
-        t("تصميم الهوية التجارية", "Branding design"),
-        t("تطوير المنتجات", "Product development"),
-        t("تطوير تطبيقات الويب", "Web app development"),
-        t("الاستشارات الصناعية", "Industrial consultation"),
-      ],
-      links: [
-        ["/studio", t("خدمات الاستوديو", "Studio services")],
-        ["/contact", t("اطلب عرض سعر", "Request a quote")],
-      ],
-    },
-  ];
   return (
     <>
       <section className="hero">
         <div className="hero-copy">
-          <span className="pill">
+          <span className="pill" dir="ltr">
             <span />
-            {t("أكاديمي · استوديو", "ACADEMIC · STUDIO")}
+            IDEAS · BRANDS · WEBSITES · GROWTH
           </span>
           <h1>
-            {t("نصنع الوضوح", "We craft clarity")}
+            {t("رؤيتك.", "Your Vision.")}
             <br />
-            <span>
-              {t("في التعلّم والأعمال.", "for learners and businesses.")}
-            </span>
+            {t("خبرتنا", "Our Digital")}
+            <br />
+            <span>{t("الرقمية.", "Expertise.")}</span>
           </h1>
           <p>
             {t(
-              "دعم أكاديمي يرسّخ الفهم، وخدمات احترافية تبني الهوية والمنتج وتطوّر العمليات — بمعيار واحد: الدقة والشفافية والالتزام.",
-              "Academic support that builds real understanding, and professional services that shape brands, products and operations — held to one standard: precision, transparency and commitment.",
+              "نصمّم ونطوّر ونبني تجارب رقمية ترتقي بعلامتك وتنمّي أعمالك — من الهوية والموقع إلى الأتمتة والاستشارات الصناعية.",
+              "We design, develop and build digital experiences that elevate your brand and grow your business — from identity and websites to automation and industrial consulting.",
             )}
           </p>
           <div className="hero-actions">
-            <LocalizedLink className="button" to="/contact">
-              {t("ابدأ طلبك", "Start your request")}
+            <LocalizedLink className="button" to="/studio#start">
+              {t("ابدأ مشروعك", "Start your project")}
               <ArrowLeft size={18} />
             </LocalizedLink>
-            <a className="button secondary" href="#paths">
-              {t("استكشف خدماتنا", "Explore our services")}
-            </a>
+            <LocalizedLink className="button secondary" to="/portfolio">
+              {t("شاهد أعمالنا", "See our work")}
+            </LocalizedLink>
           </div>
         </div>
-        <aside
-          className="hero-panel"
-          aria-label={t("نيكسورا في أرقام", "Nexora at a glance")}
-        >
-          <BrandMark size={84} />
-          <dl>
-            <div>
-              <dt>{services.length}</dt>
-              <dd>{t("خدمة أكاديمية", "academic services")}</dd>
-            </div>
-            <div>
-              <dt>4</dt>
-              <dd>{t("مسارات أعمال", "business practices")}</dd>
-            </div>
-            <div>
-              <dt>{site.minimum}</dt>
-              <dd>{t("ر.س تبدأ منها الأسعار", "SAR starting price")}</dd>
-            </div>
-            <div>
-              <dt lang="en">AR · EN</dt>
-              <dd>{t("بلغتين", "bilingual")}</dd>
-            </div>
-          </dl>
-          <span className="hero-panel-foot" dir="ltr">
-            LEARN · BUILD · PROGRESS
-          </span>
-        </aside>
-      </section>
-      <section className="section" id="paths">
-        <SectionHeading
-          eyebrow={t("مساران، معيار واحد", "TWO PATHS, ONE STANDARD")}
-          title={t("اختر المسار الذي يناسبك", "Choose the path that fits you")}
-        />
-        <div className="paths">
-          {paths.map(({ id, Icon, label, title, text, items, links }) => (
-            <article className={`path-card path-${id}`} key={id}>
-              <div className="path-head">
-                <span className="icon-box">
-                  <Icon size={22} />
-                </span>
-                <span className="path-label">{label}</span>
-              </div>
-              <h3>{title}</h3>
-              <p>{text}</p>
-              <ul>
-                {items.map((item) => (
-                  <li key={item}>
-                    <Check size={16} />
-                    {item}
-                  </li>
-                ))}
-              </ul>
-              <div className="path-links">
-                {links.map(([to, text], i) => (
-                  <LocalizedLink
-                    key={to}
-                    to={to}
-                    className={i === 0 ? "button" : "button secondary"}
-                  >
-                    {text}
-                    {i === 0 && <ArrowLeft size={17} />}
-                  </LocalizedLink>
-                ))}
-              </div>
-            </article>
-          ))}
-        </div>
+        <Devices />
       </section>
       <div className="trust-strip">
         {[
@@ -253,10 +182,10 @@ export function Home() {
           ],
           [
             Zap,
-            t("خصوصية محفوظة", "Privacy respected"),
+            t("أداء عالٍ", "Built to perform"),
             t(
-              "نطّلع فقط على ما تحتاجه الخدمة",
-              "We access only what the work needs",
+              "سرعة وأمان وتوافق مع كل الأجهزة",
+              "Fast, secure, works on every device",
             ),
           ],
         ].map(([C, title, text]) => {
@@ -272,6 +201,61 @@ export function Home() {
           );
         })}
       </div>
+      <section className="section">
+        <div className="section-row">
+          <SectionHeading
+            eyebrow={t("خدماتنا", "WHAT WE DO")}
+            title={t(
+              "كل ما تحتاجه لتنمو رقميًا",
+              "Everything you need to grow digitally",
+            )}
+          />
+          <LocalizedLink className="text-link" to="/studio">
+            {t("كل الخدمات", "All services")}
+            <ArrowLeft size={17} />
+          </LocalizedLink>
+        </div>
+        <div className="agency-grid">
+          {agencyServices.map((s) => {
+            const Icon = s.icon;
+            return (
+              <LocalizedLink
+                key={s.id}
+                to={`/studio#${s.id}`}
+                className="agency-card"
+              >
+                <span className="icon-box">
+                  <Icon size={24} />
+                </span>
+                <h3>{t(...s.name)}</h3>
+                <p>{t(...s.tagline)}</p>
+                <ArrowLeft className="card-arrow" size={18} />
+              </LocalizedLink>
+            );
+          })}
+        </div>
+      </section>
+      <section className="section">
+        <div className="section-row">
+          <SectionHeading
+            eyebrow={t("أعمالنا", "PORTFOLIO")}
+            title={t("أفكار تتحوّل إلى أثر", "Ideas turned into impact")}
+            text={t(
+              "مشاريع مفاهيمية توضّح أسلوبنا — وليست أعمالًا لعملاء حقيقيين.",
+              "Concept projects that show our approach — not real client work.",
+            )}
+          />
+          <LocalizedLink className="text-link" to="/portfolio">
+            {t("كل الأعمال", "All projects")}
+            <ArrowLeft size={17} />
+          </LocalizedLink>
+        </div>
+        <div className="project-grid">
+          {conceptProjects.slice(0, 3).map((p) => (
+            <ProjectCard project={p} key={p.id} />
+          ))}
+        </div>
+      </section>
       <section className="section tinted">
         <SectionHeading
           eyebrow={t("كيف نعمل", "HOW WE WORK")}
@@ -298,21 +282,18 @@ export function Home() {
               "We pair hands-on experience in automation, operations and financial planning with an artistic eye for detail, so the work is both rigorous and beautiful.",
             )}
           </p>
-          <LocalizedLink className="text-link" to="/integrity">
-            {t(
-              "التزامنا بالنزاهة الأكاديمية",
-              "Our academic integrity commitment",
-            )}
+          <LocalizedLink className="text-link" to="/about">
+            {t("تعرّف علينا", "About us")}
             <ArrowLeft size={17} />
           </LocalizedLink>
         </div>
         <div className="benefits">
           {[
             [
-              t("نتائج يمكنك البناء عليها", "Results you can build on"),
+              t("نتائج يمكنك قياسها", "Results you can measure"),
               t(
-                "نشرح أسباب كل قرار وتعديل، لتفهم العمل وتطوّره بنفسك.",
-                "We explain the reasoning behind every decision and change, so you can understand and extend the work yourself.",
+                "نحدد مع كل مشروع مؤشرات نجاح واضحة، ونسلّم بما يحققها.",
+                "Every project starts with clear success measures, and we deliver against them.",
               ),
             ],
             [
@@ -323,10 +304,10 @@ export function Home() {
               ),
             ],
             [
-              t("عناية بالتفاصيل", "Care in every detail"),
+              t("شراكة بعد التسليم", "Partnership after launch"),
               t(
-                "مراجعة منظّمة لكل تسليم، وحماية لملفاتك وبياناتك.",
-                "A structured review of every delivery, and protection for your files and data.",
+                "دعم وصيانة وتحسين مستمر حتى يحقق العمل هدفه.",
+                "Support, maintenance and ongoing improvement until the work does its job.",
               ),
             ],
           ].map(([a, b]) => (
@@ -342,48 +323,33 @@ export function Home() {
           ))}
         </div>
       </section>
-      <section className="section testimonials">
-        <SectionHeading
-          title={t(
-            "التجربة التي نعمل لتقديمها",
-            "The experience we work to deliver",
-          )}
-          text={t(
-            "نماذج توضيحية مؤقتة — ليست شهادات عملاء حقيقيين.",
-            "Temporary illustrative examples — not real customer testimonials.",
-          )}
-        />
-        <div className="testimonial-grid">
-          {[
-            [
-              t(
-                "«الملاحظات خطوة بخطوة جعلت نقاط التحسين في تقريري واضحة.»",
-                "“Step-by-step feedback made it clear how to improve my report.”",
-              ),
-              t(
-                "نموذج تجربة · مراجعة تقرير",
-                "Example experience · report review",
-              ),
-            ],
-            [
-              t(
-                "«خرجنا بهوية متكاملة ودليل استخدام يسهّل عمل فريقنا.»",
-                "“We came away with a complete identity and a guide our team can actually use.”",
-              ),
-              t(
-                "نموذج تجربة · هوية تجارية",
-                "Example experience · brand identity",
-              ),
-            ],
-          ].map(([a, b]) => (
-            <article key={b}>
-              <span className="sample-badge">
-                {t("نموذج مؤقت", "ILLUSTRATIVE EXAMPLE")}
-              </span>
-              <blockquote>{a}</blockquote>
-              <p>{b}</p>
-            </article>
-          ))}
+      <section className="section academic-band">
+        <span className="icon-box">
+          <GraduationCap size={24} />
+        </span>
+        <div>
+          <span className="eyebrow">NEXORA ACADEMIC</span>
+          <h2>
+            {t(
+              "ودعم أكاديمي بالمعايير نفسها",
+              "And academic support, to the same standard",
+            )}
+          </h2>
+          <p>
+            {t(
+              "شرح ومراجعة وتدقيق وإرشاد للطلاب والباحثين، بأسعار معلنة تبدأ من 40 ر.س.",
+              "Explanation, review, proofreading and mentoring for students and researchers, with published prices from SAR 40.",
+            )}
+          </p>
+        </div>
+        <div className="academic-links">
+          <LocalizedLink className="button secondary" to="/services">
+            {t("الخدمات الأكاديمية", "Academic services")}
+          </LocalizedLink>
+          <LocalizedLink className="text-link" to="/calculator">
+            {t("احسب السعر", "Estimate a price")}
+            <ArrowLeft size={17} />
+          </LocalizedLink>
         </div>
       </section>
       <CTA />

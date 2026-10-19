@@ -52,8 +52,9 @@ export function useLocalizedNavigate() {
   return (to: string, options?: NavigateOptions) =>
     navigate(localize(to, lang), options);
 }
-// The mark: an N whose last stroke rises toward a spark -- learning that
-// turns into building. Drawn inline so it follows the light/dark tokens.
+// The mark: an X of two crossing blades -- one in ink, one in the blue
+// brand gradient laid over it -- echoing the X in the NEXORA wordmark.
+// Drawn inline so the ink blade follows the light/dark tokens.
 export function BrandMark({ size = 40 }: { size?: number }) {
   return (
     <svg
@@ -63,16 +64,14 @@ export function BrandMark({ size = 40 }: { size?: number }) {
       height={size}
       aria-hidden="true"
     >
-      <rect width="48" height="48" rx="14" fill="var(--primary)" />
-      <path
-        d="M14 34V14l20 20V23"
-        fill="none"
-        stroke="var(--on-primary)"
-        strokeWidth="4.5"
-        strokeLinecap="round"
-        strokeLinejoin="round"
-      />
-      <circle cx="34" cy="14.5" r="3.4" fill="var(--logo-dot)" />
+      <defs>
+        <linearGradient id="nx-blade" x1="0" y1="0" x2="1" y2="1">
+          <stop offset="0" stopColor="#5ac8ff" />
+          <stop offset="1" stopColor="#1556d6" />
+        </linearGradient>
+      </defs>
+      <path d="M6 6h10l26 36H32z" fill="var(--navy)" />
+      <path d="M32 6h10L16 42H6z" fill="url(#nx-blade)" />
     </svg>
   );
 }
@@ -80,12 +79,11 @@ export function Logo() {
   const { lang } = useLanguage();
   return (
     <LocalizedLink to="/" className="brand" aria-label={site.name[lang]}>
-      <BrandMark />
-      <span dir="ltr">
-        <strong>Nexora</strong>
-        <small>
-          {lang === "ar" ? "تعلّم · ابنِ · تقدّم" : "Learn · Build · Progress"}
-        </small>
+      <span className="wordmark" dir="ltr">
+        <strong>
+          NE<span>X</span>ORA
+        </strong>
+        <small>DIGITAL SOLUTIONS</small>
       </span>
     </LocalizedLink>
   );
