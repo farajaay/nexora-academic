@@ -252,7 +252,7 @@ function Shell() {
         <h2 className="visually-hidden">{t("روابط الموقع", "Site links")}</h2>
         <div className="container footer-grid">
           <div>
-            <Logo />
+            <Logo variant="full" />
             <p>
               {t(
                 "نبني الهويات والمواقع والأنظمة التي تخدم عملك.",

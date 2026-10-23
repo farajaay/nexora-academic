@@ -1,0 +1,82 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<svg
+   viewBox="0 0 320 64"
+   role="img"
+   aria-label="NEXORA"
+   fill="#eeeee4"
+   version="1.1"
+   id="svg10"
+   xmlns="http://www.w3.org/2000/svg"
+   xmlns:svg="http://www.w3.org/2000/svg">
+  <defs
+     id="defs10" />
+  <title
+     id="title1">NEXORA</title>
+  <g
+     transform="translate(0 3) scale(.54)"
+     id="g4">
+    <defs
+       id="defs2">
+      <mask
+         id="ribbon-crossing"
+         maskUnits="userSpaceOnUse"
+         x="0"
+         y="0"
+         width="132"
+         height="108">
+        <path
+           fill="#fff"
+           d="M0 0H132V108H0Z"
+           id="path1" />
+        <path
+           d="M18 9C34 3 48 5 62 19C71 28 80 40 90 53L109 77C118 88 117 95 108 98C91 104 77 98 64 85C55 76 45 63 35 50L15 25C7 14 8 12 18 9Z"
+           fill="#000"
+           stroke="#000"
+           stroke-width="8"
+           stroke-linejoin="round"
+           id="path2" />
+      </mask>
+    </defs>
+    <path
+       d="M4 101C17 91 27 77 39 62L61 34C74 17 87 4 102 4H128C112 14 104 26 92 42L67 74C54 90 44 102 28 102Z"
+       mask="url(#ribbon-crossing)"
+       id="path3" />
+    <path
+       d="M18 9C34 3 48 5 62 19C71 28 80 40 90 53L109 77C118 88 117 95 108 98C91 104 77 98 64 85C55 76 45 63 35 50L15 25C7 14 8 12 18 9Z"
+       id="path4" />
+  </g>
+  <g
+     transform="translate(80 13) scale(.95)"
+     id="g10">
+    <path
+       transform="translate(0)"
+       fill-rule="evenodd"
+       d="M0 40V0H7L25 27V0H32V40H25L7 13V40Z"
+       id="path5" />
+    <path
+       transform="translate(40)"
+       fill-rule="evenodd"
+       d="M0 0H28V7H7V16H25V23H7V33H28V40H0Z"
+       id="path6" />
+    <path
+       transform="translate(76)"
+       fill-rule="evenodd"
+       d="M0 0H9L17 13L25 0H34L22 19L35 40H26L17 25L8 40H-1L12 19Z"
+       id="path7" />
+    <path
+       transform="translate(118)"
+       fill-rule="evenodd"
+       d="M18 0C29 0 36 7 36 20S29 40 18 40S0 33 0 20S7 0 18 0ZM18 7C11 7 7 11 7 20S11 33 18 33S29 29 29 20S25 7 18 7Z"
+       id="path8" />
+    <path
+       transform="translate(162)"
+       fill-rule="evenodd"
+       d="M0 40V0H17C28 0 34 5 34 13C34 19 31 23 25 25L36 40H27L17 26H7V40ZM7 7V19H17C24 19 27 17 27 13S24 7 17 7Z"
+       id="path9" />
+    <path
+       transform="translate(206)"
+       fill-rule="evenodd"
+       d="M0 40L16 0H24L40 40H32L28 30H12L8 40ZM15 23H25L20 10Z"
+       id="path10" />
+  </g>
+</svg>
