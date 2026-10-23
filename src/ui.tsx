@@ -8,7 +8,6 @@ import {
   type NavigateOptions,
 } from "react-router-dom";
 import {
-  ArrowUpLeft,
   Code2,
   DraftingCompass,
   FileText,
@@ -52,46 +51,21 @@ export function useLocalizedNavigate() {
   return (to: string, options?: NavigateOptions) =>
     navigate(localize(to, lang), options);
 }
-// The mark: an X of two crossing blades -- one in ink, one in the blue
-// brand gradient laid over it -- echoing the X in the NEXORA wordmark.
-// Drawn inline so the ink blade follows the light/dark tokens.
-export function BrandMark({ size = 40 }: { size?: number }) {
-  return (
-    <svg
-      className="brand-mark"
-      viewBox="0 0 48 48"
-      width={size}
-      height={size}
-      aria-hidden="true"
-    >
-      <defs>
-        <linearGradient id="nx-blade" x1="0" y1="0" x2="1" y2="1">
-          <stop offset="0" stopColor="#5ac8ff" />
-          <stop offset="1" stopColor="#1556d6" />
-        </linearGradient>
-      </defs>
-      <path d="M6 6h10l26 36H32z" fill="var(--navy)" />
-      <path d="M32 6h10L16 42H6z" fill="url(#nx-blade)" />
-    </svg>
-  );
-}
 export function Logo() {
   const { lang } = useLanguage();
   return (
     <LocalizedLink to="/" className="brand" aria-label={site.name[lang]}>
       <span className="wordmark" dir="ltr">
-        <strong>
-          NE<span>X</span>ORA
-        </strong>
+        <strong>NEXORA</strong>
         <small className="wordmark-ar" dir="rtl" lang="ar">
           نيكسورا للحلول الرقمية
         </small>
-        <small>DIGITAL SOLUTIONS</small>
+        <small>Digital solutions</small>
       </span>
     </LocalizedLink>
   );
 }
-export function Icon({ name, size = 23 }: { name: string; size?: number }) {
+export function Icon({ name }: { name: string }) {
   const C =
     {
       spark: Sparkles,
@@ -102,10 +76,9 @@ export function Icon({ name, size = 23 }: { name: string; size?: number }) {
       cad: DraftingCompass,
       language: Languages,
     }[name] || Sparkles;
-  return <C size={size} strokeWidth={1.7} />;
+  return <C />;
 }
 export function SectionHeading({
-  eyebrow,
   title,
   text,
 }: {
@@ -115,7 +88,6 @@ export function SectionHeading({
 }) {
   return (
     <div className="section-heading">
-      {eyebrow && <span className="eyebrow">{eyebrow}</span>}
       <h2>{title}</h2>
       {text && <p>{text}</p>}
     </div>
@@ -132,7 +104,11 @@ export function PageIntro({
 }) {
   return (
     <div className="page-intro">
-      <span className="eyebrow">{eyebrow || "NEXORA"}</span>
+      {eyebrow && (
+        <p className="page-context">
+          {eyebrow === "NEXORA ACADEMIC" ? "Nexora Academic" : eyebrow}
+        </p>
+      )}
       <h1>{title}</h1>
       <p>{subtitle}</p>
     </div>
@@ -140,7 +116,6 @@ export function PageIntro({
 }
 export function ServiceCard({
   service,
-  index = 0,
 }: {
   service: (typeof services)[number];
   index?: number;
@@ -151,12 +126,6 @@ export function ServiceCard({
       className="service-card"
       to={`/contact?service=${service.id}`}
     >
-      <div className="card-top">
-        <span className={`icon-box tone-${index % 3}`}>
-          <Icon name={service.icon} />
-        </span>
-        <ArrowUpLeft className="card-arrow" size={19} />
-      </div>
       <h3>{service[lang]}</h3>
       <p>
         {service.price ? (

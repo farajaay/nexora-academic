@@ -107,3 +107,29 @@ test("robots.txt blocks both languages of the private routes", () => {
     assert.ok(robots.includes(`Disallow: /nexora-academic/en/${route.path}/`));
   }
 });
+
+test("assistant guides and readable no-JavaScript content ship with the site", () => {
+  for (const filename of ["llms.txt", "AGENTS.md"]) {
+    const text = readFileSync(`dist/${filename}`, "utf8");
+    assert.ok(text.includes("https://farajaay.github.io/nexora-academic/"));
+    assert.ok(text.includes("WhatsApp"));
+  }
+  for (const route of publicRoutes) {
+    for (const lang of ["ar", "en"]) {
+      const html = readFileSync(docPath(route.path, lang), "utf8");
+      const fallback = html.match(/<noscript>([\s\S]*?)<\/noscript>/)?.[1];
+      assert.ok(
+        fallback
+          ?.replaceAll("&amp;", "&")
+          .includes(`<h1>${route.title[lang]}</h1>`),
+      );
+      assert.ok(fallback.includes("https://wa.me/966554517103"));
+      const schema = JSON.parse(
+        html.match(
+          /<script type="application\/ld\+json">([\s\S]*?)<\/script>/,
+        )[1],
+      );
+      assert.equal(schema["@graph"][0]["@type"], "ProfessionalService");
+    }
+  }
+});

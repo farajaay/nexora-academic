@@ -21,7 +21,7 @@ export function ThemePicker() {
       aria-label={t("الوضع الداكن", "Dark mode")}
       onClick={() => setThemePreference(dark ? "light" : "dark")}
     >
-      {dark ? <Sun size={18} /> : <Moon size={18} />}
+      {dark ? <Sun /> : <Moon />}
     </button>
   );
 }

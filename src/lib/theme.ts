@@ -10,6 +10,14 @@ export {
 /** Applies a theme to the document immediately (no network involved). */
 export function applyTheme(id: ThemeId) {
   document.documentElement.dataset.theme = id;
+  document
+    .querySelector('meta[name="theme-color"]')
+    ?.setAttribute(
+      "content",
+      getComputedStyle(document.documentElement)
+        .getPropertyValue("--paper")
+        .trim(),
+    );
 }
 
 // `./backend` pulls in @supabase/supabase-js. It's imported dynamically here

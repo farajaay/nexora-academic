@@ -9,45 +9,10 @@ import {
   ShieldCheck,
 } from "lucide-react";
 import { useState } from "react";
+import { ProjectCover } from "./ProjectCover";
 import { agencyServices, conceptProjects, serviceName } from "./config/agency";
 import { CTA, Steps } from "./pages";
 import { LocalizedLink, PageIntro, SectionHeading, useLanguage } from "./ui";
-
-/** Generated project cover: a stylised browser window in the project hues. */
-function ProjectCover({
-  hues,
-  icon,
-}: {
-  hues: readonly [string, string];
-  icon: string;
-}) {
-  const Icon = agencyServices.find((s) => s.id === icon)!.icon;
-  return (
-    <div
-      className="project-cover"
-      style={{ background: `linear-gradient(135deg, ${hues[0]}, ${hues[1]})` }}
-      aria-hidden="true"
-    >
-      <div className="cover-window">
-        <span className="cover-dots">
-          <i />
-          <i />
-          <i />
-        </span>
-        <span className="cover-line wide" />
-        <span className="cover-line" />
-        <span className="cover-blocks">
-          <i />
-          <i />
-          <i />
-        </span>
-      </div>
-      <span className="cover-icon">
-        <Icon size={26} />
-      </span>
-    </div>
-  );
-}
 
 export function ProjectCard({
   project,
@@ -57,9 +22,11 @@ export function ProjectCard({
   const { t, lang } = useLanguage();
   return (
     <article className="project-card">
-      <ProjectCover hues={project.cover} icon={project.services[0]} />
+      <ProjectCover kind={project.services[0]} />
       <div className="project-body">
-        <span className="project-sector">{t(...project.sector)}</span>
+        <span className="project-sector">
+          {t("مفهوم مقترح", "Concept proposal")} / {t(...project.sector)}
+        </span>
         <h3>{t(...project.title)}</h3>
         <p>
           <strong>{t("التحدي:", "Challenge:")}</strong>{" "}
@@ -92,7 +59,7 @@ export function Portfolio() {
   return (
     <>
       <PageIntro
-        eyebrow={t("أعمالنا", "PORTFOLIO")}
+        eyebrow={t("أعمالنا", "Portfolio")}
         title={t("أفكار تتحوّل إلى أثر.", "Ideas turned into impact.")}
         subtitle={t(
           "مشاريع مفاهيمية توضّح طريقتنا في التفكير والتنفيذ عبر خدماتنا.",
@@ -217,7 +184,7 @@ export function About() {
   return (
     <>
       <PageIntro
-        eyebrow={t("من نحن", "ABOUT US")}
+        eyebrow={t("من نحن", "About us")}
         title={t(
           "انضباط المهندس، وحسّ الفنان.",
           "An engineer’s discipline, an artist’s eye.",
@@ -244,7 +211,7 @@ export function About() {
       </section>
       <section className="section">
         <SectionHeading
-          eyebrow={t("ما نحمله لك", "WHAT WE BRING")}
+          eyebrow={t("ما نحمله لك", "What we bring")}
           title={t(
             "خبرات تلتقي في كل مشروع",
             "Expertise that meets in every project",
@@ -254,7 +221,7 @@ export function About() {
           {strengths.map(([Icon, title, text]) => (
             <article key={title}>
               <span className="icon-box">
-                <Icon size={22} />
+                <Icon />
               </span>
               <h3>{title}</h3>
               <p>{text}</p>
@@ -271,7 +238,7 @@ export function About() {
           {values.map(([Icon, title, text]) => (
             <article key={title}>
               <span className="icon-box">
-                <Icon size={22} />
+                <Icon />
               </span>
               <h3>{title}</h3>
               <p>{text}</p>

@@ -1,11 +1,24 @@
 import { readFileSync, writeFileSync, mkdirSync } from "node:fs";
-import { site } from "../src/config/site.ts";
+import { site, services } from "../src/config/site.ts";
 import { privateRoutes, publicRoutes, urlFor } from "../src/config/routes.ts";
 import { DEFAULT_THEME } from "../src/config/theme.ts";
 
 const template = readFileSync("dist/index.html", "utf8");
 const escape = (s) =>
   s.replaceAll("&", "&amp;").replaceAll('"', "&quot;").replaceAll("<", "&lt;");
+
+// A readable fallback for visitors and assistants without JavaScript.
+// Interactive request/calculator behavior still requires the application.
+function staticContent(route, lang) {
+  const en = lang === "en";
+  const links = publicRoutes
+    .map(
+      (page) =>
+        `<li><a href="${urlFor(page.path, lang)}">${escape(page.title[lang])}</a></li>`,
+    )
+    .join("");
+  return `<noscript><main><h1>${escape(route.title[lang])}</h1><p>${escape(route.description[lang])}</p><p>${en ? "NEXORA builds websites, identities and digital systems. Project scopes and quotes are agreed before work begins. Portfolio entries are concepts, not client projects." : "نيكسورا تبني المواقع والهويات والأنظمة الرقمية. يُتفق على النطاق والسعر قبل البدء. الأعمال المعروضة مفاهيم وليست مشاريع لعملاء."}</p><p>${en ? "Enable JavaScript to use the calculator or request form. You can also contact us on WhatsApp." : "فعّل JavaScript لاستخدام الحاسبة ونموذج الطلب، أو تواصل عبر واتساب."}</p><p><a href="https://wa.me/${site.whatsapp}">${en ? "Contact on WhatsApp" : "التواصل عبر واتساب"}</a></p><nav aria-label="${en ? "Pages" : "الصفحات"}"><ul>${links}</ul></nav></main></noscript>`;
+}
 
 /** Directory a route's document is written to, for the given language. */
 function outDir(path, lang) {
@@ -69,7 +82,11 @@ function render(route, lang, { indexable }) {
   );
   html = html.replace(
     "<!--schema-->",
-    `<script type="application/ld+json">${JSON.stringify({ "@context": "https://schema.org", "@type": "ProfessionalService", name: site.name.en, alternateName: site.name.ar, url: site.url, telephone: "+" + site.whatsapp, description: [publicRoutes[0].description.en, "Website development, brand identity, UI/UX, content production, digital solutions, product development and industrial consultation, plus academic support."], areaServed: { "@type": "Country", name: "Saudi Arabia" }, knowsLanguage: ["ar", "en"], logo: site.url + "brand-mark.svg" })}</script>`,
+    `<script type="application/ld+json">${JSON.stringify({ "@context": "https://schema.org", "@graph": [{ "@type": "ProfessionalService", "@id": site.url + "#organization", name: site.name.en, alternateName: site.name.ar, url: site.url, telephone: "+" + site.whatsapp, description: publicRoutes[0].description[lang], areaServed: { "@type": "Country", name: "Saudi Arabia" }, knowsLanguage: ["ar", "en"], logo: site.url + "brand-mark.svg" }, ...(route.path === "services" ? services.filter((service) => service.price).map((service) => ({ "@type": "Service", name: service[lang], provider: { "@id": site.url + "#organization" }, offers: { "@type": "Offer", priceCurrency: "SAR", priceSpecification: { "@type": "PriceSpecification", minPrice: service.price, priceCurrency: "SAR", description: lang === "en" ? "Starting price; final quote after review." : "سعر يبدأ من المبلغ المعروض، ويثبت بعد المراجعة." } } })) : [])] })}</script>`,
+  );
+  html = html.replace(
+    /<noscript\b[^>]*>[\s\S]*?<\/noscript\s*>/,
+    staticContent(route, lang),
   );
   return html;
 }
@@ -102,10 +119,7 @@ writeFileSync(
   template
     .replace('content="index, follow"', 'content="noindex, nofollow"')
     .replace("<!--hreflang-->", "")
-    .replace(
-      /<title>.*?<\/title>/s,
-      "<title>صفحة غير موجودة | NEXORA</title>",
-    ),
+    .replace(/<title>.*?<\/title>/s, "<title>صفحة غير موجودة | NEXORA</title>"),
 );
 writeFileSync("dist/.nojekyll", "");
 

@@ -21,10 +21,11 @@ import { isEnglishPath, localize } from "./lib/i18n";
 import { initializeThemes } from "./lib/theme";
 import { ThemePicker } from "./ThemePicker";
 import { LanguageContext, LocalizedLink, LocalizedNavLink, Logo } from "./ui";
-import { FAQ, Home, How, Legal, NotFound, Services } from "./pages";
+import { FAQ, How, Legal, NotFound, Services } from "./pages";
 import { Calculator, Contact, Success } from "./forms";
 import { Studio } from "./Studio";
 import { About, Portfolio } from "./Agency";
+import { Home } from "./Home";
 import "./index.css";
 const Admin = lazy(() => import("./Admin"));
 const nav = [
@@ -87,6 +88,18 @@ function Shell() {
   const lang: Lang = isEnglishPath(pathname) ? "en" : "ar";
   const t = (ar: string, en: string) => (lang === "ar" ? ar : en);
   const [menu, setMenu] = useState(false);
+  const menuButton = useRef<HTMLButtonElement>(null);
+  useEffect(() => {
+    if (!menu) return;
+    const close = (event: KeyboardEvent) => {
+      if (event.key === "Escape") {
+        setMenu(false);
+        menuButton.current?.focus();
+      }
+    };
+    window.addEventListener("keydown", close);
+    return () => window.removeEventListener("keydown", close);
+  }, [menu]);
   useEffect(() => {
     try {
       localStorage.setItem("nexora-language", lang);
@@ -99,6 +112,7 @@ function Shell() {
   // different one, in which case it upgrades once, here, on mount.
   useEffect(initializeThemes, []);
   function toggle() {
+    setMenu(false);
     const target: Lang = lang === "ar" ? "en" : "ar";
     navigate(localize(pathname, target) + window.location.search);
   }
@@ -182,7 +196,7 @@ function Shell() {
               onClick={toggle}
               aria-label={t("Switch to English", "التبديل إلى العربية")}
             >
-              <Globe2 size={17} />
+              <Globe2 />
               <span>{t("EN", "عربي")}</span>
             </button>
             <LocalizedLink className="button nav-cta" to="/studio#start">
@@ -190,6 +204,7 @@ function Shell() {
             </LocalizedLink>
             <button
               className="menu-button"
+              ref={menuButton}
               aria-label={t("القائمة", "Menu")}
               aria-expanded={menu}
               aria-controls="mobile-nav"
@@ -206,7 +221,12 @@ function Shell() {
             aria-label={t("قائمة الهاتف", "Mobile navigation")}
           >
             {nav.map(([to, ar, en]) => (
-              <LocalizedNavLink key={to} to={to} onClick={() => setMenu(false)}>
+              <LocalizedNavLink
+                key={to}
+                to={to}
+                end={to === "/"}
+                onClick={() => setMenu(false)}
+              >
                 {t(ar, en)}
               </LocalizedNavLink>
             ))}
@@ -216,7 +236,9 @@ function Shell() {
       <main id="main" tabIndex={-1} className="container">
         <Suspense
           fallback={
-            <p className="empty-state">{t("جارٍ التحميل…", "Loading…")}</p>
+            <p className="loading-state" role="status">
+              {t("جارٍ التحميل…", "Loading…")}
+            </p>
           }
         >
           <Routes>
@@ -232,8 +254,8 @@ function Shell() {
             <Logo />
             <p>
               {t(
-                "نصمّم ونطوّر ونبني تجارب رقمية ترتقي بعلامتك.",
-                "We design, develop and build digital experiences that elevate your brand.",
+                "نبني الهويات والمواقع والأنظمة التي تخدم عملك.",
+                "We build identities, websites and systems around your work.",
               )}
             </p>
             <span className="footer-tag">
@@ -304,7 +326,7 @@ function Shell() {
             © {new Date().getFullYear()} NEXORA Digital Solutions.{" "}
             {t("جميع الحقوق محفوظة.", "All rights reserved.")}
           </span>
-          <span>IDEAS · BRANDS · WEBSITES · GROWTH</span>
+          <span>Design, development and industrial thinking</span>
         </div>
       </footer>
       <button
@@ -320,7 +342,7 @@ function Shell() {
         }
         aria-label={t("العودة إلى الأعلى", "Back to top")}
       >
-        <ArrowUp size={20} />
+        <ArrowUp />
       </button>
       <aside
         className="mobile-contact"
@@ -332,12 +354,12 @@ function Shell() {
             target="_blank"
             rel="noopener noreferrer"
           >
-            <MessageCircle size={20} />
+            <MessageCircle />
             {t("تواصل معنا عبر واتساب", "Chat on WhatsApp")}
           </a>
         ) : (
           <LocalizedLink to="/contact">
-            <MessageCircle size={20} />
+            <MessageCircle />
             {t("جهّز طلبك وتواصل معنا", "Prepare your support request")}
           </LocalizedLink>
         )}

@@ -7,28 +7,23 @@ export const DEFAULT_THEME: ThemeId = "dark";
 // Pure data, no browser or database dependency, so it is safe to import from
 // both the client (src/App.tsx, src/Admin.tsx) and the static document
 // generator (scripts/seo.mjs), matching the src/config/routes.ts pattern.
-// One identity in two modes. `swatch` mirrors each mode's --bg/--primary/
-// --accent in src/index.css for the admin preview dots -- update both together.
 export const themes: {
   id: ThemeId;
   name: Text;
   blurb: Text;
-  swatch: [string, string, string];
 }[] = [
   {
     id: "light",
     name: { ar: "فاتح", en: "Light" },
-    blurb: { ar: "أزرق ليلكي فاتح وواضح", en: "Light periwinkle, clear" },
-    swatch: ["#eceef9", "#2e3570", "#4a55b8"],
+    blurb: { ar: "ورق معدني وحبر داكن", en: "Mineral paper and dark ink" },
   },
   {
     id: "dark",
     name: { ar: "داكن", en: "Dark" },
     blurb: {
-      ar: "أزرق ليلكي داكن (الافتراضي)",
-      en: "Dark periwinkle (default)",
+      ar: "ظل هادئ ونص واضح (الافتراضي)",
+      en: "Quiet shade and clear type (default)",
     },
-    swatch: ["#0f1120", "#b3bcf5", "#c0c6ff"],
   },
 ];
 
