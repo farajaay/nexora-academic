@@ -47,7 +47,7 @@ npm run preview
 
 ## التعديل والإطلاق
 
-عدّل الاسم والأسعار ورقم واتساب والبريد والروابط في `src/config/site.ts`. بيانات التواصل placeholders مقصودة، والأزرار لا تتفعل قبل استبدالها. الشعار المرفق في `public/nexora-logo.jpg`، وأيقونة المتصفح في `public/brand-mark.svg`، وأبعاد العرض في `src/index.css`.
+عدّل الاسم والأسعار ورقم واتساب والبريد والروابط في `src/config/site.ts`. بيانات التواصل placeholders مقصودة، والأزرار لا تتفعل قبل استبدالها. الشعارات المسطّحة الشفافة في `public/brand/`، وأيقونة المتصفح المتجهة في `public/brand-mark.svg`، وأبعاد العرض في `src/index.css`. احتُفظ بالشعار المعدني الأصلي في `public/nexora-logo.jpg` للعروض. راجع [ملفات الهوية](docs/BRAND-ASSETS.md).
 
 - [دليل الإعداد والهوية وقاعدة البيانات](docs/CONFIGURATION.md)
 - [دليل المحتوى](docs/CONTENT-GUIDE.md)
@@ -56,7 +56,7 @@ npm run preview
 
 تطبق migration قاعدة البيانات من `supabase/migrations/`. أنشئ حساب المدير في Supabase Auth ثم أضف UUID الخاص به إلى `public.admins` من SQL Editor. لا يوجد تسجيل ذاتي يمنح الإدارة. الجلسة في الذاكرة وتنتهي بإعادة تحميل الصفحة. تتبع الدفعات يدوي وليس بوابة دفع؛ لا يجمع الموقع بيانات البطاقات.
 
-الشعار هو الملف المرفق من المالك، والأعمال المعروضة مشاريع عامة فعلية مع حالة التنفيذ ومصدر كل مشروع. يجب تحديد مشغل المنصة وقنوات التواصل وسياسة الاحتفاظ الفعلية ومراجعة السياسات قبل استقبال بيانات حقيقية. لا يضمن الموقع درجات ولا يقدم أداء اختبارات أو انتحالًا.
+الهوية اليومية نسخة متجهة مسطّحة من علامة X المرفقة من المالك، والأعمال المعروضة مشاريع عامة فعلية مع حالة التنفيذ ومصدر كل مشروع. يجب تحديد مشغل المنصة وقنوات التواصل وسياسة الاحتفاظ الفعلية ومراجعة السياسات قبل استقبال بيانات حقيقية. لا يضمن الموقع درجات ولا يقدم أداء اختبارات أو انتحالًا.
 
 ## English
 
@@ -76,7 +76,7 @@ Use Node.js 24. Run `npm ci`, copy `.env.example` to `.env.local`, and run `npm 
 
 Select GitHub Actions in repository Pages settings. Every push to main runs checks and deploys `dist`. Set the public Supabase URL/key as Actions variables. Apply the included SQL migration, create an Auth user and provision its UUID in the admins table. Never expose service-role or secret keys. Browser requests are protected by column grants and RLS.
 
-The shared configuration at `src/config/site.ts` controls names, contact placeholders, pricing, currency, timing and links. Replace only with real business details. The supplied logo is in `public/nexora-logo.jpg`; its ribbon-X favicon is in `public/brand-mark.svg`. Logo display dimensions and interface tokens are in `src/index.css`. Update the Vite base and site URL if renaming the repository. Route titles and descriptions live in `src/config/routes.ts`, the single source both the router and the static generator read — add a page there once, not in two places. Each public route gets its own Arabic document at its existing unprefixed URL and an English document at the matching `/en/` URL, with reciprocal `hreflang` tags (`x-default` pointing at Arabic) and both listed in the sitemap; the build also creates a single unprefixed 404 page and robots file. The site uses one identity in light and dark modes: the admin sets the default for every visitor (stored in the database), and visitors can switch modes with the header toggle.
+The shared configuration at `src/config/site.ts` controls names, contact placeholders, pricing, currency, timing and links. Replace only with real business details. Transparent flat SVG logo variants are in `public/brand/`; the vector ribbon-X favicon is `public/brand-mark.svg`. The original metallic `public/nexora-logo.jpg` is retained for promotional use. See [brand assets and regeneration](docs/BRAND-ASSETS.md). Logo display dimensions and interface tokens are in `src/index.css`. Update the Vite base and site URL if renaming the repository. Route titles and descriptions live in `src/config/routes.ts`, the single source both the router and the static generator read — add a page there once, not in two places. Each public route gets its own Arabic document at its existing unprefixed URL and an English document at the matching `/en/` URL, with reciprocal `hreflang` tags (`x-default` pointing at Arabic) and both listed in the sitemap; the build also creates a single unprefixed 404 page and robots file. The site uses one identity in light and dark modes: the admin sets the default for every visitor (stored in the database), and visitors can switch modes with the header toggle.
 
 Academic integrity is central. Portfolio entries are verified public GitHub projects with explicit delivery status; they do not imply client commissions or measured commercial results. WhatsApp/email links prepare a message; the user must complete sending in the external app. The success screen does not confuse message preparation with database submission. Payments are recorded manually after receipt, not processed by the site.
 

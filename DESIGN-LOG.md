@@ -7,3 +7,6 @@ Next time: compare a native vector lockup at small navigation sizes; this update
 Theme: C retained; six verified public GitHub projects now supply the portfolio content and delivery status.
 Lever: 1 retained; real landing-page captures and labelled project overviews replace the invented concept artwork, with C5 facts and source links.
 Next time: capture released product workflows as they become available; this update passed 24 responsive page combinations, bilingual light/dark accessibility, source/filter/anchor/fallback checks, build, lint, seven SEO checks and seven unit checks.
+Theme: C retained; flat ink-colored ribbon-X assets now sit directly on the page surface in both modes.
+Lever: 1 retained; the horizontal navigation gives the geometric NEXORA name more space, with outlined English/Arabic descriptors in the full lockups.
+Next time: compare print proofs with the retained metallic presentation artwork; vector construction, 16–64px symbols, 12 bilingual theme/width combinations and existing navigation/accessibility checks verified this refinement.
