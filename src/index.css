@@ -57,7 +57,6 @@
   --measure-title: 22ch;
   --measure-caption: 46ch;
   --measure-footer: 32ch;
-  --proof-scale: 1.7;
   --site-width: 1280px;
   --gutter: clamp(var(--s-6), 4vw, var(--s-16));
   --header-height: 112px;
@@ -517,7 +516,7 @@ code {
 .service-index-row:active {
   background: color-mix(in srgb, var(--ink) var(--quiet-tone), var(--paper));
 }
-/* Concepts are proposals, with no invented client screens or production data. */
+/* Actual project captures and labelled repository overviews; no mock dashboards. */
 .project-grid {
   display: grid;
   grid-template-columns: repeat(2, minmax(0, 1fr));
@@ -552,13 +551,6 @@ code {
   font-weight: var(--weight-medium);
   letter-spacing: var(--tracking-display);
 }
-.proof-brand > strong {
-  align-self: center;
-  font-family: var(--font-arabic);
-  font-size: calc(var(--step-5) * var(--proof-scale));
-  line-height: var(--leading-heading);
-  padding-block: var(--s-4);
-}
 .proof-baseline {
   display: flex;
   flex-wrap: wrap;
@@ -567,24 +559,6 @@ code {
   padding-block-start: var(--s-4);
   border-block-start: var(--hairline) solid var(--line);
   font-size: var(--step--1);
-}
-.proof-register {
-  display: grid;
-  grid-template-columns: repeat(3, minmax(0, 1fr));
-  gap: var(--s-4);
-  border-block-start: var(--hairline) solid var(--line);
-  padding-block-start: var(--s-4);
-}
-.proof-register > span {
-  display: flex;
-  flex-direction: column;
-  color: var(--ink-2);
-  font-size: var(--step--1);
-}
-.proof-register b {
-  color: var(--ink);
-  font-size: var(--step-2);
-  font-weight: var(--weight-normal);
 }
 .project-body {
   padding-block: var(--s-6);
@@ -595,7 +569,8 @@ code {
   font-size: var(--step--1);
   margin-block-end: var(--s-3);
 }
-.project-body h3 {
+.project-body > h2,
+.project-body > h3 {
   font-size: var(--step-2);
   margin-block-end: var(--s-4);
 }
@@ -623,6 +598,90 @@ code {
   min-block-size: var(--control-size);
   color: var(--accent);
   font-size: var(--step--1);
+}
+.project-card {
+  scroll-margin-block-start: var(--s-6);
+}
+.project-figure {
+  margin: 0;
+  min-inline-size: 0;
+}
+.project-screen {
+  display: block;
+  inline-size: 100%;
+  block-size: auto;
+  border: var(--hairline) solid var(--line);
+}
+.project-figure figcaption,
+.project-updated,
+.project-count {
+  color: var(--ink-2);
+  font-size: var(--step--1);
+}
+.project-figure figcaption {
+  padding-block: var(--s-3);
+}
+.project-count {
+  margin-block: var(--s-6) 0;
+}
+.portfolio-projects {
+  grid-template-columns: 1fr;
+  margin-block-start: var(--s-8);
+}
+.project-record {
+  display: grid;
+  grid-template-columns: 5fr 7fr;
+  align-items: start;
+  gap: var(--s-12);
+  border-block-start: var(--hairline) solid var(--line);
+  padding-block: var(--s-12);
+}
+.project-record .project-body {
+  padding: 0;
+}
+.project-facts {
+  margin-block: 0 var(--s-6);
+}
+.project-facts > div {
+  display: grid;
+  grid-template-columns: 1fr 3fr;
+  gap: var(--s-4);
+  padding-block: var(--s-2);
+  border-block-end: var(--hairline) solid var(--line);
+}
+.project-facts dt {
+  color: var(--ink-2);
+  font-size: var(--step--1);
+}
+.project-facts dd {
+  margin: 0;
+}
+.project-body .project-subheading {
+  font-size: var(--step-0);
+  font-weight: var(--weight-medium);
+  margin-block-end: var(--s-2);
+}
+.project-evidence > p {
+  color: var(--ink-2);
+}
+.project-evidence strong {
+  color: var(--ink);
+  font-weight: var(--weight-medium);
+}
+.project-evidence,
+.project-body,
+.project-facts dd {
+  min-inline-size: 0;
+  overflow-wrap: anywhere;
+}
+.project-links {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--s-2) var(--s-6);
+  margin-block: var(--s-4);
+}
+.next-project {
+  margin-block-start: var(--s-4);
 }
 .steps-grid {
   display: grid;
@@ -1617,11 +1676,17 @@ input[type="file"]::file-selector-button {
   .project-cover {
     min-block-size: var(--mobile-cover-height);
   }
-  .project-body h3 {
+  .project-body > h2,
+  .project-body > h3 {
     font-size: var(--step-1);
   }
-  .proof-brand > strong {
-    font-size: var(--step-5);
+  .project-record {
+    grid-template-columns: 1fr;
+    gap: var(--s-6);
+    padding-block: var(--s-8);
+  }
+  .project-facts > div {
+    grid-template-columns: 1fr 2fr;
   }
   .steps-grid {
     grid-template-columns: 1fr;

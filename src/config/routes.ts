@@ -51,8 +51,8 @@ export const publicRoutes: RouteMeta[] = [
     path: "portfolio",
     title: { ar: "أعمالنا", en: "Portfolio" },
     description: {
-      ar: "مشاريع مفاهيمية توضّح طريقتنا في الهوية والمواقع والمنتجات والحلول الرقمية.",
-      en: "Concept projects showing how we approach identity, websites, products and digital solutions.",
+      ar: "مشاريع عامة فعلية من GitHub: أتما ستوديو وMRO Optix وEmployee OS والمجلس وأدوات التخطيط والمتابعة، مع النطاق والحالة وروابط المصدر.",
+      en: "Real public GitHub projects: ATEMA Studio, MRO Optix, Employee OS, Majlis and operational planning tools, with scope, status and source links.",
     },
   },
   {

@@ -1,83 +1,43 @@
-/** Proposed deliverable illustration; `kind` is a concept's primary service id.
- * Labels explicitly identify proposals. No client screens or data are invented.
+/** `project` supplies an actual landing-page capture or a factual type cover.
+ * A failed capture falls back to its project overview, never a broken image.
  */
+import { useState } from "react";
+import type { Project } from "./config/projects";
 import { useLanguage } from "./ui";
 
-export function ProjectCover({ kind }: { kind: string }) {
+export function ProjectCover({ project }: { project: Project }) {
   const { t } = useLanguage();
-  if (kind === "industrial" || kind === "digital") {
-    return (
-      <div
-        className="project-cover proof-system"
-        aria-label={t(
-          "تصوّر لوحة مؤشرات بلا بيانات إنتاج حقيقية",
-          "Proposed dashboard, without real production data",
-        )}
-      >
-        <span className="proof-caption">
-          {t("تصوّر لنظام متابعة", "System concept")}
-        </span>
-        <strong>
-          {t(
-            "الصورة الكاملة.\nفي مكان واحد.",
-            "The whole picture.\nOne place.",
-          )}
-        </strong>
-        <div className="proof-register">
-          {[
-            t("الإنتاج", "Production"),
-            t("التوقفات", "Downtime"),
-            t("التوافر", "Availability"),
-          ].map((label) => (
-            <span key={label}>
-              {label}
-              <b aria-label={t("لا توجد بيانات", "No data")}>—</b>
-            </span>
-          ))}
-        </div>
-      </div>
-    );
-  }
-  if (kind === "branding" || kind === "content") {
-    return (
-      <div
-        className="project-cover proof-brand"
-        aria-label={t(
-          "دراسة طباعية لهوية مقترحة",
-          "Type study for a proposed identity",
-        )}
-      >
-        <span className="proof-caption">
-          {t("دراسة هوية", "Identity study")}
-        </span>
-        <strong lang="ar" dir="rtl">
-          حَبّ
-        </strong>
-        <div className="proof-baseline">
-          <span>{t("قهوة متخصصة", "Specialty coffee")}</span>
-          <span>{t("هوية ومتجر", "Identity and store")}</span>
-        </div>
-      </div>
-    );
-  }
+  const [imageFailed, setImageFailed] = useState(false);
   return (
-    <div
-      className="project-cover proof-product"
-      aria-label={t("مخطط رحلة استخدام مقترحة", "Proposed user journey")}
-    >
-      <span className="proof-caption">
-        {t("دراسة تجربة استخدام", "Experience study")}
-      </span>
-      <strong>
-        {kind === "uiux"
-          ? t("موعدك،\nبوضوح.", "Your visit,\nclearly planned.")
-          : t("الخطوة التالية،\nأوضح.", "A clearer\nnext step.")}
-      </strong>
-      <div className="proof-baseline">
-        <span>{t("اختر", "Choose")}</span>
-        <span>{t("راجع", "Review")}</span>
-        <span>{t("أكّد", "Confirm")}</span>
-      </div>
-    </div>
+    <figure className="project-figure">
+      {project.screen && !imageFailed ? (
+        <img
+          className="project-screen"
+          src={`${import.meta.env.BASE_URL}projects/${project.screen.file}`}
+          alt={t(...project.screen.alt)}
+          width="1280"
+          height="800"
+          loading="lazy"
+          decoding="async"
+          onError={() => setImageFailed(true)}
+        />
+      ) : (
+        <div className="project-cover">
+          <span className="proof-caption">
+            {t("نظرة على المشروع", "Project overview")}
+          </span>
+          <strong>
+            <bdi>{t(...project.title)}</bdi>
+          </strong>
+          <div className="proof-baseline">
+            <span>{t(...project.type)}</span>
+            <span>
+              <bdi>{project.year}</bdi>
+            </span>
+          </div>
+        </div>
+      )}
+      <figcaption>{t(...project.functions)}</figcaption>
+    </figure>
   );
 }

@@ -7,9 +7,23 @@ Canonical site: https://farajaay.github.io/nexora-academic/
 ## Digital studio
 - [Services](https://farajaay.github.io/nexora-academic/en/studio/): Websites and apps, brand identity, UI/UX, content, digital solutions, product development and industrial consultation.
 - [Project brief](https://farajaay.github.io/nexora-academic/en/studio/#start): Name, optional company, service, approximate budget, timeline and project description. Prepares a WhatsApp message; the visitor must send it.
-- [Portfolio](https://farajaay.github.io/nexora-academic/en/portfolio/): Explicitly labelled concept studies, not client projects or proven commercial outcomes.
+- [Portfolio](https://farajaay.github.io/nexora-academic/en/portfolio/): Six original public GitHub projects with verified scope, current delivery status and source links. These are not claims of client commissions or commercial outcomes.
+
 - [About](https://farajaay.github.io/nexora-academic/en/about/): The studio's engineering, operations and design approach.
 - [Process](https://farajaay.github.io/nexora-academic/en/how-it-works/): Brief, written scope and quote, delivery.
+
+## Selected projects
+
+- [ATEMA Studio](https://github.com/farajaay/atema-studio): Arabic/English photography booking platform. Published beta at https://atemastudio.xyz/; React, TypeScript, Vite, Supabase.
+- [MRO Optix](https://github.com/farajaay/mro-optix): Excel turnaround material-review workflow and bilingual product website. Candidate v2.1; sales closed and Windows Excel acceptance pending. Overview: https://farajaay.github.io/mro-optix/.
+- [Employee OS](https://github.com/farajaay/employee-os): Arabic work-application foundation. Compiling TypeScript skeleton and tested contracts; PWA and native app releases remain planned.
+- [Majlis](https://github.com/farajaay/Majlis): Self-hosted AI-agent rooms, messages, files, decisions and live transcript. FastAPI/CLI and Next.js implementations. No working public demo linked.
+- [Saudi Industry Forum planner](https://github.com/farajaay/saudi-industry-forum-event-planner): React/TypeScript workbook-driven event planner; browser edits are a local overlay, not writes to hosted Excel files. https://farajaay.github.io/saudi-industry-forum-event-planner/.
+- [HADEED performance dashboard](https://github.com/farajaay/HADEED-TA-Command-center): Static director/manager dashboard and shared scoring engine; a working aid, not the controlled record. https://farajaay.github.io/HADEED-TA-Command-center/.
+
+Selection checked 2026-10-23. It includes recent nonempty, nonarchived original
+public repositories with code updates since July 2026, excluding forks and
+private repositories. Dates refer to code commits, not product launches.
 
 ## Academic support
 - [Services and starting prices](https://farajaay.github.io/nexora-academic/en/services/): Explanation, review, proofreading, reports, presentations, coding, CAD and mentoring. Minimum order SAR 40.

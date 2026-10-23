@@ -3,6 +3,7 @@ import assert from "node:assert/strict";
 import { readFileSync, existsSync } from "node:fs";
 import { publicRoutes, privateRoutes, urlFor } from "../src/config/routes.ts";
 import { DEFAULT_THEME } from "../src/config/theme.ts";
+import { projects } from "../src/config/projects.ts";
 
 function docPath(path, lang) {
   const slug = path ? `${path}/` : "";
@@ -131,5 +132,22 @@ test("assistant guides and readable no-JavaScript content ship with the site", (
       );
       assert.equal(schema["@graph"][0]["@type"], "ProfessionalService");
     }
+  }
+});
+
+test("portfolio fallback exposes real projects, source links and delivery limits", () => {
+  for (const lang of ["ar", "en"]) {
+    const html = readFileSync(docPath("portfolio", lang), "utf8");
+    const fallback = html.match(/<noscript>([\s\S]*?)<\/noscript>/)?.[1];
+    assert.ok(fallback);
+    for (const project of projects) {
+      const i = lang === "ar" ? 0 : 1;
+      assert.ok(fallback.includes(project.repository));
+      assert.ok(fallback.includes(project.status[i]));
+      assert.ok(fallback.includes(project.outcome[i]));
+      if (project.website) assert.ok(fallback.includes(project.website.url));
+    }
+    assert.ok(!fallback.includes("Concept projects"));
+    assert.ok(!fallback.includes("majlis-webapp.vercel.app"));
   }
 });

@@ -2,6 +2,7 @@ import { readFileSync, writeFileSync, mkdirSync } from "node:fs";
 import { site, services } from "../src/config/site.ts";
 import { privateRoutes, publicRoutes, urlFor } from "../src/config/routes.ts";
 import { DEFAULT_THEME } from "../src/config/theme.ts";
+import { projects } from "../src/config/projects.ts";
 
 const template = readFileSync("dist/index.html", "utf8");
 const escape = (s) =>
@@ -17,7 +18,16 @@ function staticContent(route, lang) {
         `<li><a href="${urlFor(page.path, lang)}">${escape(page.title[lang])}</a></li>`,
     )
     .join("");
-  return `<noscript><main><h1>${escape(route.title[lang])}</h1><p>${escape(route.description[lang])}</p><p>${en ? "NEXORA builds websites, identities and digital systems. Project scopes and quotes are agreed before work begins. Portfolio entries are concepts, not client projects." : "نيكسورا تبني المواقع والهويات والأنظمة الرقمية. يُتفق على النطاق والسعر قبل البدء. الأعمال المعروضة مفاهيم وليست مشاريع لعملاء."}</p><p>${en ? "Enable JavaScript to use the calculator or request form. You can also contact us on WhatsApp." : "فعّل JavaScript لاستخدام الحاسبة ونموذج الطلب، أو تواصل عبر واتساب."}</p><p><a href="https://wa.me/${site.whatsapp}">${en ? "Contact on WhatsApp" : "التواصل عبر واتساب"}</a></p><nav aria-label="${en ? "Pages" : "الصفحات"}"><ul>${links}</ul></nav></main></noscript>`;
+  const portfolio =
+    route.path === "portfolio"
+      ? projects
+          .map((project) => {
+            const i = en ? 1 : 0;
+            return `<article id="${project.id}"><h2>${escape(project.title[i])}</h2><p>${escape(project.scope[i])}</p><p>${escape(project.status[i])}</p><p>${escape(project.outcome[i])}</p><p><a href="${project.repository}">GitHub: ${escape(project.title[i])}</a>${project.website ? ` — <a href="${project.website.url}">${escape(project.website.label[i])}</a>` : ""}</p></article>`;
+          })
+          .join("")
+      : "";
+  return `<noscript><main><h1>${escape(route.title[lang])}</h1><p>${escape(route.description[lang])}</p><p>${en ? "NEXORA builds websites, identities and digital systems. Project scopes and quotes are agreed before work begins. The portfolio documents public GitHub projects with their actual delivery status." : "نيكسورا تبني المواقع والهويات والأنظمة الرقمية. يُتفق على النطاق والسعر قبل البدء. تعرض صفحة الأعمال مشاريع GitHub عامة مع حالة تنفيذ كل مشروع."}</p>${portfolio}<p>${en ? "Enable JavaScript to use the calculator or request form. You can also contact us on WhatsApp." : "فعّل JavaScript لاستخدام الحاسبة ونموذج الطلب، أو تواصل عبر واتساب."}</p><p><a href="https://wa.me/${site.whatsapp}">${en ? "Contact on WhatsApp" : "التواصل عبر واتساب"}</a></p><nav aria-label="${en ? "Pages" : "الصفحات"}"><ul>${links}</ul></nav></main></noscript>`;
 }
 
 /** Directory a route's document is written to, for the given language. */

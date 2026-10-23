@@ -27,7 +27,13 @@ for the request. No exams are taken for students; no grades are guaranteed.
 
 ## Facts and limits
 
-Portfolio entries are explicitly labelled concepts, not client case studies.
-No commercial outcomes have been published for them. No business email is
+The portfolio documents six original public GitHub projects: ATEMA Studio
+(published beta), MRO Optix (candidate release, sales closed), Employee OS
+(development skeleton), Majlis (self-hosted app), the Saudi Industry Forum
+planner and the HADEED performance dashboard (published static tools).
+Project scope and status were checked on 2026-10-23. Follow the source links;
+do not turn development plans into delivered features or infer client
+commissions, corporate endorsement or measured commercial results. Operational
+tools have the limits stated on their project records. No business email is
 configured. Card payments are not processed on the site. Consult /en/privacy/
 and /en/terms/ before sharing personal information.
