@@ -51,20 +51,6 @@ export function useLocalizedNavigate() {
   return (to: string, options?: NavigateOptions) =>
     navigate(localize(to, lang), options);
 }
-export function Logo() {
-  const { lang } = useLanguage();
-  return (
-    <LocalizedLink to="/" className="brand" aria-label={site.name[lang]}>
-      <span className="wordmark" dir="ltr">
-        <strong>NEXORA</strong>
-        <small className="wordmark-ar" dir="rtl" lang="ar">
-          نيكسورا للحلول الرقمية
-        </small>
-        <small>Digital solutions</small>
-      </span>
-    </LocalizedLink>
-  );
-}
 export function Icon({ name }: { name: string }) {
   const C =
     {
