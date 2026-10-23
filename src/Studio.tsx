@@ -68,7 +68,7 @@ export function Studio() {
   return (
     <>
       <PageIntro
-        eyebrow={t("خدماتنا", "OUR SERVICES")}
+        eyebrow={t("خدماتنا", "Our services")}
         title={t(
           "من الفكرة إلى أثر رقمي ملموس.",
           "From idea to measurable digital impact.",
@@ -99,7 +99,7 @@ export function Studio() {
               tabIndex={i === active ? 0 : -1}
               onClick={() => select(i)}
             >
-              <TabIcon size={18} aria-hidden="true" />
+              <TabIcon aria-hidden="true" />
               {pick(...x.name)}
             </button>
           );
@@ -114,7 +114,7 @@ export function Studio() {
       >
         <div className="studio-head">
           <span className="studio-icon">
-            <Icon size={26} aria-hidden="true" />
+            <Icon aria-hidden="true" />
           </span>
           <div>
             <h2>{pick(...s.name)}</h2>
@@ -128,7 +128,7 @@ export function Studio() {
             <ul className="studio-list">
               {s.deliverables.map((d) => (
                 <li key={d[1]}>
-                  <Check size={16} aria-hidden="true" />
+                  <Check aria-hidden="true" />
                   {pick(...d)}
                 </li>
               ))}
@@ -154,6 +154,15 @@ export function Studio() {
             {t("ابدأ مشروعك", "Start your project")}
           </a>
         </div>
+      </section>
+      <section className="section expectations">
+        <h2>{t("ما الذي لا نقدّمه؟", "What you’re not getting")}</h2>
+        <p>
+          {t(
+            "لا تشمل الخدمة نطاقًا مفتوحًا أو موعدًا مضمونًا قبل مراجعة التفاصيل. نحدّد الملفات والتعديلات والدعم والاستضافة، إن لزمت، في العرض المكتوب. نموذج المشروع يجهّز رسالة واتساب ولا يحفظها في قاعدة البيانات.",
+            "There is no open-ended scope or confirmed deadline before we review the details. Files, revisions, support and any hosting are defined in the written proposal. The project form prepares a WhatsApp message and does not save it to the database.",
+          )}
+        </p>
       </section>
       <section className="section">
         <ProjectForm initial={initialService} />

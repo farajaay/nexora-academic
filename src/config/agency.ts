@@ -196,8 +196,6 @@ export type ConceptProject = {
   services: readonly string[];
   challenge: Bi;
   approach: Bi;
-  /** Cover art hue pair (CSS colors) for the generated project cover. */
-  cover: readonly [string, string];
 };
 
 // Concept work: illustrative projects that show how we approach a brief.
@@ -217,7 +215,6 @@ export const conceptProjects: readonly ConceptProject[] = [
       "هوية مستوحاة من رحلة الحبة، ومتجر ثنائي اللغة بالدفع والاشتراكات، ومحتوى إطلاق لمنصات التواصل.",
       "An identity inspired by the bean’s journey, a bilingual store with payments and subscriptions, and launch content for social media.",
     ],
-    cover: ["#1668e3", "#0b2a6b"],
   },
   {
     id: "clinic",
@@ -232,7 +229,6 @@ export const conceptProjects: readonly ConceptProject[] = [
       "رحلة حجز من ثلاث خطوات، وتذكير تلقائي، ولوحة للعيادة تعرض الجدول والإلغاءات.",
       "A three-step booking journey, automatic reminders and a clinic dashboard for schedules and cancellations.",
     ],
-    cover: ["#00b3c7", "#0a3a6b"],
   },
   {
     id: "plant",
@@ -247,7 +243,6 @@ export const conceptProjects: readonly ConceptProject[] = [
       "ربط بيانات خطوط الإنتاج بلوحة لحظية لمؤشر الكفاءة الشاملة (OEE)، مع خطة تحسين لأكبر أسباب التوقف.",
       "Line data feeding a live OEE dashboard, plus an improvement plan targeting the biggest downtime causes.",
     ],
-    cover: ["#3d7bff", "#101a3a"],
   },
   {
     id: "field",
@@ -262,7 +257,6 @@ export const conceptProjects: readonly ConceptProject[] = [
       "منتج أولي يوزّع المهام ويوثّقها بالصور والموقع، مع تقرير يومي للمشرف.",
       "An MVP that assigns jobs, captures photos and location, and sends supervisors a daily report.",
     ],
-    cover: ["#5b8cff", "#1b1f4d"],
   },
   {
     id: "launch",
@@ -277,7 +271,6 @@ export const conceptProjects: readonly ConceptProject[] = [
       "فكرة حملة موحّدة، وفيديو موشن قصير، وسلسلة تصاميم وتقويم نشر لستة أسابيع.",
       "One campaign idea, a short motion video, a design series and a six-week publishing calendar.",
     ],
-    cover: ["#1e90ff", "#2a145c"],
   },
   {
     id: "contracting",
@@ -292,7 +285,6 @@ export const conceptProjects: readonly ConceptProject[] = [
       "تحديث للهوية، وموقع يعرض المشاريع بالصور والأرقام، ونموذج طلب تسعير يصل مباشرة للمبيعات.",
       "A refreshed identity, a site showcasing projects with photos and figures, and a quote form routed straight to sales.",
     ],
-    cover: ["#2f6bff", "#0b1530"],
   },
 ];
 

@@ -123,7 +123,7 @@ test("attachment limits reject oversized, empty, unsupported and excess files", 
     assert.ok(attachmentError(files, "ar"));
   }
 });
-test("themes: default is valid, every theme has bilingual text and a real swatch", () => {
+test("themes: default is valid and both modes have bilingual descriptions", () => {
   const ids: ThemeId[] = ["light", "dark"];
   assert.equal(themes.length, ids.length);
   assert.ok(isThemeId(DEFAULT_THEME));
@@ -135,8 +135,6 @@ test("themes: default is valid, every theme has bilingual text and a real swatch
       assert.ok(theme!.name[lang].trim().length > 0);
       assert.ok(theme!.blurb[lang].trim().length > 0);
     }
-    assert.equal(theme!.swatch.length, 3);
-    for (const color of theme!.swatch) assert.match(color, /^#[0-9a-f]{6}$/);
   }
   assert.ok(!isThemeId("sunrise"));
   assert.ok(!isThemeId(""));

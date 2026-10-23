@@ -1,11 +1,5 @@
 <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 48 48" role="img" aria-label="NEXORA">
-  <defs>
-    <linearGradient id="b" x1="0" y1="0" x2="1" y2="1">
-      <stop offset="0" stop-color="#5ac8ff"/>
-      <stop offset="1" stop-color="#1556d6"/>
-    </linearGradient>
-  </defs>
-  <rect width="48" height="48" rx="12" fill="#070d1f"/>
-  <path d="M9 9h8l22 30h-8z" fill="#eef3ff"/>
-  <path d="M31 9h8L17 39H9z" fill="url(#b)"/>
+  <style>:root{--paper:#f2f1e9;--ink:#232c27}@media(prefers-color-scheme:dark){:root{--paper:#18241e;--ink:#eeeee4}}</style>
+  <path fill="var(--paper)" d="M0 0h48v48H0z"/>
+  <path fill="var(--ink)" d="M9 9h8l22 30h-8zM31 9h8L17 39H9z"/>
 </svg>

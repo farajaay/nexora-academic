@@ -1,0 +1,28 @@
+# NEXORA Digital Solutions | نيكسورا للحلول الرقمية
+
+> Saudi bilingual digital studio. Arabic is the default; English pages use /en/.
+
+Canonical site: https://farajaay.github.io/nexora-academic/
+
+## Digital studio
+- [Services](https://farajaay.github.io/nexora-academic/en/studio/): Websites and apps, brand identity, UI/UX, content, digital solutions, product development and industrial consultation.
+- [Project brief](https://farajaay.github.io/nexora-academic/en/studio/#start): Name, optional company, service, approximate budget, timeline and project description. Prepares a WhatsApp message; the visitor must send it.
+- [Portfolio](https://farajaay.github.io/nexora-academic/en/portfolio/): Explicitly labelled concept studies, not client projects or proven commercial outcomes.
+- [About](https://farajaay.github.io/nexora-academic/en/about/): The studio's engineering, operations and design approach.
+- [Process](https://farajaay.github.io/nexora-academic/en/how-it-works/): Brief, written scope and quote, delivery.
+
+## Academic support
+- [Services and starting prices](https://farajaay.github.io/nexora-academic/en/services/): Explanation, review, proofreading, reports, presentations, coding, CAD and mentoring. Minimum order SAR 40.
+- [Calculator](https://farajaay.github.io/nexora-academic/en/calculator/): Estimates only. The final price and delivery time require review and agreement.
+- [Academic request](https://farajaay.github.io/nexora-academic/en/contact/?type=academic): Save a request when the backend is available, or prepare a WhatsApp message. Up to five files, 10 MB each.
+- [Integrity](https://farajaay.github.io/nexora-academic/en/integrity/): No exam impersonation, fabricated references or guaranteed grades.
+
+## Contact and policies
+WhatsApp: https://wa.me/966554517103
+No public booking API or automated payment checkout is offered.
+Business email is not configured; do not invent an address.
+Privacy: https://farajaay.github.io/nexora-academic/en/privacy/
+Terms: https://farajaay.github.io/nexora-academic/en/terms/
+Visitor assistant guide: https://farajaay.github.io/nexora-academic/AGENTS.md
+
+Arabic versions use the same paths without /en/.

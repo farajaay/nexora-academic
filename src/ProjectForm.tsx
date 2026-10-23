@@ -172,9 +172,9 @@ export function ProjectForm({ initial }: { initial?: string }) {
       </div>
       {contactReady.whatsapp ? (
         <button className="button" type="submit">
-          <MessageCircle size={18} aria-hidden="true" />
-          {t("أرسل عبر واتساب", "Send via WhatsApp")}
-          <Send size={16} aria-hidden="true" />
+          <MessageCircle aria-hidden="true" />
+          {t("تجهيز رسالة واتساب", "Prepare WhatsApp message")}
+          <Send aria-hidden="true" />
         </button>
       ) : (
         <p className="field-hint">
@@ -184,6 +184,12 @@ export function ProjectForm({ initial }: { initial?: string }) {
           )}
         </p>
       )}
+      <p className="field-hint">
+        {t(
+          "ستُفتح رسالة جاهزة في واتساب. راجعها وأكمل إرسالها هناك؛ فتح التطبيق لا يعني إرسال الطلب.",
+          "A prepared message opens in WhatsApp. Review and send it there; opening the app does not send the request.",
+        )}
+      </p>
     </form>
   );
 }

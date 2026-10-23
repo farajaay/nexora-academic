@@ -64,18 +64,12 @@ function ThemeSettings() {
             className="theme-option"
             aria-pressed={current === theme.id}
             disabled={busy || !db}
+            aria-busy={busy}
             onClick={() => void choose(theme.id)}
           >
-            <span className="theme-swatch" aria-hidden="true">
-              {theme.swatch.map((color, i) => (
-                <span key={i} style={{ background: color }} />
-              ))}
-            </span>
             <strong>{theme.name[lang]}</strong>
             <small>{theme.blurb[lang]}</small>
-            {current === theme.id && (
-              <Check className="theme-option-check" size={16} />
-            )}
+            {current === theme.id && <Check className="theme-option-check" />}
           </button>
         ))}
       </div>
@@ -141,8 +135,8 @@ function PasswordSettings() {
     <details className="panel account-settings">
       <summary>
         {t(
-          "أمان الحساب · تغيير كلمة المرور",
-          "Account security · change password",
+          "أمان الحساب, تغيير كلمة المرور",
+          "Account security, change password",
         )}
       </summary>
       <form className="admin-edit" onSubmit={(e) => void change(e)}>
@@ -174,7 +168,7 @@ function PasswordSettings() {
             onChange={(e) => setConfirm(e.target.value)}
           />
         </Field>
-        <button className="button" disabled={busy}>
+        <button className="button" disabled={busy} aria-busy={busy}>
           {busy
             ? t("جارٍ الحفظ…", "Saving…")
             : t("تغيير كلمة المرور", "Change password")}
@@ -408,7 +402,11 @@ export default function Admin() {
               )}
             </p>
           )}
-          <button className="button wide" disabled={busy || !db}>
+          <button
+            className="button wide"
+            disabled={busy || !db}
+            aria-busy={busy}
+          >
             {busy
               ? t("جارٍ التحقق…", "Checking…")
               : t("تسجيل الدخول", "Sign in")}
@@ -436,7 +434,7 @@ export default function Admin() {
           className="button secondary"
           onClick={() => void db?.auth.signOut()}
         >
-          <LogOut size={17} />
+          <LogOut />
           {t("خروج", "Sign out")}
         </button>
       </div>
@@ -487,9 +485,10 @@ export default function Admin() {
         <button
           className="button secondary"
           disabled={busy}
+          aria-busy={busy}
           onClick={() => void load()}
         >
-          <RefreshCw size={17} />
+          <RefreshCw />
           {t("تحديث", "Refresh")}
         </button>
       </div>
@@ -520,7 +519,7 @@ export default function Admin() {
                     o.service}
                 </span>
                 <small>
-                  {new Date(o.created_at).toLocaleDateString(lang)} ·{" "}
+                  {new Date(o.created_at).toLocaleDateString(lang)},{" "}
                   {
                     statuses.find((s) => s[0] === o.status)?.[
                       lang === "ar" ? 1 : 2
@@ -637,7 +636,7 @@ export default function Admin() {
                 {(selected.attachments || []).map((file) => (
                   <li key={file.path}>
                     <span>
-                      <bdi>{file.name}</bdi> ·{" "}
+                      <bdi>{file.name}</bdi>,{" "}
                       {(file.size / 1024 / 1024).toFixed(2)} MB
                     </span>
                     <button
@@ -686,14 +685,14 @@ export default function Admin() {
                     onChange={(e) => setQuote(e.target.value)}
                   />
                 </Field>
-                <button className="button" disabled={busy}>
+                <button className="button" disabled={busy} aria-busy={busy}>
                   {t("حفظ التغييرات", "Save changes")}
                 </button>
               </form>
               <hr />
               <h3>{t("سجل الدفعات", "Payment ledger")}</h3>
               <p>
-                {t("المدفوع:", "Paid:")} {paid} {site.currency[lang]} ·{" "}
+                {t("المدفوع:", "Paid:")} {paid} {site.currency[lang]},{" "}
                 {t("المتبقي:", "Balance:")}{" "}
                 {selected.quoted_total === null
                   ? "—"
@@ -747,7 +746,7 @@ export default function Admin() {
                     onChange={(e) => setReference(e.target.value)}
                   />
                 </Field>
-                <button className="button" disabled={busy}>
+                <button className="button" disabled={busy} aria-busy={busy}>
                   {t("تسجيل دفعة مؤكدة", "Record confirmed payment")}
                 </button>
               </form>

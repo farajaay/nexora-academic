@@ -20,7 +20,7 @@ test("home, language, responsive layout and navigation", async ({
   await page.getByRole("button", { name: "Switch to English" }).click();
   await expect(page).toHaveURL(/\/en\/?$/);
   await expect(page.locator("html")).toHaveAttribute("dir", "ltr");
-  await expect(page.locator("h1")).toContainText("Your Vision");
+  await expect(page.locator("h1")).toContainText("Your vision");
   await page.reload();
   await expect(page.locator("html")).toHaveAttribute("lang", "en");
   expect(
@@ -301,12 +301,12 @@ test("project brief opens WhatsApp with the chosen service", async ({
     page.getByRole("tab", { name: "UI/UX design", exact: true }),
   ).toHaveAttribute("aria-selected", "true");
   const form = page.locator("#start");
-  await form.getByRole("button", { name: "Send via WhatsApp" }).click();
+  await form.getByRole("button", { name: "Prepare WhatsApp message" }).click();
   await expect(page.locator("#pf-name-error")).toBeVisible();
   await page.locator("#pf-name").fill("Test Client");
   await page.locator("#pf-details").fill("A redesign for our clinic website.");
   await expect(page.locator("#pf-service")).toHaveValue("uiux");
-  await form.getByRole("button", { name: "Send via WhatsApp" }).click();
+  await form.getByRole("button", { name: "Prepare WhatsApp message" }).click();
   const opened = await page.evaluate(
     () => (window as unknown as { opened: string[] }).opened,
   );

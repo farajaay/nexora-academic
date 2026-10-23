@@ -192,7 +192,7 @@ export function PriceSummary({ value }: { value: Choices }) {
   return (
     <aside className="price-summary">
       <span className="icon-box">
-        <CalcIcon size={25} />
+        <CalcIcon />
       </span>
       <h2>{t("تقديرك المبدئي", "Your initial estimate")}</h2>
       <p>
@@ -215,11 +215,11 @@ export function PriceSummary({ value }: { value: Choices }) {
         )}
       </div>
       <div className="summary-detail">
-        <CheckCircle2 size={17} />
+        <CheckCircle2 />
         {t("جولة تعديل واحدة مشمولة", "One revision included")}
       </div>
       <div className="summary-detail">
-        <ShieldCheck size={17} />
+        <ShieldCheck />
         {t("السعر يؤكد قبل البدء", "Price confirmed before starting")}
       </div>
       <p className="estimate-note">
@@ -262,7 +262,6 @@ export function Calculator() {
           }}
         >
           <div className="panel-heading">
-            <span className="step-number">01</span>
             <div>
               <h2>{t("تفاصيل الخدمة", "Service details")}</h2>
               <p>
@@ -281,7 +280,7 @@ export function Calculator() {
           </div>
           <button className="button wide">
             {t("إرسال تفاصيل الطلب", "Send request details")}
-            <ArrowLeft size={18} />
+            <ArrowLeft />
           </button>
         </form>
         <PriceSummary value={value} />
@@ -639,7 +638,7 @@ export function Contact() {
                   >
                     <div className="file-control">
                       <span aria-hidden="true">
-                        {t("اختيار ملفات", "Choose files")} ·{" "}
+                        {t("اختيار ملفات", "Choose files")},{" "}
                         {files.length
                           ? t(
                               `${files.length} ملفات محددة`,
@@ -681,7 +680,7 @@ export function Contact() {
                     {files.map((file, i) => (
                       <li key={i}>
                         <span>
-                          <bdi>{file.name}</bdi> ·{" "}
+                          <bdi>{file.name}</bdi>,{" "}
                           {(file.size / 1024 / 1024).toFixed(2)} MB
                         </span>
                         <button
@@ -760,13 +759,17 @@ export function Contact() {
                 {message}
               </p>
             )}
-            <button className="button wide" disabled={busy || !backendReady}>
+            <button
+              className="button wide"
+              disabled={busy || !backendReady}
+              aria-busy={busy}
+            >
               {busy
                 ? t("جارٍ حفظ الطلب…", "Saving request…")
                 : receipt
                   ? t("إعادة محاولة رفع الملفات", "Retry file uploads")
                   : t("إرسال وحفظ الطلب", "Submit & save request")}
-              <ArrowLeft size={18} />
+              <ArrowLeft />
             </button>
             {!backendReady && (
               <p className="notice">
@@ -783,7 +786,7 @@ export function Contact() {
                 disabled={!contactReady.whatsapp}
                 onClick={() => void send("whatsapp")}
               >
-                <MessageCircle size={18} />
+                <MessageCircle />
                 {t("عبر واتساب", "WhatsApp")}
               </button>
               <button
@@ -792,7 +795,7 @@ export function Contact() {
                 disabled={!contactReady.email}
                 onClick={() => void send("email")}
               >
-                <Mail size={18} />
+                <Mail />
                 {t("عبر البريد", "Email")}
               </button>
               <button
@@ -800,7 +803,7 @@ export function Contact() {
                 type="button"
                 onClick={() => void send("copy")}
               >
-                <Copy size={18} />
+                <Copy />
                 {t("نسخ الطلب", "Copy request")}
               </button>
             </div>
@@ -816,7 +819,7 @@ export function Contact() {
           <div>
             <PriceSummary value={value} />
             <div className="support-note">
-              <ShieldCheck size={24} />
+              <ShieldCheck />
               <h3>
                 {t("دعم يحترم رحلتك", "Support that respects your journey")}
               </h3>
@@ -839,8 +842,8 @@ export function Success() {
   const saved = state?.channel === "save";
   return (
     <div className="empty-state">
-      <span className="success-icon">
-        <CheckCircle2 size={40} />
+      <span className="success-icon" data-saved={saved}>
+        {saved ? <CheckCircle2 /> : <ArrowLeft />}
       </span>
       <h1>
         {saved

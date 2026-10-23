@@ -39,7 +39,7 @@ export const services = [
   {
     id: "report",
     ar: "مراجعة وتحسين تقرير 3–5 صفحات",
-    en: "Report review & improvement · 3–5 pages",
+    en: "Report review & improvement, 3–5 pages",
     price: 100,
     unit: "report",
     category: "writing",
@@ -48,7 +48,7 @@ export const services = [
   {
     id: "research",
     ar: "مراجعة بحث 10–15 صفحة",
-    en: "Research review · 10–15 pages",
+    en: "Research review, 10–15 pages",
     price: 250,
     unit: "research",
     category: "writing",
@@ -168,7 +168,7 @@ export const options = {
     },
   ],
   deadline: [
-    { id: "standard", ar: "عادي · 3–5 أيام", en: "Standard · 3–5 days" },
+    { id: "standard", ar: "عادي, 3–5 أيام", en: "Standard, 3–5 days" },
     { id: "day", ar: "خلال 24 ساعة (+30%)", en: "Within 24 hours (+30%)" },
     { id: "halfday", ar: "خلال 12 ساعة (+50%)", en: "Within 12 hours (+50%)" },
   ],
