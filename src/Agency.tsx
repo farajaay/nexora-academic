@@ -8,68 +8,42 @@ import {
   Palette,
   ShieldCheck,
 } from "lucide-react";
-import { useState } from "react";
-import { ProjectCover } from "./ProjectCover";
-import { agencyServices, conceptProjects, serviceName } from "./config/agency";
+import { useEffect, useState } from "react";
+import { useLocation } from "react-router-dom";
+import { ProjectCard } from "./ProjectCard";
+import { projects } from "./config/projects";
+import { agencyServices, serviceName } from "./config/agency";
 import { CTA, Steps } from "./pages";
-import { LocalizedLink, PageIntro, SectionHeading, useLanguage } from "./ui";
-
-export function ProjectCard({
-  project,
-}: {
-  project: (typeof conceptProjects)[number];
-}) {
-  const { t, lang } = useLanguage();
-  return (
-    <article className="project-card">
-      <ProjectCover kind={project.services[0]} />
-      <div className="project-body">
-        <span className="project-sector">
-          {t("مفهوم مقترح", "Concept proposal")} / {t(...project.sector)}
-        </span>
-        <h3>{t(...project.title)}</h3>
-        <p>
-          <strong>{t("التحدي:", "Challenge:")}</strong>{" "}
-          {t(...project.challenge)}
-        </p>
-        <p>
-          <strong>{t("نهجنا:", "Our approach:")}</strong>{" "}
-          {t(...project.approach)}
-        </p>
-        <ul className="project-tags">
-          {project.services.map((id) => (
-            <li key={id}>
-              <LocalizedLink to={`/studio#${id}`}>
-                {serviceName(id, lang)}
-              </LocalizedLink>
-            </li>
-          ))}
-        </ul>
-      </div>
-    </article>
-  );
-}
+import { PageIntro, SectionHeading, useLanguage } from "./ui";
 
 export function Portfolio() {
   const { t, lang } = useLanguage();
+  const { hash } = useLocation();
   const [filter, setFilter] = useState("all");
-  const shown = conceptProjects.filter(
+  useEffect(() => {
+    if (!projects.some((project) => `#${project.id}` === hash)) return;
+    const frame = requestAnimationFrame(() =>
+      document.getElementById(hash.slice(1))?.scrollIntoView(),
+    );
+    return () => cancelAnimationFrame(frame);
+  }, [hash]);
+  const shown = projects.filter(
     (p) => filter === "all" || p.services.includes(filter),
   );
   return (
     <>
       <PageIntro
         eyebrow={t("أعمالنا", "Portfolio")}
-        title={t("أفكار تتحوّل إلى أثر.", "Ideas turned into impact.")}
+        title={t("مشاريع حقيقية. نطاق واضح.", "Real projects. Clear scope.")}
         subtitle={t(
-          "مشاريع مفاهيمية توضّح طريقتنا في التفكير والتنفيذ عبر خدماتنا.",
-          "Concept projects that show how we think and deliver across our services.",
+          "أعمال مختارة من مشاريعنا العامة على GitHub: مواقع، منتجات وأدوات تشغيل، مع حالة كل مشروع وروابطه.",
+          "Selected work from our public GitHub projects: websites, products and operational tools, with each project’s status and source.",
         )}
       />
-      <p className="notice concept-note">
+      <p className="notice">
         {t(
-          "هذه مشاريع مفاهيمية لتوضيح أسلوبنا، وليست أعمالًا لعملاء حقيقيين. ستُستبدل بدراسات حالة فعلية عند نشرها.",
-          "These are concept projects that illustrate our approach — not real client work. They will be replaced by actual case studies as they are published.",
+          "قائمة مختارة روجعت في 23 أكتوبر 2026. تضم مواقع منشورة وأدوات للاستضافة الذاتية ومشروعًا قيد التطوير، مع الوظائف المنفّذة والحدود الحالية لكل منها.",
+          "Selection checked on 23 October 2026. It includes published websites, self-hosted tools and a project in development, with implemented scope and current limits stated for each.",
         )}
       </p>
       <div
@@ -78,9 +52,11 @@ export function Portfolio() {
       >
         {[
           ["all", t("الكل", "All")] as const,
-          ...agencyServices.map(
-            (s) => [s.id, serviceName(s.id, lang)] as const,
-          ),
+          ...agencyServices
+            .filter((service) =>
+              projects.some((project) => project.services.includes(service.id)),
+            )
+            .map((s) => [s.id, serviceName(s.id, lang)] as const),
         ].map(([id, label]) => (
           <button
             key={id}
@@ -93,16 +69,28 @@ export function Portfolio() {
         ))}
       </div>
       <h2 className="visually-hidden">{t("قائمة المشاريع", "Project list")}</h2>
-      <div className="project-grid">
-        {shown.map((p) => (
-          <ProjectCard project={p} key={p.id} />
+      <p className="project-count" role="status">
+        {t(
+          `عرض ${shown.length} من ${projects.length} مشاريع`,
+          `Showing ${shown.length} of ${projects.length} projects`,
+        )}
+      </p>
+      <div className="project-grid portfolio-projects">
+        {shown.map((p, index) => (
+          <ProjectCard
+            project={p}
+            key={p.id}
+            nextProject={
+              shown.length > 1 ? shown[(index + 1) % shown.length] : undefined
+            }
+          />
         ))}
       </div>
       {shown.length === 0 && (
         <p className="empty-state">
           {t(
-            "لا توجد مشاريع مفاهيمية لهذه الخدمة بعد.",
-            "No concept projects for this service yet.",
+            "لا توجد مشاريع لهذه الخدمة في القائمة الحالية. اختر الكل لعرض الأعمال.",
+            "No projects match this service. Choose All to browse the work.",
           )}
         </p>
       )}

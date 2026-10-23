@@ -1,7 +1,8 @@
 /** Homepage. No props; language comes from the shared route context. */
 import { ArrowDown, ArrowUpRight } from "lucide-react";
-import { agencyServices, conceptProjects } from "./config/agency";
-import { ProjectCard } from "./Agency";
+import { agencyServices } from "./config/agency";
+import { ProjectCard } from "./ProjectCard";
+import { projects } from "./config/projects";
 import { CTA, Steps } from "./pages";
 import { LocalizedLink, useLanguage } from "./ui";
 
@@ -79,28 +80,28 @@ export function Home() {
       </section>
 
       <section
-        className="section concept-section"
-        aria-labelledby="concepts-title"
+        className="section projects-section"
+        aria-labelledby="projects-title"
       >
         <div className="section-row">
           <div>
-            <h2 id="concepts-title">
-              {t("كيف نفكّر في العمل", "A look at our thinking")}
+            <h2 id="projects-title">
+              {t("من المشاريع التي نبنيها", "Projects we’re building")}
             </h2>
             <p className="section-caption">
               {t(
-                "دراسات مفاهيمية، وليست مشاريع لعملاء. لا توجد نتائج تجارية منشورة بعد.",
-                "Concept studies, not client projects. No commercial results have been published yet.",
+                "مواقع ومنتجات من مستودعاتنا العامة، مع نطاق التنفيذ وحالة كل مشروع.",
+                "Websites and products from our public repositories, with scope and delivery status stated for each.",
               )}
             </p>
           </div>
           <LocalizedLink className="text-link" to="/portfolio">
-            {t("تصفّح المفاهيم", "Browse the concepts")}
+            {t("تصفّح المشاريع", "Browse the projects")}
           </LocalizedLink>
         </div>
         <div className="project-grid home-projects">
-          {[conceptProjects[0], conceptProjects[2]].map((project) => (
-            <ProjectCard key={project.id} project={project} />
+          {projects.slice(0, 2).map((project) => (
+            <ProjectCard key={project.id} project={project} compact />
           ))}
         </div>
       </section>
@@ -136,8 +137,8 @@ export function Home() {
           </p>
           <p>
             {t(
-              "المفاهيم المعروضة ليست أعمال عملاء. نموذج المشروع يفتح واتساب برسالة جاهزة؛ عليك إكمال إرسالها هناك.",
-              "The concepts shown are not client work. The project form prepares a WhatsApp message; you complete sending it there.",
+              "حالة كل مشروع موضّحة في صفحة الأعمال. نموذج المشروع يفتح واتساب برسالة جاهزة؛ عليك إكمال إرسالها هناك.",
+              "Each project’s current status is stated in the portfolio. The project form prepares a WhatsApp message; you complete sending it there.",
             )}
           </p>
         </div>

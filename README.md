@@ -56,7 +56,7 @@ npm run preview
 
 تطبق migration قاعدة البيانات من `supabase/migrations/`. أنشئ حساب المدير في Supabase Auth ثم أضف UUID الخاص به إلى `public.admins` من SQL Editor. لا يوجد تسجيل ذاتي يمنح الإدارة. الجلسة في الذاكرة وتنتهي بإعادة تحميل الصفحة. تتبع الدفعات يدوي وليس بوابة دفع؛ لا يجمع الموقع بيانات البطاقات.
 
-الشهادات نماذج مؤقتة موسومة، والشعار مؤقت. يجب تحديد مشغل المنصة وقنوات التواصل وسياسة الاحتفاظ الفعلية ومراجعة السياسات قبل استقبال بيانات حقيقية. لا يضمن الموقع درجات ولا يقدم أداء اختبارات أو انتحالًا.
+الشعار هو الملف المرفق من المالك، والأعمال المعروضة مشاريع عامة فعلية مع حالة التنفيذ ومصدر كل مشروع. يجب تحديد مشغل المنصة وقنوات التواصل وسياسة الاحتفاظ الفعلية ومراجعة السياسات قبل استقبال بيانات حقيقية. لا يضمن الموقع درجات ولا يقدم أداء اختبارات أو انتحالًا.
 
 ## English
 
@@ -78,7 +78,7 @@ Select GitHub Actions in repository Pages settings. Every push to main runs chec
 
 The shared configuration at `src/config/site.ts` controls names, contact placeholders, pricing, currency, timing and links. Replace only with real business details. The supplied logo is in `public/nexora-logo.jpg`; its ribbon-X favicon is in `public/brand-mark.svg`. Logo display dimensions and interface tokens are in `src/index.css`. Update the Vite base and site URL if renaming the repository. Route titles and descriptions live in `src/config/routes.ts`, the single source both the router and the static generator read — add a page there once, not in two places. Each public route gets its own Arabic document at its existing unprefixed URL and an English document at the matching `/en/` URL, with reciprocal `hreflang` tags (`x-default` pointing at Arabic) and both listed in the sitemap; the build also creates a single unprefixed 404 page and robots file. The site uses one identity in light and dark modes: the admin sets the default for every visitor (stored in the database), and visitors can switch modes with the header toggle.
 
-Academic integrity is central. Testimonials are explicitly illustrative. WhatsApp/email links prepare a message; the user must complete sending in the external app. The success screen does not confuse message preparation with database submission. Payments are recorded manually after receipt, not processed by the site.
+Academic integrity is central. Portfolio entries are verified public GitHub projects with explicit delivery status; they do not imply client commissions or measured commercial results. WhatsApp/email links prepare a message; the user must complete sending in the external app. The success screen does not confuse message preparation with database submission. Payments are recorded manually after receipt, not processed by the site.
 
 MIT license applies to the source code. Review the launch checklist before operating the service.
 
@@ -91,3 +91,9 @@ Production uses a dedicated Supabase project named nexora-academic (Frankfurt), 
 ### مرفقات الطلب / File uploads
 
 Clients can upload 5 files (10 MB each) directly with their request. Admins can download private attachments from order details. See [file upload operations](docs/FILE-UPLOADS.md).
+
+## المشاريع المعروضة / Portfolio content
+
+المشاريع الفعلية في `src/config/projects.ts`، مع وصف عربي وإنجليزي، وروابط المصدر، وحالة التنفيذ وتاريخ آخر تعديل للشيفرة. راجع [مصادر التحقق](docs/PORTFOLIO-SOURCES.md) قبل تحديثها.
+
+The homepage and portfolio share six recent original public GitHub projects. Update scope, status, links and code dates in `src/config/projects.ts` only after checking the linked sources. Landing-page captures are in `public/projects/`. Keep `public/llms.txt` and `public/AGENTS.md` consistent; the build generates matching no-JavaScript portfolio content and metadata.
