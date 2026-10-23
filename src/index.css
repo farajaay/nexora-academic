@@ -60,7 +60,11 @@
   --proof-scale: 1.7;
   --site-width: 1280px;
   --gutter: clamp(var(--s-6), 4vw, var(--s-16));
-  --header-height: 96px;
+  --header-height: 112px;
+  --brand-width: 192px;
+  --brand-mobile-width: 160px;
+  --brand-footer-width: 256px;
+  --brand-ratio: 2 / 1;
   --cover-height: 300px;
   --mobile-cover-height: 248px;
   --detail-width: 880px;
@@ -279,24 +283,15 @@ code {
   text-decoration: none;
   flex-shrink: 0;
 }
-.wordmark {
-  display: flex;
-  flex-direction: column;
-  line-height: var(--leading-heading);
-  font-family: var(--font-sans);
+.brand-logo {
+  display: block;
+  inline-size: var(--brand-width);
+  block-size: auto;
+  aspect-ratio: var(--brand-ratio);
+  object-fit: contain;
 }
-.wordmark strong {
-  font-size: var(--step-2);
-  letter-spacing: var(--tracking-wordmark);
-  font-weight: var(--weight-display);
-}
-.wordmark small {
-  color: var(--ink-2);
-  font-size: var(--step--1);
-  margin-block-start: var(--s-1);
-}
-.wordmark .wordmark-ar {
-  font-family: var(--font-arabic);
+.site-footer .brand-logo {
+  inline-size: var(--brand-footer-width);
 }
 .desktop-nav {
   display: flex;
@@ -1563,14 +1558,8 @@ input[type="file"]::file-selector-button {
   .nav-wrap {
     gap: var(--s-2);
   }
-  .wordmark strong {
-    font-size: var(--step-1);
-  }
-  .wordmark small {
-    font-size: var(--step--1);
-  }
-  .wordmark small:last-child {
-    display: none;
+  .site-header .brand-logo {
+    inline-size: var(--brand-mobile-width);
   }
   .nav-actions {
     gap: 0;

@@ -47,7 +47,7 @@ npm run preview
 
 ## التعديل والإطلاق
 
-عدّل الاسم والأسعار ورقم واتساب والبريد والروابط في `src/config/site.ts`. بيانات التواصل placeholders مقصودة، والأزرار لا تتفعل قبل استبدالها. الشعار في `public/brand-mark.svg`، والألوان والخطوط في `src/index.css`.
+عدّل الاسم والأسعار ورقم واتساب والبريد والروابط في `src/config/site.ts`. بيانات التواصل placeholders مقصودة، والأزرار لا تتفعل قبل استبدالها. الشعار المرفق في `public/nexora-logo.jpg`، وأيقونة المتصفح في `public/brand-mark.svg`، وأبعاد العرض في `src/index.css`.
 
 - [دليل الإعداد والهوية وقاعدة البيانات](docs/CONFIGURATION.md)
 - [دليل المحتوى](docs/CONTENT-GUIDE.md)
@@ -76,7 +76,7 @@ Use Node.js 24. Run `npm ci`, copy `.env.example` to `.env.local`, and run `npm 
 
 Select GitHub Actions in repository Pages settings. Every push to main runs checks and deploys `dist`. Set the public Supabase URL/key as Actions variables. Apply the included SQL migration, create an Auth user and provision its UUID in the admins table. Never expose service-role or secret keys. Browser requests are protected by column grants and RLS.
 
-The shared configuration at `src/config/site.ts` controls names, contact placeholders, pricing, currency, timing and links. Replace only with real business details. Change `public/brand-mark.svg` and `src/index.css` for branding. Update the Vite base and site URL if renaming the repository. Route titles and descriptions live in `src/config/routes.ts`, the single source both the router and the static generator read — add a page there once, not in two places. Each public route gets its own Arabic document at its existing unprefixed URL and an English document at the matching `/en/` URL, with reciprocal `hreflang` tags (`x-default` pointing at Arabic) and both listed in the sitemap; the build also creates a single unprefixed 404 page and robots file. The site uses one identity in light and dark modes: the admin sets the default for every visitor (stored in the database), and visitors can switch modes with the header toggle.
+The shared configuration at `src/config/site.ts` controls names, contact placeholders, pricing, currency, timing and links. Replace only with real business details. The supplied logo is in `public/nexora-logo.jpg`; its ribbon-X favicon is in `public/brand-mark.svg`. Logo display dimensions and interface tokens are in `src/index.css`. Update the Vite base and site URL if renaming the repository. Route titles and descriptions live in `src/config/routes.ts`, the single source both the router and the static generator read — add a page there once, not in two places. Each public route gets its own Arabic document at its existing unprefixed URL and an English document at the matching `/en/` URL, with reciprocal `hreflang` tags (`x-default` pointing at Arabic) and both listed in the sitemap; the build also creates a single unprefixed 404 page and robots file. The site uses one identity in light and dark modes: the admin sets the default for every visitor (stored in the database), and visitors can switch modes with the header toggle.
 
 Academic integrity is central. Testimonials are explicitly illustrative. WhatsApp/email links prepare a message; the user must complete sending in the external app. The success screen does not confuse message preparation with database submission. Payments are recorded manually after receipt, not processed by the site.
 
